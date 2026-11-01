@@ -9,5 +9,15 @@ public interface CategoryRepository {
 
     List<ProductCategory> findAll();
 
+    List<ProductCategory> findByParentId(Long parentId);
+
+    List<ProductCategory> findByLevel(Integer level);
+
     Optional<ProductCategory> findById(Long id);
+
+    boolean existsByName(String name, Long parentId);
+
+    ProductCategory save(ProductCategory category);
+
+    void deleteById(Long id);
 }

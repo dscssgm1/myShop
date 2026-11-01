@@ -24,10 +24,11 @@ public class CartRepositoryImpl implements CartRepository {
     }
 
     @Override
-    public Optional<CartItem> findByUserAndProduct(Long userId, Long productId) {
+    public Optional<CartItem> findByUserAndProductSku(Long userId, Long productId, Long skuId) {
         return Optional.ofNullable(cartItemMapper.selectOne(Wrappers.<CartItem>lambdaQuery()
                 .eq(CartItem::getUserId, userId)
-                .eq(CartItem::getProductId, productId)));
+                .eq(CartItem::getProductId, productId)
+                .eq(CartItem::getSkuId, skuId == null ? 0L : skuId)));
     }
 
     @Override

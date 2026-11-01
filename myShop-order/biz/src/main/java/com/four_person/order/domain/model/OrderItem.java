@@ -21,6 +21,11 @@ public class OrderItem {
 
     private Long productId;
 
+    /** SKU，0 表示无规格 */
+    private Long skuId;
+
+    private String skuSpecs;
+
     private String productName;
 
     private String productEmoji;

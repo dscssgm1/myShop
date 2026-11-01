@@ -28,7 +28,7 @@ myShop 是一个多角色电商购物平台，本项目为其后端服务，基�
 |------|------|------|------|
 | myshop-gateway | myShop-gateway | 8080 | 统一入口，按路径转发到各业务服务 |
 | myshop-system | myShop-system/biz | 8081 | 认证（JWT）、用户、角色、地址/银行卡/收藏/足迹、会员积分 |
-| myshop-product | myShop-product/biz | 8082 | 分类、商品、库存 |
+| myshop-product | myShop-product/biz | 8082 | 分类（两级）、品牌、规格模板、商品与 SKU、库存 |
 | myshop-order | myShop-order/biz | 8083 | 购物车、订单、订单状态流转 |
 | myshop-payment | myShop-payment/biz | 8084 | 支付单、模拟支付、回调订单 |
 | myshop-discount | myShop-discount/biz | 8085 | 活动、优惠券、折扣计算、个性化推荐、促销推送 |
@@ -49,7 +49,7 @@ myShop 是一个多角色电商购物平台，本项目为其后端服务，基�
 
 | 路径 | 目标服务 |
 |------|----------|
-| `/api/products/**`、`/api/categories/**` | myshop-product |
+| `/api/products/**`、`/api/categories/**`、`/api/brands/**`、`/api/specs/**` | myshop-product |
 | `/api/cart/**`、`/api/orders/**` | myshop-order |
 | `/api/payments/**` | myshop-payment |
 | `/api/promotions/**`、`/api/coupons/**`、`/api/discounts/**`、`/api/recommendations/**`、`/api/push/**` | myshop-discount |
@@ -83,7 +83,11 @@ myShop 是一个多角色电商购物平台，本项目为其后端服务，基�
 
 **平台运营**：统一审核中心（商家入驻/商品上架/活动报名/退款/举报等）、分组配置中心、操作/登录/系统日志查询与内部写入接口。
 
-**商品**：分类、分页搜索（关键字/分类/价格/标签/排序）、详情、热门商品、商品维护、库存扣减与恢复。
+**商品**：
+- 两级分类（大类 + 小类）、品牌、规格模板（含选项）的增删改查；
+- 商品（SPU）：多类目关联、品牌、促销价（折扣）、上下架（含原因）、审核状态（发布待审核 → 平台通过）；
+- 商品 SKU：规格组合（颜色/尺码/容量等）各自独立价格与库存，无规格商品自动生成默认 SKU；
+- 分页搜索（关键字/大类/小类/品牌/价格/标签/排序）、详情、热门商品、库存扣减与恢复（商品级 + SKU 级）。
 
 **订单**：购物车增删改、下单预览、创建订单、订单列表与详情、取消、发货、确认收货。下单时调用商品服务扣库存、调用折扣服务算价并核销优惠券；取消订单会恢复库存并释放优惠券。
 

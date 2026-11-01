@@ -10,6 +10,9 @@ public class OrderPreviewVO {
 
     private List<OrderPreviewItemVO> items;
 
+    /** 按店铺拆分的预览 */
+    private List<ShopPreviewVO> shops;
+
     private BigDecimal originalAmount;
 
     private BigDecimal promotionDiscount;
@@ -29,4 +32,16 @@ public class OrderPreviewVO {
     private Long appliedCouponId;
 
     private String appliedCouponTitle;
+
+    @Data
+    public static class ShopPreviewVO {
+        private Long shopId;
+        private String shopName;
+        private BigDecimal originalAmount;
+        private BigDecimal promotionDiscount;
+        private BigDecimal couponDiscount;
+        private BigDecimal freightAmount;
+        private BigDecimal payAmount;
+        private List<OrderPreviewItemVO> items;
+    }
 }

@@ -48,6 +48,14 @@ public class OrderRepositoryImpl implements OrderRepository {
     }
 
     @Override
+    public PageResult<Order> pageByShop(Long shopId, String status, int page, int size) {
+        return doPage(Wrappers.<Order>lambdaQuery()
+                .eq(Order::getShopId, shopId)
+                .eq(StringUtils.hasText(status), Order::getStatus, status)
+                .orderByDesc(Order::getId), page, size);
+    }
+
+    @Override
     public Optional<Order> findByOrderNo(String orderNo) {
         return Optional.ofNullable(orderMapper.selectOne(Wrappers.<Order>lambdaQuery()
                 .eq(Order::getOrderNo, orderNo)));

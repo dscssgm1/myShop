@@ -15,6 +15,12 @@ public class ProductCategory {
     @TableId(type = IdType.AUTO)
     private Long id;
 
+    /** 0 表示大类，否则为父分类 id */
+    private Long parentId;
+
+    /** 1 大类 2 小类 */
+    private Integer level;
+
     private String name;
 
     private String icon;

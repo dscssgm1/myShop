@@ -16,6 +16,9 @@ public interface OrderRepository {
 
     PageResult<Order> adminPage(String status, int page, int size);
 
+    /** 商家端：按店铺查订单（一店一单） */
+    PageResult<Order> pageByShop(Long shopId, String status, int page, int size);
+
     Optional<Order> findByOrderNo(String orderNo);
 
     List<OrderItem> findItems(String orderNo);
@@ -26,7 +29,6 @@ public interface OrderRepository {
 
     void saveItems(List<OrderItem> items);
 
-    /** 条件更新：未付款 -> 已付款 */
     boolean markPaid(String orderNo, LocalDateTime time);
 
     boolean markShipped(String orderNo, LocalDateTime time);

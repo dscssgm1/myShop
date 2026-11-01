@@ -11,6 +11,10 @@ public class CartItemVO {
 
     private Long productId;
 
+    private Long skuId;
+
+    private String skuSpecs;
+
     private String productName;
 
     private BigDecimal price;

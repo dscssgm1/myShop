@@ -9,6 +9,10 @@ public class OrderPreviewItemVO {
 
     private Long productId;
 
+    private Long skuId;
+
+    private String skuSpecs;
+
     private String productName;
 
     private String productEmoji;

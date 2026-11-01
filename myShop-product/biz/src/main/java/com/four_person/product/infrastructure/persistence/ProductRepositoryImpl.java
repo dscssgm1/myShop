@@ -5,9 +5,13 @@ import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.four_person.common.api.PageResult;
 import com.four_person.product.domain.model.Product;
-import com.four_person.product.infrastructure.persistence.mapper.ProductMapper;
+import com.four_person.product.domain.model.ProductCategoryRel;
 import com.four_person.product.domain.model.ProductFilter;
+import com.four_person.product.domain.model.ProductSku;
 import com.four_person.product.domain.repository.ProductRepository;
+import com.four_person.product.infrastructure.persistence.mapper.ProductCategoryRelMapper;
+import com.four_person.product.infrastructure.persistence.mapper.ProductMapper;
+import com.four_person.product.infrastructure.persistence.mapper.ProductSkuMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 import org.springframework.util.StringUtils;
@@ -21,6 +25,8 @@ import java.util.Optional;
 public class ProductRepositoryImpl implements ProductRepository {
 
     private final ProductMapper productMapper;
+    private final ProductSkuMapper productSkuMapper;
+    private final ProductCategoryRelMapper categoryRelMapper;
 
     @Override
     public PageResult<Product> page(ProductFilter filter) {
@@ -29,10 +35,24 @@ public class ProductRepositoryImpl implements ProductRepository {
 
         LambdaQueryWrapper<Product> wrapper = Wrappers.<Product>lambdaQuery()
                 .eq(Product::getStatus, 1)
+                .eq(Product::getAuditStatus, "APPROVED")
                 .eq(filter.categoryId() != null, Product::getCategoryId, filter.categoryId())
+                .eq(filter.brandId() != null, Product::getBrandId, filter.brandId())
+                .eq(filter.shopId() != null, Product::getShopId, filter.shopId())
                 .ge(filter.minPrice() != null, Product::getPrice, filter.minPrice())
                 .le(filter.maxPrice() != null, Product::getPrice, filter.maxPrice())
                 .like(StringUtils.hasText(filter.tag()), Product::getTags, filter.tag());
+
+        if (filter.subCategoryId() != null) {
+            List<Long> productIds = categoryRelMapper.selectList(
+                            Wrappers.<ProductCategoryRel>lambdaQuery()
+                                    .eq(ProductCategoryRel::getCategoryId, filter.subCategoryId()))
+                    .stream().map(ProductCategoryRel::getProductId).toList();
+            if (productIds.isEmpty()) {
+                return PageResult.empty(pageNo, pageSize);
+            }
+            wrapper.in(Product::getId, productIds);
+        }
         if (StringUtils.hasText(filter.keyword())) {
             String keyword = filter.keyword().trim();
             wrapper.and(w -> w.like(Product::getName, keyword).or().like(Product::getShopName, keyword));
@@ -66,6 +86,7 @@ public class ProductRepositoryImpl implements ProductRepository {
         Page<Product> page = productMapper.selectPage(new Page<>(1, size, false),
                 Wrappers.<Product>lambdaQuery()
                         .eq(Product::getStatus, 1)
+                        .eq(Product::getAuditStatus, "APPROVED")
                         .orderByDesc(Product::getSales)
                         .orderByAsc(Product::getId));
         return page.getRecords();
@@ -77,6 +98,7 @@ public class ProductRepositoryImpl implements ProductRepository {
         Page<Product> page = productMapper.selectPage(new Page<>(1, size, false),
                 Wrappers.<Product>lambdaQuery()
                         .eq(Product::getStatus, 1)
+                        .eq(Product::getAuditStatus, "APPROVED")
                         .notIn(excludeIds != null && !excludeIds.isEmpty(), Product::getId, excludeIds)
                         .orderByDesc(Product::getSales)
                         .orderByAsc(Product::getId));
@@ -106,5 +128,63 @@ public class ProductRepositoryImpl implements ProductRepository {
     @Override
     public void restoreStock(Long productId, int quantity) {
         productMapper.restoreStock(productId, quantity);
+    }
+
+    // ---- 多类目 ----
+
+    @Override
+    public List<Long> findCategoryIds(Long productId) {
+        return categoryRelMapper.selectList(Wrappers.<ProductCategoryRel>lambdaQuery()
+                        .eq(ProductCategoryRel::getProductId, productId))
+                .stream().map(ProductCategoryRel::getCategoryId).toList();
+    }
+
+    @Override
+    public void saveCategoryRels(Long productId, List<Long> categoryIds) {
+        for (Long categoryId : categoryIds) {
+            ProductCategoryRel rel = new ProductCategoryRel();
+            rel.setProductId(productId);
+            rel.setCategoryId(categoryId);
+            categoryRelMapper.insert(rel);
+        }
+    }
+
+    @Override
+    public void deleteCategoryRels(Long productId) {
+        categoryRelMapper.delete(Wrappers.<ProductCategoryRel>lambdaQuery()
+                .eq(ProductCategoryRel::getProductId, productId));
+    }
+
+    // ---- SKU ----
+
+    @Override
+    public List<ProductSku> findSkus(Long productId) {
+        return productSkuMapper.selectList(Wrappers.<ProductSku>lambdaQuery()
+                .eq(ProductSku::getProductId, productId)
+                .orderByAsc(ProductSku::getId));
+    }
+
+    @Override
+    public void saveSkus(Long productId, List<ProductSku> skus) {
+        for (ProductSku sku : skus) {
+            sku.setProductId(productId);
+            productSkuMapper.insert(sku);
+        }
+    }
+
+    @Override
+    public void deleteSkus(Long productId) {
+        productSkuMapper.delete(Wrappers.<ProductSku>lambdaQuery()
+                .eq(ProductSku::getProductId, productId));
+    }
+
+    @Override
+    public boolean deductSkuStock(Long skuId, int quantity) {
+        return productSkuMapper.deductStock(skuId, quantity) > 0;
+    }
+
+    @Override
+    public void restoreSkuStock(Long skuId, int quantity) {
+        productSkuMapper.restoreStock(skuId, quantity);
     }
 }

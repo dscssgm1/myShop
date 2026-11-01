@@ -11,6 +11,10 @@ public class OrderVO {
 
     private String orderNo;
 
+    private Long shopId;
+
+    private String shopName;
+
     private String status;
 
     private String statusText;

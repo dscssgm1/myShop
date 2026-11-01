@@ -9,7 +9,7 @@ public interface CartRepository {
 
     List<CartItem> findByUser(Long userId);
 
-    Optional<CartItem> findByUserAndProduct(Long userId, Long productId);
+    Optional<CartItem> findByUserAndProductSku(Long userId, Long productId, Long skuId);
 
     Optional<CartItem> findByIdAndUser(Long id, Long userId);
 

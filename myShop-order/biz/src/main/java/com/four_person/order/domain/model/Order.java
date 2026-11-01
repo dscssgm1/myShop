@@ -29,6 +29,11 @@ public class Order {
     /** 见 {@link OrderStatus} */
     private String status;
 
+    /** 所属店铺：一店一单 */
+    private Long shopId;
+
+    private String shopName;
+
     private BigDecimal originalAmount;
 
     private BigDecimal promotionDiscount;

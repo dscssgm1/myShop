@@ -35,7 +35,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.util.StringUtils;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
@@ -48,6 +47,9 @@ import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+/**
+ * 订单应用服务：下单时按店铺拆分，每个店铺生成一个独立订单（一店一单）。
+ */
 @Slf4j
 @Service
 @RequiredArgsConstructor
@@ -61,10 +63,13 @@ public class OrderApplicationService {
     private final DiscountInternalApi discountInternalApi;
     private final OrderNoGenerator orderNoGenerator;
 
+    // ==================== 预览 ====================
+
     public OrderPreviewVO preview(Long userId, OrderPreviewRequest request) {
         PreparedOrder prepared = prepare(userId, request.getItems(), request.getCouponId());
         OrderPreviewVO vo = new OrderPreviewVO();
-        vo.setItems(prepared.items.stream().map(this::toPreviewItemVO).toList());
+        vo.setItems(prepared.allItems.stream().map(this::toPreviewItemVO).toList());
+        vo.setShops(buildShopPreviews(prepared));
         vo.setOriginalAmount(prepared.originalAmount);
         vo.setPromotionDiscount(prepared.discount.getPromotionDiscount());
         vo.setCouponDiscount(prepared.discount.getCouponDiscount());
@@ -78,73 +83,101 @@ public class OrderApplicationService {
         return vo;
     }
 
+    // ==================== 创建订单（一店一单） ====================
+
     @Transactional(rollbackFor = Exception.class)
     public CreateOrderVO create(Long userId, OrderCreateRequest request) {
         PreparedOrder prepared = prepare(userId, request.getItems(), request.getCouponId());
-        String orderNo = orderNoGenerator.next();
-        LocalDateTime now = LocalDateTime.now();
+        List<AllocatedShop> allocations = allocateShops(prepared);
 
-        Order order = new Order();
-        order.setOrderNo(orderNo);
-        order.setUserId(userId);
-        order.setStatus(OrderStatus.UNPAID.name());
-        order.setOriginalAmount(prepared.originalAmount);
-        order.setPromotionDiscount(prepared.discount.getPromotionDiscount());
-        order.setCouponDiscount(prepared.discount.getCouponDiscount());
-        order.setFreightAmount(FREIGHT_AMOUNT);
-        order.setPayAmount(prepared.discount.getPayAmount());
-        order.setPromotionId(prepared.discount.getAppliedPromotionId());
-        order.setPromotionTitle(prepared.discount.getAppliedPromotionTitle());
-        order.setCouponId(prepared.discount.getAppliedCouponId());
-        order.setCouponTitle(prepared.discount.getAppliedCouponTitle());
-        order.setReceiverName(request.getReceiverName());
-        order.setReceiverPhone(request.getReceiverPhone());
-        order.setReceiverAddress(request.getReceiverAddress());
-        order.setRemark(request.getRemark());
-        orderRepository.save(order);
+        if (prepared.discount.getAppliedCouponId() != null && allocations.size() > 1) {
+            throw new BusinessException(40010, "跨店铺下单暂不支持使用优惠券，请分店铺结算");
+        }
 
-        List<OrderItem> items = prepared.items.stream()
-                .map(item -> toOrderItem(order, item))
-                .toList();
-        orderRepository.saveItems(items);
+        List<CreateOrderVO.OrderBrief> briefs = new ArrayList<>();
+        for (AllocatedShop allocated : allocations) {
+            String orderNo = orderNoGenerator.next();
+            Order order = new Order();
+            order.setOrderNo(orderNo);
+            order.setUserId(userId);
+            order.setShopId(allocated.shopId);
+            order.setShopName(allocated.shopName);
+            order.setStatus(OrderStatus.UNPAID.name());
+            order.setOriginalAmount(allocated.originalAmount);
+            order.setPromotionDiscount(allocated.promotionDiscount);
+            order.setCouponDiscount(allocated.couponDiscount);
+            order.setFreightAmount(FREIGHT_AMOUNT);
+            order.setPayAmount(allocated.payAmount);
+            order.setPromotionId(prepared.discount.getAppliedPromotionId());
+            order.setPromotionTitle(prepared.discount.getAppliedPromotionTitle());
+            order.setCouponId(prepared.discount.getAppliedCouponId());
+            order.setCouponTitle(prepared.discount.getAppliedCouponTitle());
+            order.setReceiverName(request.getReceiverName());
+            order.setReceiverPhone(request.getReceiverPhone());
+            order.setReceiverAddress(request.getReceiverAddress());
+            order.setRemark(request.getRemark());
+            orderRepository.save(order);
 
+            List<OrderItem> items = allocated.items.stream()
+                    .map(item -> toOrderItem(order, item))
+                    .toList();
+            orderRepository.saveItems(items);
+
+            briefs.add(new CreateOrderVO.OrderBrief(orderNo, allocated.shopId,
+                    allocated.shopName, allocated.payAmount));
+        }
+
+        // 扣减库存（按商品聚合）
         StockChangeRequest stockRequest = new StockChangeRequest();
         stockRequest.setItems(prepared.stockItems);
         Results.data(productInternalApi.deductStock(stockRequest));
 
+        // 核销优惠券（仅单店铺场景），失败回滚库存
         if (prepared.discount.getAppliedCouponId() != null) {
             try {
                 CouponUseRequest useRequest = new CouponUseRequest();
                 useRequest.setUserId(userId);
-                useRequest.setOrderNo(orderNo);
+                useRequest.setOrderNo(briefs.get(0).getOrderNo());
                 Results.data(discountInternalApi.useCoupon(prepared.discount.getAppliedCouponId(), useRequest));
             } catch (RuntimeException ex) {
-                log.warn("订单 {} 核销优惠券失败，回滚库存", orderNo, ex);
+                log.warn("核销优惠券失败，回滚库存", ex);
                 try {
                     Results.data(productInternalApi.restoreStock(stockRequest));
                 } catch (Exception restoreEx) {
-                    log.error("订单 {} 回滚库存失败，需要人工处理", orderNo, restoreEx);
+                    log.error("回滚库存失败，需要人工处理", restoreEx);
                 }
                 throw ex;
             }
         }
-        return new CreateOrderVO(orderNo, order.getPayAmount());
+
+        CreateOrderVO vo = new CreateOrderVO();
+        vo.setOrders(briefs);
+        vo.setOrderNo(briefs.get(0).getOrderNo());
+        vo.setPayAmount(briefs.stream().map(CreateOrderVO.OrderBrief::getPayAmount)
+                .reduce(ZERO, BigDecimal::add));
+        return vo;
     }
 
+    // ==================== 查询 ====================
+
     public PageResult<OrderVO> page(Long userId, String status, int page, int size) {
-        PageResult<Order> result = orderRepository.pageByUser(userId, status, page, size);
-        return assemblePage(result);
+        return assemblePage(orderRepository.pageByUser(userId, status, page, size));
     }
 
     public PageResult<OrderVO> adminPage(String status, int page, int size) {
-        PageResult<Order> result = orderRepository.adminPage(status, page, size);
-        return assemblePage(result);
+        return assemblePage(orderRepository.adminPage(status, page, size));
+    }
+
+    /** 商家端：本店铺的订单 */
+    public PageResult<OrderVO> merchantPage(Long shopId, String status, int page, int size) {
+        return assemblePage(orderRepository.pageByShop(shopId, status, page, size));
     }
 
     public OrderVO detail(Long userId, String orderNo) {
-        Order order = requireOwned(userId, orderNo);
-        return toVO(order, orderRepository.findItems(orderNo));
+        return toVO(requireOwned(userId, orderNo));
     }
+
+    // ==================== 状态流转 ====================
 
     @Transactional(rollbackFor = Exception.class)
     public void cancel(Long userId, String orderNo) {
@@ -172,12 +205,16 @@ public class OrderApplicationService {
         }
     }
 
-    public void ship(String orderNo) {
+    /** 商家发货：只能发本店铺订单 */
+    public void ship(Long shopId, String orderNo) {
         Order order = requireOrder(orderNo);
+        if (shopId != null && !shopId.equals(order.getShopId())) {
+            throw new BusinessException(OrderErrorCode.ORDER_FORBIDDEN);
+        }
         LocalDateTime now = LocalDateTime.now();
         order.ship(now);
         if (!orderRepository.markShipped(orderNo, now)) {
-            throw new BusinessException(OrderErrorCode.ORDER_STATUS_INVALID, "订单状态已变化，请刷新后重试");
+            throw new BusinessException(OrderErrorCode.ORDER_STATUS_INVALID, "只有待发货订单可以发货");
         }
     }
 
@@ -221,50 +258,67 @@ public class OrderApplicationService {
         return vo;
     }
 
+    // ==================== 内部逻辑 ====================
+
     private PreparedOrder prepare(Long userId, List<OrderItemRequest> itemRequests, Long couponId) {
-        Map<Long, Integer> merged = new LinkedHashMap<>();
+        Map<String, OrderItemRequest> merged = new LinkedHashMap<>();
         for (OrderItemRequest item : itemRequests) {
-            merged.merge(item.getProductId(), item.getQuantity(), Integer::sum);
+            Long skuId = item.getSkuId() == null ? 0L : item.getSkuId();
+            String key = item.getProductId() + ":" + skuId;
+            merged.merge(key, item, (a, b) -> {
+                a.setQuantity(a.getQuantity() + b.getQuantity());
+                return a;
+            });
         }
 
+        List<Long> productIds = merged.values().stream().map(OrderItemRequest::getProductId)
+                .distinct().toList();
         ProductBatchRequest batchRequest = new ProductBatchRequest();
-        batchRequest.setIds(new ArrayList<>(merged.keySet()));
+        batchRequest.setIds(new ArrayList<>(productIds));
         List<ProductVO> products = Results.data(productInternalApi.batch(batchRequest));
         Map<Long, ProductVO> productMap = products == null ? Collections.emptyMap()
                 : products.stream().collect(Collectors.toMap(ProductVO::getId, Function.identity()));
 
-        List<PreparedItem> items = new ArrayList<>();
+        List<PreparedItem> allItems = new ArrayList<>();
         List<DiscountItem> discountItems = new ArrayList<>();
         List<StockChangeRequest.StockItem> stockItems = new ArrayList<>();
         BigDecimal originalAmount = ZERO;
 
-        for (Map.Entry<Long, Integer> entry : merged.entrySet()) {
-            ProductVO product = productMap.get(entry.getKey());
+        for (OrderItemRequest itemRequest : merged.values()) {
+            ProductVO product = productMap.get(itemRequest.getProductId());
             if (product == null) {
-                throw new BusinessException(OrderErrorCode.PRODUCT_NOT_FOUND, "商品 " + entry.getKey() + " 不存在");
+                throw new BusinessException(OrderErrorCode.PRODUCT_NOT_FOUND,
+                        "商品 " + itemRequest.getProductId() + " 不存在");
             }
             if (product.getStatus() == null || product.getStatus() != 1) {
                 throw new BusinessException(OrderErrorCode.PRODUCT_OFF_SHELF, product.getName() + " 已下架");
             }
-            if (product.getStock() == null || product.getStock() < entry.getValue()) {
+            Long skuId = itemRequest.getSkuId() == null ? 0L : itemRequest.getSkuId();
+            ProductVO.SkuVO sku = findSku(product, skuId);
+
+            int quantity = itemRequest.getQuantity();
+            int stock = sku != null && sku.getStock() != null ? sku.getStock()
+                    : (product.getStock() == null ? 0 : product.getStock());
+            if (stock < quantity) {
                 throw new BusinessException(OrderErrorCode.STOCK_INSUFFICIENT, product.getName() + " 库存不足");
             }
-            BigDecimal subtotal = product.getPrice()
-                    .multiply(BigDecimal.valueOf(entry.getValue()))
+
+            BigDecimal price = sku != null ? sku.getPrice() : product.getPrice();
+            BigDecimal subtotal = price.multiply(BigDecimal.valueOf(quantity))
                     .setScale(2, RoundingMode.HALF_UP);
             originalAmount = originalAmount.add(subtotal);
-            items.add(new PreparedItem(product, entry.getValue(), subtotal));
+            allItems.add(new PreparedItem(product, sku, skuId, quantity, subtotal));
 
             DiscountItem discountItem = new DiscountItem();
             discountItem.setProductId(product.getId());
             discountItem.setCategoryId(product.getCategoryId());
-            discountItem.setPrice(product.getPrice());
-            discountItem.setQuantity(entry.getValue());
+            discountItem.setPrice(price);
+            discountItem.setQuantity(quantity);
             discountItems.add(discountItem);
 
             StockChangeRequest.StockItem stockItem = new StockChangeRequest.StockItem();
             stockItem.setProductId(product.getId());
-            stockItem.setQuantity(entry.getValue());
+            stockItem.setQuantity(quantity);
             stockItems.add(stockItem);
         }
 
@@ -274,7 +328,74 @@ public class OrderApplicationService {
         discountRequest.setItems(discountItems);
         DiscountResultVO discount = Results.data(discountInternalApi.calculate(discountRequest));
 
-        return new PreparedOrder(items, originalAmount, discount, stockItems);
+        Map<Long, List<PreparedItem>> byShop = new LinkedHashMap<>();
+        for (PreparedItem item : allItems) {
+            byShop.computeIfAbsent(item.product.getShopId(), k -> new ArrayList<>()).add(item);
+        }
+        List<PreparedShop> shops = byShop.entrySet().stream().map(entry -> {
+            BigDecimal shopOriginal = entry.getValue().stream()
+                    .map(PreparedItem::subtotal)
+                    .reduce(ZERO, BigDecimal::add)
+                    .setScale(2, RoundingMode.HALF_UP);
+            String shopName = entry.getValue().get(0).product.getShopName();
+            return new PreparedShop(entry.getKey(), shopName, entry.getValue(), shopOriginal);
+        }).toList();
+
+        return new PreparedOrder(allItems, shops, originalAmount, discount, stockItems);
+    }
+
+    /** 按店铺小计比例分摊优惠，尾差给最后一个店铺 */
+    private List<AllocatedShop> allocateShops(PreparedOrder prepared) {
+        List<PreparedShop> shops = prepared.shops;
+        BigDecimal totalOriginal = prepared.originalAmount;
+        BigDecimal totalPay = prepared.discount.getPayAmount();
+        BigDecimal totalPromotion = prepared.discount.getPromotionDiscount() == null
+                ? ZERO : prepared.discount.getPromotionDiscount();
+
+        List<AllocatedShop> result = new ArrayList<>();
+        BigDecimal allocatedPay = ZERO;
+        BigDecimal allocatedPromotion = ZERO;
+
+        for (int i = 0; i < shops.size(); i++) {
+            PreparedShop shop = shops.get(i);
+            boolean last = i == shops.size() - 1;
+
+            BigDecimal pay;
+            BigDecimal promotion;
+            if (last) {
+                pay = totalPay.subtract(allocatedPay).setScale(2, RoundingMode.HALF_UP);
+                promotion = totalPromotion.subtract(allocatedPromotion).setScale(2, RoundingMode.HALF_UP);
+            } else {
+                BigDecimal ratio = totalOriginal.signum() == 0 ? BigDecimal.ZERO
+                        : shop.originalAmount.divide(totalOriginal, 6, RoundingMode.HALF_UP);
+                pay = totalPay.multiply(ratio).setScale(2, RoundingMode.HALF_UP);
+                promotion = totalPromotion.multiply(ratio).setScale(2, RoundingMode.HALF_UP);
+                allocatedPay = allocatedPay.add(pay);
+                allocatedPromotion = allocatedPromotion.add(promotion);
+            }
+            BigDecimal coupon = shop.originalAmount.subtract(pay).subtract(promotion);
+            if (coupon.signum() < 0) {
+                coupon = ZERO;
+            }
+            result.add(new AllocatedShop(shop.shopId, shop.shopName, shop.originalAmount,
+                    promotion, coupon, pay, shop.items));
+        }
+        return result;
+    }
+
+    private List<OrderPreviewVO.ShopPreviewVO> buildShopPreviews(PreparedOrder prepared) {
+        return allocateShops(prepared).stream().map(allocated -> {
+            OrderPreviewVO.ShopPreviewVO vo = new OrderPreviewVO.ShopPreviewVO();
+            vo.setShopId(allocated.shopId);
+            vo.setShopName(allocated.shopName);
+            vo.setOriginalAmount(allocated.originalAmount);
+            vo.setPromotionDiscount(allocated.promotionDiscount);
+            vo.setCouponDiscount(allocated.couponDiscount);
+            vo.setFreightAmount(FREIGHT_AMOUNT);
+            vo.setPayAmount(allocated.payAmount);
+            vo.setItems(allocated.items.stream().map(this::toPreviewItemVO).toList());
+            return vo;
+        }).toList();
     }
 
     private PageResult<OrderVO> assemblePage(PageResult<Order> result) {
@@ -286,63 +407,15 @@ public class OrderApplicationService {
         return PageResult.of(records, result.getTotal(), result.getPage(), result.getSize());
     }
 
-    private Order requireOwned(Long userId, String orderNo) {
-        Order order = requireOrder(orderNo);
-        if (!order.getUserId().equals(userId)) {
-            throw new BusinessException(OrderErrorCode.ORDER_FORBIDDEN);
-        }
-        return order;
-    }
-
-    private Order requireOrder(String orderNo) {
-        return orderRepository.findByOrderNo(orderNo)
-                .orElseThrow(() -> new BusinessException(OrderErrorCode.ORDER_NOT_FOUND));
-    }
-
-    private StockChangeRequest toStockRequest(List<OrderItem> items) {
-        StockChangeRequest request = new StockChangeRequest();
-        request.setItems(items.stream().map(item -> {
-            StockChangeRequest.StockItem stockItem = new StockChangeRequest.StockItem();
-            stockItem.setProductId(item.getProductId());
-            stockItem.setQuantity(item.getQuantity());
-            return stockItem;
-        }).toList());
-        return request;
-    }
-
-    private OrderPreviewItemVO toPreviewItemVO(PreparedItem item) {
-        OrderPreviewItemVO vo = new OrderPreviewItemVO();
-        vo.setProductId(item.product.getId());
-        vo.setProductName(item.product.getName());
-        vo.setProductEmoji(item.product.getEmoji());
-        vo.setProductColor(item.product.getColor());
-        vo.setShopId(item.product.getShopId());
-        vo.setShopName(item.product.getShopName());
-        vo.setPrice(item.product.getPrice());
-        vo.setQuantity(item.quantity);
-        vo.setSubtotal(item.subtotal);
-        return vo;
-    }
-
-    private OrderItem toOrderItem(Order order, PreparedItem item) {
-        OrderItem orderItem = new OrderItem();
-        orderItem.setOrderId(order.getId());
-        orderItem.setOrderNo(order.getOrderNo());
-        orderItem.setProductId(item.product.getId());
-        orderItem.setProductName(item.product.getName());
-        orderItem.setProductEmoji(item.product.getEmoji());
-        orderItem.setProductColor(item.product.getColor());
-        orderItem.setShopId(item.product.getShopId());
-        orderItem.setShopName(item.product.getShopName());
-        orderItem.setPrice(item.product.getPrice());
-        orderItem.setQuantity(item.quantity);
-        orderItem.setSubtotal(item.subtotal);
-        return orderItem;
+    private OrderVO toVO(Order order) {
+        return toVO(order, orderRepository.findItems(order.getOrderNo()));
     }
 
     private OrderVO toVO(Order order, List<OrderItem> items) {
         OrderVO vo = new OrderVO();
         vo.setOrderNo(order.getOrderNo());
+        vo.setShopId(order.getShopId());
+        vo.setShopName(order.getShopName());
         vo.setStatus(order.getStatus());
         vo.setStatusText(OrderStatus.textOf(order.getStatus()));
         vo.setOriginalAmount(order.getOriginalAmount());
@@ -365,9 +438,87 @@ public class OrderApplicationService {
         return vo;
     }
 
+    private Order requireOwned(Long userId, String orderNo) {
+        Order order = requireOrder(orderNo);
+        if (!order.getUserId().equals(userId)) {
+            throw new BusinessException(OrderErrorCode.ORDER_FORBIDDEN);
+        }
+        return order;
+    }
+
+    private Order requireOrder(String orderNo) {
+        return orderRepository.findByOrderNo(orderNo)
+                .orElseThrow(() -> new BusinessException(OrderErrorCode.ORDER_NOT_FOUND));
+    }
+
+    private ProductVO.SkuVO findSku(ProductVO product, Long skuId) {
+        if (skuId == null || skuId == 0) {
+            return null;
+        }
+        ProductVO.SkuVO sku = product.getSkus() == null ? null : product.getSkus().stream()
+                .filter(s -> skuId.equals(s.getId()))
+                .findFirst()
+                .orElse(null);
+        if (sku == null) {
+            throw new BusinessException(OrderErrorCode.PRODUCT_NOT_FOUND, "商品规格不存在");
+        }
+        return sku;
+    }
+
+    private StockChangeRequest toStockRequest(List<OrderItem> items) {
+        Map<Long, Integer> merged = new LinkedHashMap<>();
+        for (OrderItem item : items) {
+            merged.merge(item.getProductId(), item.getQuantity(), Integer::sum);
+        }
+        StockChangeRequest request = new StockChangeRequest();
+        request.setItems(merged.entrySet().stream().map(entry -> {
+            StockChangeRequest.StockItem stockItem = new StockChangeRequest.StockItem();
+            stockItem.setProductId(entry.getKey());
+            stockItem.setQuantity(entry.getValue());
+            return stockItem;
+        }).toList());
+        return request;
+    }
+
+    private OrderPreviewItemVO toPreviewItemVO(PreparedItem item) {
+        OrderPreviewItemVO vo = new OrderPreviewItemVO();
+        vo.setProductId(item.product.getId());
+        vo.setSkuId(item.skuId);
+        vo.setSkuSpecs(item.sku == null ? "" : specsText(item.sku.getSpecs()));
+        vo.setProductName(item.product.getName());
+        vo.setProductEmoji(item.product.getEmoji());
+        vo.setProductColor(item.product.getColor());
+        vo.setShopId(item.product.getShopId());
+        vo.setShopName(item.product.getShopName());
+        vo.setPrice(item.sku != null ? item.sku.getPrice() : item.product.getPrice());
+        vo.setQuantity(item.quantity);
+        vo.setSubtotal(item.subtotal);
+        return vo;
+    }
+
+    private OrderItem toOrderItem(Order order, PreparedItem item) {
+        OrderItem orderItem = new OrderItem();
+        orderItem.setOrderId(order.getId());
+        orderItem.setOrderNo(order.getOrderNo());
+        orderItem.setProductId(item.product.getId());
+        orderItem.setSkuId(item.skuId);
+        orderItem.setSkuSpecs(item.sku == null ? "" : specsText(item.sku.getSpecs()));
+        orderItem.setProductName(item.product.getName());
+        orderItem.setProductEmoji(item.product.getEmoji());
+        orderItem.setProductColor(item.product.getColor());
+        orderItem.setShopId(item.product.getShopId());
+        orderItem.setShopName(item.product.getShopName());
+        orderItem.setPrice(item.sku != null ? item.sku.getPrice() : item.product.getPrice());
+        orderItem.setQuantity(item.quantity);
+        orderItem.setSubtotal(item.subtotal);
+        return orderItem;
+    }
+
     private OrderItemVO toItemVO(OrderItem item) {
         OrderItemVO vo = new OrderItemVO();
         vo.setProductId(item.getProductId());
+        vo.setSkuId(item.getSkuId());
+        vo.setSkuSpecs(item.getSkuSpecs());
         vo.setProductName(item.getProductName());
         vo.setProductEmoji(item.getProductEmoji());
         vo.setProductColor(item.getProductColor());
@@ -379,12 +530,32 @@ public class OrderApplicationService {
         return vo;
     }
 
-    private record PreparedItem(ProductVO product, int quantity, BigDecimal subtotal) {
+    private String specsText(Map<String, String> specs) {
+        if (specs == null || specs.isEmpty()) {
+            return "";
+        }
+        return specs.entrySet().stream()
+                .map(e -> e.getKey() + ":" + e.getValue())
+                .collect(Collectors.joining(" / "));
     }
 
-    private record PreparedOrder(List<PreparedItem> items,
+    private record PreparedItem(ProductVO product, ProductVO.SkuVO sku, Long skuId,
+                                int quantity, BigDecimal subtotal) {
+    }
+
+    private record PreparedShop(Long shopId, String shopName, List<PreparedItem> items,
+                                BigDecimal originalAmount) {
+    }
+
+    private record PreparedOrder(List<PreparedItem> allItems,
+                                 List<PreparedShop> shops,
                                  BigDecimal originalAmount,
                                  DiscountResultVO discount,
                                  List<StockChangeRequest.StockItem> stockItems) {
+    }
+
+    private record AllocatedShop(Long shopId, String shopName, BigDecimal originalAmount,
+                                 BigDecimal promotionDiscount, BigDecimal couponDiscount,
+                                 BigDecimal payAmount, List<PreparedItem> items) {
     }
 }

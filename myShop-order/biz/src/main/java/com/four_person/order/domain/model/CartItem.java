@@ -19,6 +19,12 @@ public class CartItem {
 
     private Long productId;
 
+    /** SKU，0 表示无规格 */
+    private Long skuId;
+
+    /** 规格快照 */
+    private String skuSpecs;
+
     private String productName;
 
     private BigDecimal price;

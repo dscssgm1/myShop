@@ -18,17 +18,23 @@ public class Product {
     @TableId(type = IdType.AUTO)
     private Long id;
 
+    private String name;
+
+    private Long brandId;
+
+    /** 主分类（大类） */
     private Long categoryId;
 
     private Long shopId;
 
     private String shopName;
 
-    private String name;
-
     private BigDecimal price;
 
     private BigDecimal originPrice;
+
+    /** 促销价，空则无折扣 */
+    private BigDecimal discountPrice;
 
     private Integer stock;
 
@@ -45,11 +51,17 @@ public class Product {
 
     private String description;
 
-    /** 每行一条规格 */
+    /** 商品规格定义（JSON 数组） */
     private String specs;
 
     /** 1 上架，0 下架 */
     private Integer status;
+
+    /** PENDING / APPROVED / REJECTED */
+    private String auditStatus;
+
+    /** 下架原因 */
+    private String offReason;
 
     private LocalDateTime createdAt;
 

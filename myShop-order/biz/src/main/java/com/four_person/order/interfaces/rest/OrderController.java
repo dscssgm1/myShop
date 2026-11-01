@@ -2,6 +2,7 @@ package com.four_person.order.interfaces.rest;
 
 import com.four_person.common.api.PageResult;
 import com.four_person.common.api.Result;
+import com.four_person.common.web.AccessGuard;
 import com.four_person.common.web.UserContext;
 import com.four_person.order.api.dto.CreateOrderVO;
 import com.four_person.order.api.dto.OrderCreateRequest;
@@ -31,9 +32,10 @@ public class OrderController {
         return Result.success(orderApplicationService.preview(UserContext.getUserId(), request));
     }
 
+    /** 提交订单：按店铺拆分，每店生成一个独立订单 */
     @PostMapping
     public Result<CreateOrderVO> create(@Valid @RequestBody OrderCreateRequest request) {
-        return Result.success(orderApplicationService.create(UserContext.getUserId(), request));
+        return Result.success("订单已创建", orderApplicationService.create(UserContext.getUserId(), request));
     }
 
     @GetMapping
@@ -47,7 +49,18 @@ public class OrderController {
     public Result<PageResult<OrderVO>> adminPage(@RequestParam(required = false) String status,
                                                  @RequestParam(defaultValue = "1") int page,
                                                  @RequestParam(defaultValue = "10") int size) {
+        AccessGuard.requireGroup("PLATFORM");
         return Result.success(orderApplicationService.adminPage(status, page, size));
+    }
+
+    /** 商家端：本店铺订单 */
+    @GetMapping("/merchant")
+    public Result<PageResult<OrderVO>> merchantPage(@RequestParam(required = false) String status,
+                                                    @RequestParam(defaultValue = "1") int page,
+                                                    @RequestParam(defaultValue = "10") int size) {
+        AccessGuard.requireGroup("MERCHANT", "PLATFORM");
+        return Result.success(orderApplicationService.merchantPage(
+                UserContext.requireShopId(), status, page, size));
     }
 
     @GetMapping("/{orderNo}")
@@ -61,15 +74,18 @@ public class OrderController {
         return Result.success();
     }
 
+    /** 买家确认收货（按订单） */
     @PostMapping("/{orderNo}/confirm")
     public Result<Void> confirm(@PathVariable String orderNo) {
         orderApplicationService.confirm(UserContext.getUserId(), orderNo);
         return Result.success();
     }
 
+    /** 商家发货（只能发本店铺订单） */
     @PostMapping("/{orderNo}/ship")
     public Result<Void> ship(@PathVariable String orderNo) {
-        orderApplicationService.ship(orderNo);
+        AccessGuard.requireGroup("MERCHANT", "PLATFORM");
+        orderApplicationService.ship(UserContext.getShopId(), orderNo);
         return Result.success();
     }
 }

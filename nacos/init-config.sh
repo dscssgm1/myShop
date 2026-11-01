@@ -4,17 +4,28 @@
 set -euo pipefail
 
 NACOS_ADDR="${1:-${NACOS_SERVER_ADDR:-127.0.0.1:8848}}"
-GROUP="${NACOS_GROUP:-DEFAULT_GROUP}"
-NAMESPACE="${NACOS_NAMESPACE:-}"
+GROUP="${NACOS_GROUP:-config}"
+NAMESPACE="${NACOS_NAMESPACE:-myShop}"
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+
+# Windows 下的 curl 是原生程序，不认 /e/... 形式的 MSYS 路径，需要转换
+to_native_path() {
+    if command -v cygpath >/dev/null 2>&1; then
+        cygpath -w "$1"
+    else
+        echo "$1"
+    fi
+}
 
 for file in "${SCRIPT_DIR}"/config/*.yml; do
     data_id="$(basename "${file}")"
+    native_file="$(to_native_path "${file}")"
+    # 使用 content@文件 的方式上传，curl 会按原始字节读取，保留 UTF-8 编码
     response="$(curl -sS -X POST "http://${NACOS_ADDR}/nacos/v1/cs/configs" \
         --data-urlencode "dataId=${data_id}" \
         --data-urlencode "group=${GROUP}" \
         --data-urlencode "tenant=${NAMESPACE}" \
         --data-urlencode "type=yaml" \
-        --data-urlencode "content@${file}")"
+        --data-urlencode "content@${native_file}")"
     echo "publish ${data_id}: ${response}"
 done

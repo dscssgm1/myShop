@@ -9,7 +9,16 @@ public class ProductQuery {
 
     private String keyword;
 
+    /** 大类 */
     private Long categoryId;
+
+    /** 小类 */
+    private Long subCategoryId;
+
+    private Long brandId;
+
+    /** 店铺 ID（店铺页） */
+    private Long shopId;
 
     private BigDecimal minPrice;
 
