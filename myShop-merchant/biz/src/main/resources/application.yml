@@ -1,0 +1,40 @@
+server:
+  port: ${SERVER_PORT:8086}
+
+spring:
+  application:
+    name: myshop-merchant
+  config:
+    import:
+      - optional:nacos:myshop-merchant.yml
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: ${MYSQL_URL:jdbc:mysql://127.0.0.1:3306/myshop?useUnicode=true&characterEncoding=utf8&serverTimezone=Asia/Shanghai}
+    username: ${MYSQL_USERNAME:root}
+    password: ${MYSQL_PASSWORD:root}
+    hikari:
+      initialization-fail-timeout: -1
+  cloud:
+    nacos:
+      server-addr: ${NACOS_SERVER_ADDR:127.0.0.1:8848}
+      discovery:
+        group: DEFAULT_GROUP
+        namespace: ${NACOS_NAMESPACE:}
+      config:
+        group: DEFAULT_GROUP
+        namespace: ${NACOS_NAMESPACE:}
+        file-extension: yml
+
+mybatis-plus:
+  configuration:
+    map-underscore-to-camel-case: true
+  global-config:
+    db-config:
+      id-type: auto
+      logic-delete-field: deleted
+      logic-delete-value: 1
+      logic-not-delete-value: 0
+
+logging:
+  level:
+    com.four_person: info

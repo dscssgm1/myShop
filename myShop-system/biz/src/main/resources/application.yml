@@ -1,0 +1,70 @@
+server:
+  port: ${SERVER_PORT:8081}
+
+spring:
+  application:
+    name: myshop-system
+  config:
+    # Nacos 配置中心中的应用配置，未发布时不影响启动
+    import:
+      - optional:nacos:myshop-system.yml
+  # 本地开发默认数据源，Nacos 中的同名配置优先生效
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: ${MYSQL_URL:jdbc:mysql://127.0.0.1:3306/myshop?useUnicode=true&characterEncoding=utf8&serverTimezone=Asia/Shanghai}
+    username: ${MYSQL_USERNAME:root}
+    password: ${MYSQL_PASSWORD:root}
+    hikari:
+      initialization-fail-timeout: -1
+  cloud:
+    nacos:
+      server-addr: ${NACOS_SERVER_ADDR:127.0.0.1:8848}
+      discovery:
+        group: DEFAULT_GROUP
+        namespace: ${NACOS_NAMESPACE:}
+      config:
+        group: DEFAULT_GROUP
+        namespace: ${NACOS_NAMESPACE:}
+        file-extension: yml
+  # 邮件发送：验证码邮件；生产环境通过 MAIL_* 环境变量配置真实 SMTP
+  mail:
+    host: ${MAIL_HOST:localhost}
+    port: ${MAIL_PORT:25}
+    username: ${MAIL_USERNAME:}
+    password: ${MAIL_PASSWORD:}
+    properties:
+      mail.smtp.auth: ${MAIL_SMTP_AUTH:true}
+      mail.smtp.starttls.enable: ${MAIL_SMTP_STARTTLS:true}
+  # Redis：验证码存储与限流
+  data:
+    redis:
+      host: ${REDIS_HOST:127.0.0.1}
+      port: ${REDIS_PORT:6379}
+      password: ${REDIS_PASSWORD:}
+      timeout: 3s
+
+mybatis-plus:
+  configuration:
+    map-underscore-to-camel-case: true
+  global-config:
+    db-config:
+      id-type: auto
+      logic-delete-field: deleted
+      logic-delete-value: 1
+      logic-not-delete-value: 0
+
+# 认证配置
+myshop:
+  security:
+    jwt:
+      # 生产环境务必通过环境变量覆盖，长度不少于 32 字节
+      secret: ${MYSHOP_JWT_SECRET:myshop-default-secret-please-change-in-production-2026}
+      expiration-seconds: ${MYSHOP_JWT_EXPIRATION:7200}
+      issuer: myshop
+    email-code:
+      # 原型联调：验证码直接返回给前端；生产环境应关闭并接入邮件服务
+      debug: ${MYSHOP_EMAIL_CODE_DEBUG:true}
+
+logging:
+  level:
+    com.four_person: info

@@ -1,0 +1,13 @@
+# myshop-gateway 服务配置（Nacos 配置中心，dataId: myshop-gateway.yml，group: DEFAULT_GROUP）
+# 路由默认写在网关本地 application.yml，如需动态调整可在此处覆盖 spring.cloud.gateway.routes
+spring:
+  cloud:
+    gateway:
+      httpclient:
+        connect-timeout: 5000
+        response-timeout: 10s
+
+logging:
+  level:
+    com.four_person: info
+    org.springframework.cloud.gateway: info

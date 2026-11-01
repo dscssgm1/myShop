@@ -1,0 +1,99 @@
+server:
+  port: ${SERVER_PORT:8080}
+
+spring:
+  application:
+    name: myshop-gateway
+  config:
+    # Nacos 配置中心中的应用配置，未发布时不影响启动
+    import:
+      - optional:nacos:myshop-gateway.yml
+  cloud:
+    nacos:
+      server-addr: ${NACOS_SERVER_ADDR:127.0.0.1:8848}
+      discovery:
+        group: DEFAULT_GROUP
+        namespace: ${NACOS_NAMESPACE:}
+      config:
+        group: DEFAULT_GROUP
+        namespace: ${NACOS_NAMESPACE:}
+        file-extension: yml
+    gateway:
+      # 统一通过网关访问各服务，例如 /api/system/users -> myshop-system 的 /users
+      routes:
+        - id: myshop-system
+          uri: lb://myshop-system
+          predicates:
+            - Path=/api/system/**
+          filters:
+            - StripPrefix=2
+        # 业务服务：去掉 /api 前缀，例如 /api/products/1 -> myshop-product 的 /products/1
+        - id: myshop-product
+          uri: lb://myshop-product
+          predicates:
+            - Path=/api/products/**,/api/categories/**
+          filters:
+            - StripPrefix=1
+        - id: myshop-order
+          uri: lb://myshop-order
+          predicates:
+            - Path=/api/cart/**,/api/orders/**
+          filters:
+            - StripPrefix=1
+        - id: myshop-payment
+          uri: lb://myshop-payment
+          predicates:
+            - Path=/api/payments/**
+          filters:
+            - StripPrefix=1
+        - id: myshop-discount
+          uri: lb://myshop-discount
+          predicates:
+            - Path=/api/promotions/**,/api/coupons/**,/api/discounts/**,/api/recommendations/**,/api/push/**
+          filters:
+            - StripPrefix=1
+        - id: myshop-merchant
+          uri: lb://myshop-merchant
+          predicates:
+            - Path=/api/shops/**,/api/merchant/**
+          filters:
+            - StripPrefix=1
+        - id: myshop-logistics
+          uri: lb://myshop-logistics
+          predicates:
+            - Path=/api/logistics/**
+          filters:
+            - StripPrefix=1
+        - id: myshop-message
+          uri: lb://myshop-message
+          predicates:
+            - Path=/api/messages/**
+          filters:
+            - StripPrefix=1
+        - id: myshop-platform
+          uri: lb://myshop-platform
+          predicates:
+            - Path=/api/audit/**,/api/config/**,/api/logs/**,/api/dashboard/**
+          filters:
+            - StripPrefix=1
+      discovery:
+        locator:
+          enabled: false
+
+# Token 鉴权：密钥需与 myshop-system 保持一致
+myshop:
+  security:
+    jwt:
+      secret: ${MYSHOP_JWT_SECRET:myshop-default-secret-please-change-in-production-2026}
+    # 免登录路径前缀（商品与店铺浏览、登录注册）
+    whitelist:
+      - /api/system/auth/
+      - /api/products
+      - /api/categories
+      - /api/shops
+      - /api/promotions
+      - /api/recommendations
+
+logging:
+  level:
+    com.four_person: info

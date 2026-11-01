@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+</head>
+<body style="margin:0;padding:0;background:#f5f5f5;font-family:'PingFang SC','Microsoft YaHei',Arial,sans-serif;">
+    <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0">
+        <tr>
+            <td align="center" style="padding:32px 16px;">
+                <table role="presentation" width="480" cellspacing="0" cellpadding="0" border="0"
+                       style="background:#ffffff;border-radius:12px;overflow:hidden;">
+                    <!-- 头部 -->
+                    <tr>
+                        <td style="background:linear-gradient(135deg,#ff416c,#ff4b2b);padding:24px 32px;">
+                            <div style="color:#ffffff;font-size:20px;font-weight:700;">🛒 myShop</div>
+                            <div style="color:rgba(255,255,255,0.85);font-size:13px;margin-top:4px;">邮箱验证码</div>
+                        </td>
+                    </tr>
+                    <!-- 正文 -->
+                    <tr>
+                        <td style="padding:32px;">
+                            <p style="margin:0 0 16px;color:#333;font-size:15px;">您好，</p>
+                            <p style="margin:0 0 24px;color:#666;font-size:14px;line-height:1.8;">
+                                您正在进行账号验证，本次验证码为：
+                            </p>
+                            <div style="text-align:center;margin:0 0 24px;">
+                                <span th:text="${code}"
+                                      style="display:inline-block;background:#fff5f3;border:1px dashed #ff4b2b;color:#ff4b2b;
+                                             font-size:32px;font-weight:700;letter-spacing:8px;padding:16px 32px;border-radius:8px;">123456</span>
+                            </div>
+                            <p style="margin:0 0 8px;color:#999;font-size:13px;">
+                                验证码 <span th:text="${expireMinutes}">5</span> 分钟内有效，请勿泄露给他人。
+                            </p>
+                            <p style="margin:0;color:#bbb;font-size:12px;">
+                                若非本人操作，请忽略本邮件。
+                            </p>
+                        </td>
+                    </tr>
+                    <!-- 页脚 -->
+                    <tr>
+                        <td style="background:#fafafa;padding:16px 32px;text-align:center;color:#bbb;font-size:12px;">
+                            myShop 电商购物平台 · 系统自动发送，请勿回复
+                        </td>
+                    </tr>
+                </table>
+            </td>
+        </tr>
+    </table>
+</body>
+</html>
