@@ -19,6 +19,8 @@ public class PointsExchange {
     private Long itemId;
     private String itemName;
     private String itemEmoji;
+    /** 商品主图快照 */
+    private String itemCover;
     private Integer points;
     /** 兑换生成的订单号 */
     private String orderNo;

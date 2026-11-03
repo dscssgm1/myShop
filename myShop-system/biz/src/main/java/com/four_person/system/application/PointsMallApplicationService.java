@@ -101,6 +101,7 @@ public class PointsMallApplicationService {
         record.setItemId(item.getId());
         record.setItemName(item.getProductName());
         record.setItemEmoji(item.getProductEmoji());
+        record.setItemCover(item.getProductCoverImage());
         record.setPoints(pointsPrice);
         record.setOrderNo(orderNo);
         exchangeMapper.insert(record);
@@ -185,6 +186,7 @@ public class PointsMallApplicationService {
         item.setProductName(product.getName());
         item.setProductEmoji(product.getEmoji());
         item.setProductColor(product.getColor());
+        item.setProductCoverImage(product.getCoverImage());
         item.setProductPrice(product.getPrice());
         item.setShopId(product.getShopId());
         item.setShopName(product.getShopName());
@@ -209,6 +211,7 @@ public class PointsMallApplicationService {
         vo.setProductName(item.getProductName());
         vo.setProductEmoji(item.getProductEmoji());
         vo.setProductColor(item.getProductColor());
+        vo.setProductCoverImage(item.getProductCoverImage());
         vo.setProductPrice(item.getProductPrice());
         vo.setPointsPrice(pointsPrice(item.getProductPrice(), rate));
         vo.setShopId(item.getShopId());
@@ -223,6 +226,7 @@ public class PointsMallApplicationService {
         vo.setItemId(record.getItemId());
         vo.setItemName(record.getItemName());
         vo.setItemEmoji(record.getItemEmoji());
+        vo.setItemCover(record.getItemCover());
         vo.setPoints(record.getPoints());
         vo.setOrderNo(record.getOrderNo());
         vo.setCreatedAt(record.getCreatedAt());

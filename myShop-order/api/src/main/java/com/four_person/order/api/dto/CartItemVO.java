@@ -29,6 +29,9 @@ public class CartItemVO {
 
     private String color;
 
+    /** 商品主图（读取时从商品实时回填） */
+    private String coverImage;
+
     private BigDecimal subtotal;
 
     private Integer stock;

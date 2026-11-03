@@ -18,6 +18,8 @@ public final class PointsMallDtos {
         private String productName;
         private String productEmoji;
         private String productColor;
+        /** 商品主图快照 */
+        private String productCoverImage;
         /** 原价快照 */
         private BigDecimal productPrice;
         /** 积分价 = 原价 × 配置中心倍数 */
@@ -49,6 +51,8 @@ public final class PointsMallDtos {
         private Long itemId;
         private String itemName;
         private String itemEmoji;
+        /** 商品主图快照 */
+        private String itemCover;
         private Integer points;
         private String orderNo;
         private LocalDateTime createdAt;

@@ -35,6 +35,9 @@ public class OrderItem {
 
     private String productColor;
 
+    /** 商品主图快照（无图商品为 null，前端回退 emoji 占位） */
+    private String productCoverImage;
+
     private Long shopId;
 
     private String shopName;

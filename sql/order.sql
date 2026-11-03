@@ -111,6 +111,7 @@ CREATE TABLE IF NOT EXISTS order_item (
     product_name  VARCHAR(200)   NOT NULL DEFAULT '',
     product_emoji VARCHAR(32)    NOT NULL DEFAULT '',
     product_color VARCHAR(255)   NOT NULL DEFAULT '',
+    product_cover_image VARCHAR(512) NULL COMMENT '商品主图快照',
     shop_id       BIGINT         NOT NULL DEFAULT 0,
     shop_name     VARCHAR(100)   NOT NULL DEFAULT '',
     price         DECIMAL(10, 2) NOT NULL DEFAULT 0.00,

@@ -19,6 +19,9 @@ public class OrderItemVO {
 
     private String productColor;
 
+    /** 商品主图快照 */
+    private String productCoverImage;
+
     private Long shopId;
 
     private String shopName;

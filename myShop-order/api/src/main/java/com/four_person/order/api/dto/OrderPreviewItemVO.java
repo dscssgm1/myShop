@@ -19,6 +19,9 @@ public class OrderPreviewItemVO {
 
     private String productColor;
 
+    /** 商品主图（结算页实时取自商品） */
+    private String productCoverImage;
+
     private Long shopId;
 
     private String shopName;

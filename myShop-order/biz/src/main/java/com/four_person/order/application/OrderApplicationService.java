@@ -872,6 +872,7 @@ public class OrderApplicationService {
         vo.setProductName(item.product.getName());
         vo.setProductEmoji(item.product.getEmoji());
         vo.setProductColor(item.product.getColor());
+        vo.setProductCoverImage(item.product.getCoverImage());
         vo.setShopId(item.product.getShopId());
         vo.setShopName(item.product.getShopName());
         vo.setCategoryId(item.product.getCategoryId());
@@ -893,6 +894,7 @@ public class OrderApplicationService {
         orderItem.setProductName(item.product.getName());
         orderItem.setProductEmoji(item.product.getEmoji());
         orderItem.setProductColor(item.product.getColor());
+        orderItem.setProductCoverImage(item.product.getCoverImage());
         orderItem.setShopId(item.product.getShopId());
         orderItem.setShopName(item.product.getShopName());
         orderItem.setPrice(item.sku != null ? item.sku.getPrice() : item.product.getPrice());
@@ -909,6 +911,7 @@ public class OrderApplicationService {
         vo.setProductName(item.getProductName());
         vo.setProductEmoji(item.getProductEmoji());
         vo.setProductColor(item.getProductColor());
+        vo.setProductCoverImage(item.getProductCoverImage());
         vo.setShopId(item.getShopId());
         vo.setShopName(item.getShopName());
         vo.setPrice(item.getPrice());

@@ -196,6 +196,10 @@ public class CartApplicationService {
             price = sku != null ? sku.getPrice() : product.getPrice();
             stock = sku != null && sku.getStock() != null ? sku.getStock() : product.getStock();
             vo.setProductName(product.getName());
+            // 图标/底色/主图以商品实时数据为准（老快照无主图）
+            vo.setEmoji(product.getEmoji());
+            vo.setColor(product.getColor());
+            vo.setCoverImage(product.getCoverImage());
         } else {
             vo.setProductName(item.getProductName());
         }
