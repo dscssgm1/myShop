@@ -31,8 +31,6 @@ public class Product {
 
     private BigDecimal price;
 
-    private BigDecimal originPrice;
-
     /** 促销价，空则无折扣 */
     private BigDecimal discountPrice;
 
@@ -46,10 +44,19 @@ public class Product {
 
     private String color;
 
+    /** 主图 URL，空则前端用 emoji 占位 */
+    private String coverImage;
+
+    /** 图集 URL，逗号分隔 */
+    private String images;
+
     /** 逗号分隔的标签，例如：自营,秒杀 */
     private String tags;
 
     private String description;
+
+    /** 商品详情（富文本 HTML） */
+    private String detail;
 
     /** 商品规格定义（JSON 数组） */
     private String specs;
@@ -59,6 +66,12 @@ public class Product {
 
     /** PENDING / APPROVED / REJECTED */
     private String auditStatus;
+
+    /** 最近一次审核驳回原因 */
+    private String auditReason;
+
+    /** 上架中商品的待审核修改（JSON，审核通过后应用，驳回即丢弃；空代表无待审核修改） */
+    private String pendingData;
 
     /** 下架原因 */
     private String offReason;

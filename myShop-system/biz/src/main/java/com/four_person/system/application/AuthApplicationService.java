@@ -11,7 +11,9 @@ import com.four_person.system.domain.repository.UserRepository;
 import com.four_person.system.enums.SystemErrorCode;
 import com.four_person.system.infrastructure.mail.MailService;
 import com.four_person.system.infrastructure.security.JwtTokenProvider;
+import com.four_person.system.infrastructure.support.AuthSessionStore;
 import com.four_person.system.infrastructure.support.ClientIpUtils;
+import com.four_person.system.infrastructure.support.DeviceUtils;
 import com.four_person.system.infrastructure.support.SendCodeRateLimiter;
 import com.four_person.system.infrastructure.support.VerificationCodeStore;
 import lombok.RequiredArgsConstructor;
@@ -22,6 +24,8 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
 import java.time.Duration;
+import java.util.List;
+import java.util.UUID;
 import java.util.concurrent.ThreadLocalRandom;
 
 /**
@@ -41,11 +45,13 @@ public class AuthApplicationService {
     private final RoleRepository roleRepository;
     private final MembershipRepository membershipRepository;
     private final UserApplicationService userApplicationService;
+    private final SecurityApplicationService securityApplicationService;
     private final PasswordEncoder passwordEncoder;
     private final JwtTokenProvider tokenProvider;
     private final MailService mailService;
     private final VerificationCodeStore verificationCodeStore;
     private final SendCodeRateLimiter sendCodeRateLimiter;
+    private final AuthSessionStore sessionStore;
 
     /** 原型/联调阶段直接把验证码返回给前端；生产环境应关闭并改为邮件发送 */
     @Value("${myshop.security.email-code.debug:true}")
@@ -72,8 +78,11 @@ public class AuthApplicationService {
         user.setStatus(1);
         userRepository.save(user);
         membershipRepository.createAccount(user.getId());
-
-        return buildLoginResponse(user);
+        recordLogin(user.getId());
+        AuthDtos.LoginResponse response = buildLoginResponse(user);
+        // 注册时邮箱验证码已验证通过，签发身份验证凭证供「信任此设备」使用
+        response.setDeviceVerifyToken(tokenProvider.generateDeviceToken(user.getId()));
+        return response;
     }
 
     public AuthDtos.LoginResponse login(AuthDtos.LoginRequest request) {
@@ -86,7 +95,14 @@ public class AuthApplicationService {
             throw new BusinessException(SystemErrorCode.USER_DISABLED);
         }
         userRepository.updateLastLogin(user.getId());
+        recordLogin(user.getId());
         return buildLoginResponse(user);
+    }
+
+    /** 记录本次登录的 IP 与设备信息 */
+    private void recordLogin(Long userId) {
+        securityApplicationService.recordLogin(userId, ClientIpUtils.currentIp(),
+                DeviceUtils.currentDeviceId(), DeviceUtils.currentDeviceName());
     }
 
     public AuthDtos.EmailCodeResponse sendEmailCode(AuthDtos.EmailCodeRequest request) {
@@ -118,14 +134,20 @@ public class AuthApplicationService {
         return sendEmailCode(codeRequest);
     }
 
-    /** 通过邮箱验证码重置密码 */
+    /** 通过邮箱验证码重置密码；验证码已验证，返回身份验证凭证供「信任此设备」使用 */
     @Transactional
-    public void resetPassword(AuthDtos.ResetPasswordRequest request) {
+    public AuthDtos.DeviceVerifyTokenVO resetPassword(AuthDtos.ResetPasswordRequest request) {
         SysUser user = userRepository.findByEmail(request.getEmail())
                 .orElseThrow(() -> new BusinessException(SystemErrorCode.USER_NOT_FOUND));
         verifyCode(request.getEmail(), PURPOSE_RESET_PASSWORD, request.getCode());
         user.setPassword(passwordEncoder.encode(request.getNewPassword()));
         userRepository.save(user);
+        // 通过邮箱重置密码后，旧登录态全部失效
+        sessionStore.deleteAll(user.getId());
+
+        AuthDtos.DeviceVerifyTokenVO vo = new AuthDtos.DeviceVerifyTokenVO();
+        vo.setVerifyToken(tokenProvider.generateDeviceToken(user.getId()));
+        return vo;
     }
 
     public UserDtos.UserVO me(Long userId) {
@@ -147,10 +169,32 @@ public class AuthApplicationService {
                 .map(SysRole::getGroupCode)
                 .orElse("USER");
 
+        String sessionId = UUID.randomUUID().toString();
         AuthDtos.LoginResponse response = new AuthDtos.LoginResponse();
-        response.setToken(tokenProvider.generate(user, groupCode));
+        response.setToken(tokenProvider.generate(user, groupCode, sessionId));
         response.setExpiresIn(tokenProvider.getExpirationSeconds());
         response.setUser(userApplicationService.toVO(user));
+        sessionStore.create(sessionId, user, groupCode);
         return response;
+    }
+
+    // ==================== 登录会话 ====================
+
+    public List<AuthDtos.SessionVO> sessions(Long userId, String currentSessionId) {
+        return sessionStore.list(userId, currentSessionId);
+    }
+
+    /** 退出登录：删除当前会话，令牌立即失效 */
+    public void logout(Long userId, String sessionId) {
+        sessionStore.delete(userId, sessionId);
+    }
+
+    /** 单点下线：只允许操作自己的会话 */
+    public void kickSession(Long userId, String sessionId) {
+        sessionStore.delete(userId, sessionId);
+    }
+
+    public void kickAll(Long userId) {
+        sessionStore.deleteAll(userId);
     }
 }

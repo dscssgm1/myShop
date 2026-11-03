@@ -3,6 +3,7 @@ package com.four_person.product.interfaces.rest;
 import com.four_person.common.api.PageResult;
 import com.four_person.common.api.Result;
 import com.four_person.common.web.AccessGuard;
+import com.four_person.common.web.UserContext;
 import com.four_person.product.api.dto.ProductQuery;
 import com.four_person.product.api.dto.ProductRequest;
 import com.four_person.product.api.dto.ProductVO;
@@ -10,6 +11,7 @@ import com.four_person.product.api.dto.StockUpdateRequest;
 import com.four_person.product.application.ProductApplicationService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -32,12 +34,40 @@ public class ProductController {
 
     @GetMapping
     public Result<PageResult<ProductVO>> page(ProductQuery query) {
+        // 上架/审核状态筛选属于管理端能力，带这些参数时必须为商家或平台身份
+        if (query.getStatus() != null || StringUtils.hasText(query.getAuditStatus())
+                || Boolean.TRUE.equals(query.getPendingEdit())) {
+            AccessGuard.requireGroup("MERCHANT", "PLATFORM");
+        }
+        // 商家管理端：包含未上架/未审核商品，商家只能查本店
+        if (Boolean.TRUE.equals(query.getIncludeAll())) {
+            AccessGuard.requireGroup("MERCHANT", "PLATFORM");
+            if ("MERCHANT".equals(UserContext.getGroup())) {
+                query.setShopId(UserContext.requireShopId());
+            }
+        }
         return Result.success(productApplicationService.page(query));
     }
 
     @GetMapping("/hot")
     public Result<List<ProductVO>> hot(@RequestParam(defaultValue = "4") int limit) {
         return Result.success(productApplicationService.hot(limit));
+    }
+
+    /** 平台侧角标：待审核商品数（新发布待审 + 修改待审核），菜单「商品审核」红点用 */
+    @GetMapping("/pending-audit-count")
+    public Result<Long> pendingAuditCount() {
+        AccessGuard.requireGroup("PLATFORM");
+        return Result.success(productApplicationService.countPendingAudit());
+    }
+
+    /** 公开：按 id 批量查询（收藏、浏览足迹展示用） */
+    @GetMapping("/batch")
+    public Result<List<ProductVO>> batch(@RequestParam String ids) {
+        List<Long> idList = java.util.Arrays.stream(ids.split(","))
+                .map(String::trim).filter(StringUtils::hasText)
+                .map(Long::valueOf).distinct().toList();
+        return Result.success(idList.isEmpty() ? List.of() : productApplicationService.batch(idList));
     }
 
     @GetMapping("/{id}")
@@ -74,11 +104,11 @@ public class ProductController {
         return Result.success();
     }
 
-    /** 设置促销价 */
-    @PutMapping("/{id}/discount")
-    public Result<ProductVO> setDiscount(@PathVariable Long id, @RequestParam BigDecimal discountPrice) {
+    /** 修改售价（直接生效，无需审核） */
+    @PutMapping("/{id}/price")
+    public Result<ProductVO> setPrice(@PathVariable Long id, @RequestParam BigDecimal price) {
         AccessGuard.requireGroup("MERCHANT", "PLATFORM");
-        return Result.success("折扣已设置", productApplicationService.setDiscount(id, discountPrice));
+        return Result.success("售价已更新", productApplicationService.setPrice(id, price));
     }
 
     /** 上架 */
@@ -97,11 +127,13 @@ public class ProductController {
         return Result.success("已下架", null);
     }
 
-    /** 平台审核 */
+    /** 平台审核：通过即自动上架；驳回必须填写原因，商家据原因修改后可重新提交 */
     @PutMapping("/{id}/audit")
-    public Result<Void> audit(@PathVariable Long id, @RequestParam boolean approved) {
+    public Result<Void> audit(@PathVariable Long id,
+                              @RequestParam boolean approved,
+                              @RequestParam(required = false) String reason) {
         AccessGuard.requireGroup("PLATFORM");
-        productApplicationService.audit(id, approved);
-        return Result.success(approved ? "审核已通过" : "审核已驳回", null);
+        productApplicationService.audit(id, approved, reason);
+        return Result.success(approved ? "审核已通过，商品已上架" : "已驳回", null);
     }
 }

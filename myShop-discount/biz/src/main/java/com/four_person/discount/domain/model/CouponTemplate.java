@@ -15,6 +15,8 @@ public class CouponTemplate {
     public static final String STATUS_ENDED = "ENDED";
 
     private final Long id;
+    /** 0 平台券；>0 商家券（归属店铺，费用由商家承担） */
+    private final Long shopId;
     private final String title;
     private final Money thresholdAmount;
     private final Money discountAmount;
@@ -26,7 +28,7 @@ public class CouponTemplate {
     private final LocalDateTime validEnd;
     private final String status;
 
-    public CouponTemplate(Long id, String title, Money thresholdAmount, Money discountAmount, Scope scope,
+    public CouponTemplate(Long id, Long shopId, String title, Money thresholdAmount, Money discountAmount, Scope scope,
                           int totalStock, int claimedCount, int perUserLimit,
                           LocalDateTime validStart, LocalDateTime validEnd, String status) {
         if (title == null || title.isBlank()) {
@@ -41,14 +43,21 @@ public class CouponTemplate {
         if (perUserLimit < 1) {
             throw new BusinessException(DiscountErrorCode.INVALID_RULE, "每人限领数量必须大于 0");
         }
+        long owner = shopId == null ? 0 : shopId;
+        Scope effectiveScope = scope == null ? Scope.all() : scope;
+        if (owner > 0 && effectiveScope.type() != com.four_person.discount.enums.ScopeType.SHOP
+                && effectiveScope.type() != com.four_person.discount.enums.ScopeType.PRODUCT) {
+            throw new BusinessException(DiscountErrorCode.INVALID_RULE, "商家优惠券范围只能是本店商品");
+        }
         if (validStart != null && validEnd != null && validStart.isAfter(validEnd)) {
             throw new BusinessException(DiscountErrorCode.INVALID_RULE, "有效期开始时间不能晚于结束时间");
         }
         this.id = id;
+        this.shopId = owner;
         this.title = title.trim();
         this.thresholdAmount = thresholdAmount == null ? Money.zero() : thresholdAmount;
         this.discountAmount = discountAmount;
-        this.scope = scope == null ? Scope.all() : scope;
+        this.scope = effectiveScope;
         this.totalStock = totalStock;
         this.claimedCount = claimedCount;
         this.perUserLimit = perUserLimit;
@@ -82,7 +91,7 @@ public class CouponTemplate {
     }
 
     public Money discountFor(List<OrderLine> lines) {
-        Money eligible = scope.subtotalOf(lines);
+        Money eligible = scope.subtotalOf(lines, shopId);
         if (eligible.compareTo(thresholdAmount) < 0) {
             return Money.zero();
         }
@@ -90,17 +99,30 @@ public class CouponTemplate {
     }
 
     public CouponTemplate withId(Long newId) {
-        return new CouponTemplate(newId, title, thresholdAmount, discountAmount, scope,
+        return new CouponTemplate(newId, shopId, title, thresholdAmount, discountAmount, scope,
                 totalStock, claimedCount, perUserLimit, validStart, validEnd, status);
     }
 
     public CouponTemplate withClaimedCount(int count) {
-        return new CouponTemplate(id, title, thresholdAmount, discountAmount, scope,
+        return new CouponTemplate(id, shopId, title, thresholdAmount, discountAmount, scope,
                 totalStock, count, perUserLimit, validStart, validEnd, status);
+    }
+
+    public CouponTemplate ended() {
+        return new CouponTemplate(id, shopId, title, thresholdAmount, discountAmount, scope,
+                totalStock, claimedCount, perUserLimit, validStart, validEnd, STATUS_ENDED);
     }
 
     public Long getId() {
         return id;
+    }
+
+    public Long getShopId() {
+        return shopId;
+    }
+
+    public boolean isMerchantCoupon() {
+        return shopId > 0;
     }
 
     public String getTitle() {

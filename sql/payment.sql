@@ -11,6 +11,8 @@ CREATE TABLE IF NOT EXISTS payment_order (
     status     VARCHAR(16)    NOT NULL DEFAULT 'PENDING',
     trade_no   VARCHAR(64)    NULL,
     paid_at    DATETIME       NULL,
+    refunded_at   DATETIME    NULL,
+    refund_reason VARCHAR(255) NOT NULL DEFAULT '',
     created_at DATETIME       NOT NULL DEFAULT CURRENT_TIMESTAMP,
     updated_at DATETIME       NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     deleted    TINYINT        NOT NULL DEFAULT 0,

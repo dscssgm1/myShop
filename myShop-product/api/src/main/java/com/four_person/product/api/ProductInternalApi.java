@@ -1,6 +1,8 @@
 package com.four_person.product.api;
 
 import com.four_person.common.api.Result;
+import com.four_person.product.api.dto.CommissionRateRequest;
+import com.four_person.product.api.dto.CommissionRateVO;
 import com.four_person.product.api.dto.ProductBatchRequest;
 import com.four_person.product.api.dto.ProductVO;
 import com.four_person.product.api.dto.StockChangeRequest;
@@ -26,6 +28,10 @@ public interface ProductInternalApi {
 
     @PostMapping("/internal/products/stock/restore")
     Result<Void> restoreStock(@RequestBody StockChangeRequest request);
+
+    /** 批量取类目生效佣金费率（小类未设置时回填大类） */
+    @PostMapping("/internal/products/commission-rates")
+    Result<List<CommissionRateVO>> commissionRates(@RequestBody CommissionRateRequest request);
 
     @GetMapping("/internal/products/candidates")
     Result<List<ProductVO>> candidates(@RequestParam(value = "excludeIds", required = false) List<Long> excludeIds,

@@ -43,6 +43,14 @@ public class AuditController {
         return Result.success(auditApplicationService.mine());
     }
 
+    /** 第一级审核（平台业务员）：物流入驻申请初审 */
+    @PutMapping("/{id}/first-approve")
+    public Result<PlatformDtos.AuditVO> firstApprove(@PathVariable Long id,
+                                                     @RequestBody(required = false) PlatformDtos.AuditActionRequest request) {
+        return Result.success("初审已通过，转平台管理员终审",
+                auditApplicationService.firstApprove(id, request == null ? null : request.getReason()));
+    }
+
     @PutMapping("/{id}/approve")
     public Result<PlatformDtos.AuditVO> approve(@PathVariable Long id,
                                                 @RequestBody(required = false) PlatformDtos.AuditActionRequest request) {

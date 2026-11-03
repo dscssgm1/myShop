@@ -13,5 +13,8 @@ public class OrderInternalDTO {
 
     private String status;
 
+    /** NORMAL 普通订单 / RECOVERY 售后补款订单 */
+    private String bizType;
+
     private BigDecimal payAmount;
 }

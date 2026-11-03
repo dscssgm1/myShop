@@ -13,6 +13,9 @@ public interface ProductRepository {
 
     PageResult<Product> page(ProductFilter filter);
 
+    /** 平台侧角标：待审核商品数（新发布待审 + 修改待审核） */
+    long countPendingAudit();
+
     Optional<Product> findById(Long id);
 
     List<Product> findByIds(List<Long> ids);
@@ -22,6 +25,9 @@ public interface ProductRepository {
     List<Product> findCandidates(List<Long> excludeIds, int limit);
 
     Product save(Product product);
+
+    /** 清空待审核修改（置 pending_data 为 NULL，绕过 MyBatis-Plus 非空更新策略） */
+    void clearPendingEdit(Long id);
 
     void deleteById(Long id);
 
@@ -36,6 +42,14 @@ public interface ProductRepository {
     void saveCategoryRels(Long productId, List<Long> categoryIds);
 
     void deleteCategoryRels(Long productId);
+
+    // ---- 服务保障（配置中心 key） ----
+
+    List<String> findServiceKeys(Long productId);
+
+    void saveServiceRels(Long productId, List<String> configKeys);
+
+    void deleteServiceRels(Long productId);
 
     // ---- SKU ----
 

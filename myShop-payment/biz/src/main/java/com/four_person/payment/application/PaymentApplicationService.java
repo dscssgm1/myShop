@@ -7,6 +7,7 @@ import com.four_person.order.api.dto.OrderInternalDTO;
 import com.four_person.order.api.dto.PaidRequest;
 import com.four_person.payment.api.dto.CreatePaymentRequest;
 import com.four_person.payment.api.dto.PaymentVO;
+import com.four_person.payment.api.dto.RefundResultVO;
 import com.four_person.payment.domain.model.Payment;
 import com.four_person.payment.domain.repository.PaymentRepository;
 import com.four_person.payment.enums.PaymentChannel;
@@ -40,6 +41,9 @@ public class PaymentApplicationService {
         }
         if (!userId.equals(order.getUserId())) {
             throw new BusinessException(PaymentErrorCode.PAYMENT_FORBIDDEN);
+        }
+        if (unpaidRecoveryBlocked(userId, order)) {
+            throw new BusinessException(PaymentErrorCode.UNPAID_RECOVERY_EXISTS);
         }
         if (!UNPAID.equals(order.getStatus())) {
             throw new BusinessException(PaymentErrorCode.ORDER_NOT_PAYABLE);
@@ -105,6 +109,61 @@ public class PaymentApplicationService {
         return toVO(payment);
     }
 
+    /** 订单服务调用：按订单号退款，幂等；无支付记录时视为无需退款 */
+    @Transactional(rollbackFor = Exception.class)
+    public RefundResultVO refundByOrderNo(String orderNo, String reason) {
+        RefundResultVO result = new RefundResultVO();
+        result.setSuccess(true);
+        result.setRefunded(false);
+
+        Payment payment = paymentRepository.findByOrderNo(orderNo).orElse(null);
+        if (payment == null) {
+            result.setMessage("未找到支付记录，无需退款");
+            return result;
+        }
+        result.setPaymentNo(payment.getPaymentNo());
+        result.setAmount(payment.getAmount());
+
+        if (PaymentStatus.REFUNDED.name().equals(payment.getStatus())) {
+            result.setRefunded(true);
+            result.setStatus(payment.getStatus());
+            result.setMessage("该支付单已退款");
+            return result;
+        }
+        if (!payment.isSuccess()) {
+            result.setStatus(payment.getStatus());
+            result.setMessage("支付单未支付成功，无需退款");
+            return result;
+        }
+
+        LocalDateTime refundedAt = LocalDateTime.now();
+        String refundReason = reason == null || reason.isBlank() ? "订单退款" : reason;
+        if (!paymentRepository.markRefunded(payment.getPaymentNo(), refundedAt, refundReason)) {
+            Payment latest = paymentRepository.findByPaymentNo(payment.getPaymentNo()).orElse(payment);
+            if (PaymentStatus.REFUNDED.name().equals(latest.getStatus())) {
+                result.setRefunded(true);
+                result.setStatus(latest.getStatus());
+                result.setMessage("该支付单已退款");
+                return result;
+            }
+            result.setSuccess(false);
+            result.setMessage("退款状态更新失败，请重试");
+            return result;
+        }
+        result.setRefunded(true);
+        result.setStatus(PaymentStatus.REFUNDED.name());
+        result.setMessage("退款成功");
+        log.info("支付单 {} 已退款，订单 {}，原因：{}", payment.getPaymentNo(), orderNo, refundReason);
+        return result;
+    }
+
+    /** 内部查询支付单状态，无支付记录时返回 null */
+    public String paymentStatusByOrderNo(String orderNo) {
+        return paymentRepository.findByOrderNo(orderNo)
+                .map(Payment::getStatus)
+                .orElse(null);
+    }
+
     public void close(Long userId, String paymentNo) {
         Payment payment = requireOwned(userId, paymentNo);
         payment.close();
@@ -115,6 +174,14 @@ public class PaymentApplicationService {
                 throw new BusinessException(PaymentErrorCode.PAYMENT_STATUS_INVALID);
             }
         }
+    }
+
+    /** 补款订单本身可以支付，其他订单在补款订单未支付时禁止创建支付 */
+    private boolean unpaidRecoveryBlocked(Long userId, OrderInternalDTO order) {
+        if ("RECOVERY".equals(order.getBizType())) {
+            return false;
+        }
+        return Boolean.TRUE.equals(Results.data(orderInternalApi.hasUnpaidRecovery(userId)));
     }
 
     private Payment requireOwned(Long userId, String paymentNo) {
@@ -142,6 +209,8 @@ public class PaymentApplicationService {
         vo.setStatusText(PaymentStatus.textOf(payment.getStatus()));
         vo.setTradeNo(payment.getTradeNo());
         vo.setPaidAt(payment.getPaidAt());
+        vo.setRefundedAt(payment.getRefundedAt());
+        vo.setRefundReason(payment.getRefundReason());
         vo.setCreatedAt(payment.getCreatedAt());
         return vo;
     }

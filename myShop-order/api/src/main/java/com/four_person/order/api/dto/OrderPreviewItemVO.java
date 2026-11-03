@@ -23,6 +23,8 @@ public class OrderPreviewItemVO {
 
     private String shopName;
 
+    private Long categoryId;
+
     private BigDecimal price;
 
     private Integer quantity;

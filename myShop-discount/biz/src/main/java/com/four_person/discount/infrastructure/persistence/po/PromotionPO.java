@@ -16,6 +16,9 @@ public class PromotionPO {
     @TableId(type = IdType.AUTO)
     private Long id;
 
+    /** 0 平台活动；>0 商家自建活动 */
+    private Long shopId;
+
     private String title;
 
     private String type;
@@ -37,6 +40,10 @@ public class PromotionPO {
     private String scopeIds;
 
     private Boolean couponStackable;
+
+    private Boolean enrollRequired;
+
+    private BigDecimal platformBearRate;
 
     private LocalDateTime startTime;
 

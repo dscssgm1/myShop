@@ -22,7 +22,6 @@ public class ProductSku {
     private String specs;
 
     private BigDecimal price;
-    private BigDecimal originPrice;
     private Integer stock;
     private Integer sales;
     private Integer status;

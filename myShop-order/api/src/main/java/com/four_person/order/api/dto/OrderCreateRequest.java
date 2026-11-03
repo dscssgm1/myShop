@@ -15,7 +15,8 @@ public class OrderCreateRequest {
     @Valid
     private List<OrderItemRequest> items;
 
-    private Long couponId;
+    /** 指定使用的优惠券（user_coupon.id），可多张叠加；为空时自动选最优组合 */
+    private List<Long> couponIds;
 
     @NotBlank(message = "收货人不能为空")
     private String receiverName;

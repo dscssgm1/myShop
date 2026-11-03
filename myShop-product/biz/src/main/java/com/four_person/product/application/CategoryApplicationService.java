@@ -3,6 +3,7 @@ package com.four_person.product.application;
 import com.four_person.common.exception.BusinessException;
 import com.four_person.product.api.dto.CategoryRequest;
 import com.four_person.product.api.dto.CategoryVO;
+import com.four_person.product.api.dto.CommissionRateVO;
 import com.four_person.product.domain.model.ProductCategory;
 import com.four_person.product.domain.repository.CategoryRepository;
 import com.four_person.product.enums.ProductErrorCode;
@@ -10,8 +11,13 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Map;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -39,6 +45,27 @@ public class CategoryApplicationService {
         return list;
     }
 
+    /**
+     * 类目生效佣金费率：小类未单独设置时继承大类，都未设置按 0（不抽佣）。
+     * 查不到的分类按 0 处理，不因个别脏数据影响整单结算。
+     */
+    public List<CommissionRateVO> commissionRates(List<Long> categoryIds) {
+        if (categoryIds == null || categoryIds.isEmpty()) {
+            return List.of();
+        }
+        Map<Long, ProductCategory> all = categoryRepository.findAll().stream()
+                .collect(Collectors.toMap(ProductCategory::getId, Function.identity(), (a, b) -> a));
+        return new LinkedHashSet<>(categoryIds).stream()
+                .filter(id -> id != null)
+                .map(id -> {
+                    ProductCategory category = all.get(id);
+                    return new CommissionRateVO(id,
+                            category == null ? "" : category.getName(),
+                            effectiveRate(id, all));
+                })
+                .toList();
+    }
+
     public CategoryVO create(CategoryRequest request) {
         Long parentId = request.getParentId() == null ? 0L : request.getParentId();
         Integer level = parentId == 0 ? 1 : 2;
@@ -56,6 +83,7 @@ public class CategoryApplicationService {
         category.setIcon(request.getIcon());
         category.setColor(request.getColor());
         category.setSort(request.getSort() == null ? 0 : request.getSort());
+        category.setCommissionRate(request.getCommissionRate());
         categoryRepository.save(category);
         return toVO(category);
     }
@@ -73,6 +101,8 @@ public class CategoryApplicationService {
         if (request.getSort() != null) {
             category.setSort(request.getSort());
         }
+        // 小类传 null 即清空费率、改为继承大类；大类传 null 即不抽佣
+        category.setCommissionRate(request.getCommissionRate());
         categoryRepository.save(category);
         return toVO(category);
     }
@@ -86,6 +116,21 @@ public class CategoryApplicationService {
         categoryRepository.deleteById(id);
     }
 
+    private BigDecimal effectiveRate(Long categoryId, Map<Long, ProductCategory> all) {
+        ProductCategory category = all.get(categoryId);
+        if (category == null) {
+            return BigDecimal.ZERO;
+        }
+        if (category.getCommissionRate() != null) {
+            return category.getCommissionRate();
+        }
+        ProductCategory parent = category.getParentId() == null ? null : all.get(category.getParentId());
+        if (parent != null && parent.getCommissionRate() != null) {
+            return parent.getCommissionRate();
+        }
+        return BigDecimal.ZERO;
+    }
+
     private CategoryVO toVO(ProductCategory category) {
         CategoryVO vo = new CategoryVO();
         vo.setId(category.getId());
@@ -95,6 +140,17 @@ public class CategoryApplicationService {
         vo.setIcon(category.getIcon());
         vo.setColor(category.getColor());
         vo.setSort(category.getSort());
+        vo.setCommissionRate(category.getCommissionRate());
+        if (category.getCommissionRate() != null) {
+            vo.setEffectiveCommissionRate(category.getCommissionRate());
+        } else if (category.getParentId() != null && category.getParentId() != 0) {
+            // 小类未单独设置：回填大类的费率，前端可直接展示"继承中的实际值"
+            vo.setEffectiveCommissionRate(categoryRepository.findById(category.getParentId())
+                    .map(ProductCategory::getCommissionRate)
+                    .orElse(BigDecimal.ZERO));
+        } else {
+            vo.setEffectiveCommissionRate(BigDecimal.ZERO);
+        }
         return vo;
     }
 }

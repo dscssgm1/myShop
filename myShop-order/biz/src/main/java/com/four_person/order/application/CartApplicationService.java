@@ -2,12 +2,14 @@ package com.four_person.order.application;
 
 import com.four_person.common.api.Results;
 import com.four_person.common.exception.BusinessException;
+import com.four_person.common.web.UserContext;
 import com.four_person.order.api.dto.CartAddRequest;
 import com.four_person.order.api.dto.CartItemVO;
 import com.four_person.order.api.dto.CartUpdateRequest;
 import com.four_person.order.api.dto.CartVO;
 import com.four_person.order.domain.model.CartItem;
 import com.four_person.order.domain.repository.CartRepository;
+import com.four_person.order.domain.repository.OrderRepository;
 import com.four_person.order.enums.OrderErrorCode;
 import com.four_person.product.api.ProductInternalApi;
 import com.four_person.product.api.dto.ProductBatchRequest;
@@ -31,6 +33,7 @@ import java.util.stream.Collectors;
 public class CartApplicationService {
 
     private final CartRepository cartRepository;
+    private final OrderRepository orderRepository;
     private final ProductInternalApi productInternalApi;
 
     public CartVO get(Long userId) {
@@ -50,7 +53,15 @@ public class CartApplicationService {
     }
 
     public CartVO add(Long userId, CartAddRequest request) {
+        if (orderRepository.hasUnpaidRecovery(userId)) {
+            throw new BusinessException(OrderErrorCode.UNPAID_RECOVERY_EXISTS);
+        }
         ProductVO product = requireProduct(request.getProductId());
+        // 防刷评价：商家不能购买自己店铺的商品
+        Long myShopId = UserContext.getShopId();
+        if (myShopId != null && myShopId.equals(product.getShopId())) {
+            throw new BusinessException(OrderErrorCode.CANNOT_BUY_OWN_PRODUCT);
+        }
         Long skuId = request.getSkuId() == null ? 0L : request.getSkuId();
         ProductVO.SkuVO sku = findSku(product, skuId);
 

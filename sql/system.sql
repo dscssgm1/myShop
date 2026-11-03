@@ -120,11 +120,44 @@ CREATE TABLE IF NOT EXISTS sys_points_log (
     change_amount INT          NOT NULL,
     balance       INT          NOT NULL DEFAULT 0,
     type          VARCHAR(16)  NOT NULL DEFAULT 'EARN',
+    biz_no        VARCHAR(32)  NOT NULL DEFAULT '' COMMENT '关联业务单号（订单号），用于售后扣回按单定位',
     remark        VARCHAR(200) NOT NULL DEFAULT '',
     created_at    DATETIME     NOT NULL DEFAULT CURRENT_TIMESTAMP,
     PRIMARY KEY (id),
-    KEY idx_user_time (user_id, created_at)
+    KEY idx_user_time (user_id, created_at),
+    KEY idx_user_biz (user_id, biz_no)
 ) ENGINE = InnoDB DEFAULT CHARSET = utf8mb4 COMMENT = '积分明细';
+
+CREATE TABLE IF NOT EXISTS sys_points_mall_item (
+    id            BIGINT        NOT NULL AUTO_INCREMENT,
+    product_id    BIGINT        NOT NULL COMMENT '来源商品 id，兑换下单用它取商品',
+    product_name  VARCHAR(128)  NOT NULL,
+    product_emoji VARCHAR(16)   NOT NULL DEFAULT '',
+    product_color VARCHAR(16)   NOT NULL DEFAULT '',
+    product_price DECIMAL(10, 2) NOT NULL COMMENT '上架时的原价快照（元）',
+    shop_id       BIGINT        NOT NULL,
+    shop_name     VARCHAR(64)   NOT NULL DEFAULT '',
+    status        TINYINT       NOT NULL DEFAULT 1 COMMENT '1 上架 0 下架',
+    created_at    DATETIME      NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at    DATETIME      NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    deleted       TINYINT       NOT NULL DEFAULT 0,
+    PRIMARY KEY (id),
+    KEY idx_product (product_id),
+    KEY idx_status (status)
+) ENGINE = InnoDB DEFAULT CHARSET = utf8mb4 COMMENT = '积分商城商品';
+
+CREATE TABLE IF NOT EXISTS sys_points_exchange (
+    id         BIGINT      NOT NULL AUTO_INCREMENT,
+    user_id    BIGINT      NOT NULL,
+    item_id    BIGINT      NOT NULL COMMENT '积分商城商品 id',
+    item_name  VARCHAR(128) NOT NULL,
+    item_emoji VARCHAR(16) NOT NULL DEFAULT '',
+    points     INT         NOT NULL COMMENT '消耗积分',
+    order_no   VARCHAR(32) NOT NULL DEFAULT '' COMMENT '兑换生成的订单号',
+    created_at DATETIME    NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    PRIMARY KEY (id),
+    KEY idx_user (user_id, created_at)
+) ENGINE = InnoDB DEFAULT CHARSET = utf8mb4 COMMENT = '积分兑换记录';
 
 CREATE TABLE IF NOT EXISTS sys_email_code (
     id         BIGINT      NOT NULL AUTO_INCREMENT,
@@ -137,6 +170,30 @@ CREATE TABLE IF NOT EXISTS sys_email_code (
     PRIMARY KEY (id),
     KEY idx_email_purpose (email, purpose, used)
 ) ENGINE = InnoDB DEFAULT CHARSET = utf8mb4 COMMENT = '邮箱验证码';
+
+CREATE TABLE IF NOT EXISTS sys_login_record (
+    id          BIGINT       NOT NULL AUTO_INCREMENT,
+    user_id     BIGINT       NOT NULL,
+    ip          VARCHAR(64)  NOT NULL DEFAULT '' COMMENT '登录 IP（X-Forwarded-For 解析）',
+    device_id   VARCHAR(64)  NOT NULL DEFAULT '' COMMENT '前端持久设备 UUID（浏览器无法读取 MAC）',
+    device_name VARCHAR(128) NOT NULL DEFAULT '' COMMENT '设备描述，如 Windows · Chrome',
+    login_at    DATETIME     NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    PRIMARY KEY (id),
+    KEY idx_user (user_id, id)
+) ENGINE = InnoDB DEFAULT CHARSET = utf8mb4 COMMENT = '登录记录';
+
+CREATE TABLE IF NOT EXISTS sys_trusted_device (
+    id          BIGINT       NOT NULL AUTO_INCREMENT,
+    user_id     BIGINT       NOT NULL,
+    device_id   VARCHAR(64)  NOT NULL COMMENT '前端持久设备 UUID',
+    device_name VARCHAR(128) NOT NULL DEFAULT '',
+    trusted_at  DATETIME     NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    created_at  DATETIME     NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at  DATETIME     NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    deleted     TINYINT      NOT NULL DEFAULT 0,
+    PRIMARY KEY (id),
+    UNIQUE KEY uk_user_device (user_id, device_id)
+) ENGINE = InnoDB DEFAULT CHARSET = utf8mb4 COMMENT = '信任设备';
 
 -- ---------------------------------------------------------------- 种子数据
 

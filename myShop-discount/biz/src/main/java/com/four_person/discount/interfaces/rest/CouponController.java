@@ -1,6 +1,7 @@
 package com.four_person.discount.controller;
 
 import com.four_person.common.api.Result;
+import com.four_person.common.web.AccessGuard;
 import com.four_person.common.web.UserContext;
 import com.four_person.discount.api.dto.CouponTemplateRequest;
 import com.four_person.discount.api.dto.CouponTemplateVO;
@@ -25,14 +26,37 @@ public class CouponController {
 
     private final CouponApplicationService couponApplicationService;
 
+    /** 领券中心：平台券 + 商家券（登录用户可见已领标记） */
     @GetMapping("/templates")
     public Result<List<CouponTemplateVO>> templates() {
         return Result.success(couponApplicationService.listTemplates(UserContext.getUserIdOrNull()));
     }
 
+    /** 商家自己发放的券 */
+    @GetMapping("/templates/mine")
+    public Result<List<CouponTemplateVO>> myTemplates() {
+        AccessGuard.requireGroup("MERCHANT");
+        return Result.success(couponApplicationService.listByShop(UserContext.requireShopId()));
+    }
+
+    /** 发放券模板：平台端发平台券，商家端发商家券 */
     @PostMapping("/templates")
     public Result<CouponTemplateVO> createTemplate(@Valid @RequestBody CouponTemplateRequest request) {
-        return Result.success(couponApplicationService.createTemplate(request));
+        AccessGuard.requireGroup("PLATFORM", "MERCHANT");
+        Long ownerShopId = "MERCHANT".equals(UserContext.getGroup()) ? UserContext.requireShopId() : null;
+        return Result.success(couponApplicationService.createTemplate(ownerShopId, request));
+    }
+
+    /** 下架券模板：平台下架平台券，商家下架自家券 */
+    @PostMapping("/templates/{id}/end")
+    public Result<Void> endTemplate(@PathVariable Long id) {
+        AccessGuard.requireGroup("PLATFORM", "MERCHANT");
+        if ("MERCHANT".equals(UserContext.getGroup())) {
+            couponApplicationService.endTemplateForShop(UserContext.requireShopId(), id);
+        } else {
+            couponApplicationService.endTemplate(id);
+        }
+        return Result.success();
     }
 
     @PostMapping("/{templateId}/claim")

@@ -46,6 +46,21 @@ public class LogisticsCompanyService {
         return toVO(company);
     }
 
+    public LogisticsDtos.CompanyVO update(Long id, LogisticsDtos.CompanyRequest request) {
+        LogisticsCompany company = companyMapper.selectById(id);
+        if (company == null) {
+            throw new BusinessException(LogisticsErrorCode.COMPANY_NOT_FOUND);
+        }
+        company.setName(request.getName());
+        company.setContact(request.getContact());
+        company.setPhone(request.getPhone());
+        if (request.getColor() != null) {
+            company.setColor(request.getColor());
+        }
+        companyMapper.updateById(company);
+        return toVO(company);
+    }
+
     public void updateStatus(Long id, Integer status) {
         LogisticsCompany company = companyMapper.selectById(id);
         if (company == null) {

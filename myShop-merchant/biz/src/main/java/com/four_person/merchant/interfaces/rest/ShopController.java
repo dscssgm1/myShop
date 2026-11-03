@@ -5,6 +5,8 @@ import com.four_person.common.api.Result;
 import com.four_person.merchant.api.dto.MerchantDtos;
 import com.four_person.merchant.application.ShopApplicationService;
 import jakarta.validation.Valid;
+
+import java.math.BigDecimal;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -27,9 +29,10 @@ public class ShopController {
     @GetMapping("/shops")
     public Result<PageResult<MerchantDtos.ShopVO>> page(@RequestParam(required = false) String keyword,
                                                         @RequestParam(required = false) String category,
+                                                        @RequestParam(required = false) BigDecimal minRating,
                                                         @RequestParam(defaultValue = "1") int page,
                                                         @RequestParam(defaultValue = "10") int size) {
-        return Result.success(shopApplicationService.page(keyword, category, page, size));
+        return Result.success(shopApplicationService.page(keyword, category, minRating, page, size));
     }
 
     /** 买家端：店铺详情 */

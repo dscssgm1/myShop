@@ -18,4 +18,6 @@ public class SecurityUser {
     private Long shopId;
     private Long companyId;
     private Long courierId;
+    /** 当前令牌对应的会话 ID（JWT jti） */
+    private String sessionId;
 }

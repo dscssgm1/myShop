@@ -6,9 +6,11 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.four_person.common.api.PageResult;
 import com.four_person.order.api.enums.OrderStatus;
 import com.four_person.order.domain.model.Order;
+import com.four_person.order.domain.model.OrderCoupon;
 import com.four_person.order.domain.model.OrderItem;
 import com.four_person.order.domain.model.UserStats;
 import com.four_person.order.domain.repository.OrderRepository;
+import com.four_person.order.infrastructure.persistence.mapper.OrderCouponMapper;
 import com.four_person.order.infrastructure.persistence.mapper.OrderItemMapper;
 import com.four_person.order.infrastructure.persistence.mapper.OrderMapper;
 import lombok.RequiredArgsConstructor;
@@ -31,6 +33,7 @@ public class OrderRepositoryImpl implements OrderRepository {
 
     private final OrderMapper orderMapper;
     private final OrderItemMapper orderItemMapper;
+    private final OrderCouponMapper orderCouponMapper;
 
     @Override
     public PageResult<Order> pageByUser(Long userId, String status, int page, int size) {
@@ -81,6 +84,21 @@ public class OrderRepositoryImpl implements OrderRepository {
     }
 
     @Override
+    public void saveCoupons(String orderNo, List<OrderCoupon> coupons) {
+        for (OrderCoupon coupon : coupons) {
+            coupon.setOrderNo(orderNo);
+            orderCouponMapper.insert(coupon);
+        }
+    }
+
+    @Override
+    public List<OrderCoupon> findCoupons(String orderNo) {
+        return orderCouponMapper.selectList(Wrappers.<OrderCoupon>lambdaQuery()
+                .eq(OrderCoupon::getOrderNo, orderNo)
+                .orderByAsc(OrderCoupon::getCouponId));
+    }
+
+    @Override
     public Order save(Order order) {
         if (order.getId() == null) {
             orderMapper.insert(order);
@@ -108,6 +126,20 @@ public class OrderRepositoryImpl implements OrderRepository {
     }
 
     @Override
+    public boolean markSigned(String orderNo, LocalDateTime time) {
+        return orderMapper.markSigned(orderNo, time) > 0;
+    }
+
+    @Override
+    public List<Order> findSignedExpired(LocalDateTime deadline) {
+        return orderMapper.selectList(Wrappers.<Order>lambdaQuery()
+                .eq(Order::getStatus, OrderStatus.SHIPPED.name())
+                .isNotNull(Order::getSignedTime)
+                .le(Order::getSignedTime, deadline)
+                .orderByAsc(Order::getId));
+    }
+
+    @Override
     public boolean markCompleted(String orderNo, LocalDateTime time) {
         return orderMapper.markCompleted(orderNo, time) > 0;
     }
@@ -115,6 +147,34 @@ public class OrderRepositoryImpl implements OrderRepository {
     @Override
     public boolean markCancelled(String orderNo, LocalDateTime time) {
         return orderMapper.markCancelled(orderNo, time) > 0;
+    }
+
+    @Override
+    public boolean markAfterSale(String orderNo) {
+        return orderMapper.markAfterSale(orderNo) > 0;
+    }
+
+    @Override
+    public boolean restoreStatus(String orderNo, String status) {
+        return orderMapper.restoreStatus(orderNo, status) > 0;
+    }
+
+    @Override
+    public boolean markRefundedAfterCancel(String orderNo, LocalDateTime time) {
+        return orderMapper.markRefundedAfterCancel(orderNo, time) > 0;
+    }
+
+    @Override
+    public boolean markRefundedAfterSale(String orderNo, LocalDateTime time) {
+        return orderMapper.markRefundedAfterSale(orderNo, time) > 0;
+    }
+
+    @Override
+    public boolean hasUnpaidRecovery(Long userId) {
+        return orderMapper.selectCount(Wrappers.<Order>lambdaQuery()
+                .eq(Order::getUserId, userId)
+                .eq(Order::getBizType, "RECOVERY")
+                .eq(Order::getStatus, OrderStatus.UNPAID.name())) > 0;
     }
 
     @Override
@@ -152,7 +212,8 @@ public class OrderRepositoryImpl implements OrderRepository {
     private List<Order> paidOrders(Long userId, int limit) {
         LambdaQueryWrapper<Order> wrapper = Wrappers.<Order>lambdaQuery()
                 .eq(Order::getUserId, userId)
-                .in(Order::getStatus, OrderStatus.PAID.name(), OrderStatus.SHIPPED.name(), OrderStatus.COMPLETED.name())
+                .in(Order::getStatus, OrderStatus.PAID.name(), OrderStatus.SHIPPED.name(),
+                        OrderStatus.COMPLETED.name(), OrderStatus.AFTER_SALE.name())
                 .orderByDesc(Order::getId);
         if (limit < Integer.MAX_VALUE) {
             wrapper.last("LIMIT " + limit);

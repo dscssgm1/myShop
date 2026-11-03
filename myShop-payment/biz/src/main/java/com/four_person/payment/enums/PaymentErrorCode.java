@@ -9,7 +9,8 @@ public enum PaymentErrorCode implements ErrorCode {
     PAYMENT_NOT_FOUND(40409, "支付单不存在"),
     PAYMENT_STATUS_INVALID(40015, "支付单状态不允许该操作"),
     PAYMENT_FORBIDDEN(40302, "无权操作该支付单"),
-    CHANNEL_INVALID(40016, "不支持的支付渠道");
+    CHANNEL_INVALID(40016, "不支持的支付渠道"),
+    UNPAID_RECOVERY_EXISTS(40017, "您有未支付的补款订单，请先完成支付后再进行其他购买");
 
     private final int code;
     private final String message;

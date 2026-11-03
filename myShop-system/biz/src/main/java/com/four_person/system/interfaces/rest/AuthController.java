@@ -4,14 +4,19 @@ import com.four_person.common.api.Result;
 import com.four_person.system.api.dto.AuthDtos;
 import com.four_person.system.api.dto.UserDtos;
 import com.four_person.system.application.AuthApplicationService;
+import com.four_person.system.infrastructure.security.SecurityUser;
 import com.four_person.system.infrastructure.security.SecurityUtils;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/auth")
@@ -31,11 +36,35 @@ public class AuthController {
     }
 
     /**
-     * 无状态 JWT：退出登录由客户端丢弃令牌完成，服务端仅返回成功。
+     * 退出登录：删除当前会话，令牌立即失效（网关下次请求即拒绝）。
      */
     @PostMapping("/logout")
     public Result<Void> logout() {
+        SecurityUser user = SecurityUtils.currentUser();
+        authApplicationService.logout(user.getId(), user.getSessionId());
         return Result.success("已退出登录", null);
+    }
+
+    /** 当前账号的在线登录设备 */
+    @GetMapping("/sessions")
+    public Result<List<AuthDtos.SessionVO>> sessions() {
+        SecurityUser user = SecurityUtils.currentUser();
+        return Result.success(authApplicationService.sessions(user.getId(), user.getSessionId()));
+    }
+
+    /** 单点下线：踢掉自己的一台设备 */
+    @DeleteMapping("/sessions/{sessionId}")
+    public Result<Void> kickSession(@PathVariable String sessionId) {
+        SecurityUser user = SecurityUtils.currentUser();
+        authApplicationService.kickSession(user.getId(), sessionId);
+        return Result.success("该设备已下线", null);
+    }
+
+    /** 下线当前账号的全部设备 */
+    @DeleteMapping("/sessions")
+    public Result<Void> kickAllSessions() {
+        authApplicationService.kickAll(SecurityUtils.currentUserId());
+        return Result.success("所有设备已下线", null);
     }
 
     @GetMapping("/me")
@@ -56,8 +85,7 @@ public class AuthController {
 
     /** 通过邮箱验证码重置密码 */
     @PostMapping("/password/reset")
-    public Result<Void> resetPassword(@Valid @RequestBody AuthDtos.ResetPasswordRequest request) {
-        authApplicationService.resetPassword(request);
-        return Result.success("密码已重置，请重新登录", null);
+    public Result<AuthDtos.DeviceVerifyTokenVO> resetPassword(@Valid @RequestBody AuthDtos.ResetPasswordRequest request) {
+        return Result.success("密码已重置，请重新登录", authApplicationService.resetPassword(request));
     }
 }

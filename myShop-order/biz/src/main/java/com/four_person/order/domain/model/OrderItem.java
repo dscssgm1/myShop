@@ -21,6 +21,9 @@ public class OrderItem {
 
     private Long productId;
 
+    /** 下单时快照的商品类目 id；历史订单为 0，结算时回查商品表 */
+    private Long categoryId;
+
     /** SKU，0 表示无规格 */
     private Long skuId;
 

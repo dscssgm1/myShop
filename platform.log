@@ -1,0 +1,41 @@
+00:47:44.965 [main] INFO com.alibaba.nacos.plugin.auth.spi.client.ClientAuthPluginManager -- [ClientAuthPluginManager] Load ClientAuthService com.alibaba.nacos.client.auth.impl.NacosClientAuthServiceImpl success.
+00:47:44.965 [main] INFO com.alibaba.nacos.plugin.auth.spi.client.ClientAuthPluginManager -- [ClientAuthPluginManager] Load ClientAuthService com.alibaba.nacos.client.auth.ram.RamClientAuthServiceImpl success.
+00:47:45.987 [main] INFO com.alibaba.nacos.common.ability.AbstractAbilityControlManager -- Ready to get current node abilities...
+00:47:45.990 [main] INFO com.alibaba.nacos.common.ability.AbstractAbilityControlManager -- Ready to initialize current node abilities, support modes: [SDK_CLIENT]
+00:47:45.991 [main] INFO com.alibaba.nacos.common.ability.AbstractAbilityControlManager -- Initialize current abilities finish...
+00:47:45.992 [main] INFO com.alibaba.nacos.common.ability.discover.NacosAbilityManagerHolder -- [AbilityControlManager] Successfully initialize AbilityControlManager
+
+  .   ____          _            __ _ _
+ /\\ / ___'_ __ _ _(_)_ __  __ _ \ \ \ \
+( ( )\___ | '_ | '_| | '_ \/ _` | \ \ \ \
+ \\/  ___)| |_)| | | | | || (_| |  ) ) ) )
+  '  |____| .__|_| |_|_| |_\__, | / / / /
+ =========|_|==============|___/=/_/_/_/
+
+ :: Spring Boot ::                (v3.3.1)
+
+2026-11-03T00:47:46.749+08:00  INFO 109752 --- [myshop-platform] [           main] c.f.platform.PlatformApplication         : Starting PlatformApplication v1.0-SNAPSHOT using Java 21.0.10 with PID 109752 (E:\JavaProject\myShop\myShop\myShop-platform\biz\target\myShop-platform-biz-1.0-SNAPSHOT.jar started by Dawn in E:\JavaProject\myShop\myShop\myShop-platform\biz)
+2026-11-03T00:47:46.749+08:00 DEBUG 109752 --- [myshop-platform] [           main] c.f.platform.PlatformApplication         : Running with Spring Boot v3.3.1, Spring v6.1.10
+2026-11-03T00:47:46.751+08:00  INFO 109752 --- [myshop-platform] [           main] c.f.platform.PlatformApplication         : No active profile set, falling back to 1 default profile: "default"
+2026-11-03T00:47:46.961+08:00  INFO 109752 --- [myshop-platform] [           main] c.a.c.n.c.NacosConfigDataLoader          : [Nacos Config] Load config[dataId=myshop-platform.yml, group=config] success
+2026-11-03T00:47:48.679+08:00  INFO 109752 --- [myshop-platform] [           main] o.s.cloud.context.scope.GenericScope     : BeanFactory id=3c987648-9e22-3263-bbb5-9bc9d5aa1099
+2026-11-03T00:47:48.761+08:00  WARN 109752 --- [myshop-platform] [           main] trationDelegate$BeanPostProcessorChecker : Bean 'com.alibaba.cloud.nacos.NacosConfigAutoConfiguration' of type [com.alibaba.cloud.nacos.NacosConfigAutoConfiguration] is not eligible for getting processed by all BeanPostProcessors (for example: not eligible for auto-proxying). The currently created BeanPostProcessor [nacosAnnotationProcessor] is declared through a non-static factory method on that class; consider declaring it as static instead.
+2026-11-03T00:47:49.035+08:00  WARN 109752 --- [myshop-platform] [           main] trationDelegate$BeanPostProcessorChecker : Bean 'org.springframework.cloud.client.loadbalancer.LoadBalancerAutoConfiguration$DeferringLoadBalancerInterceptorConfig' of type [org.springframework.cloud.client.loadbalancer.LoadBalancerAutoConfiguration$DeferringLoadBalancerInterceptorConfig] is not eligible for getting processed by all BeanPostProcessors (for example: not eligible for auto-proxying). The currently created BeanPostProcessor [lbRestClientPostProcessor] is declared through a non-static factory method on that class; consider declaring it as static instead.
+2026-11-03T00:47:49.042+08:00  WARN 109752 --- [myshop-platform] [           main] trationDelegate$BeanPostProcessorChecker : Bean 'deferringLoadBalancerInterceptor' of type [org.springframework.cloud.client.loadbalancer.DeferringLoadBalancerInterceptor] is not eligible for getting processed by all BeanPostProcessors (for example: not eligible for auto-proxying). Is this bean getting eagerly injected into a currently created BeanPostProcessor [lbRestClientPostProcessor]? Check the corresponding BeanPostProcessor declaration and its dependencies.
+2026-11-03T00:47:49.611+08:00  INFO 109752 --- [myshop-platform] [           main] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat initialized with port 8089 (http)
+2026-11-03T00:47:49.641+08:00  INFO 109752 --- [myshop-platform] [           main] o.apache.catalina.core.StandardService   : Starting service [Tomcat]
+2026-11-03T00:47:49.642+08:00  INFO 109752 --- [myshop-platform] [           main] o.apache.catalina.core.StandardEngine    : Starting Servlet engine: [Apache Tomcat/10.1.25]
+2026-11-03T00:47:49.733+08:00  INFO 109752 --- [myshop-platform] [           main] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring embedded WebApplicationContext
+2026-11-03T00:47:49.735+08:00  INFO 109752 --- [myshop-platform] [           main] w.s.c.ServletWebServerApplicationContext : Root WebApplicationContext: initialization completed in 2756 ms
+ _ _   |_  _ _|_. ___ _ |    _ 
+| | |\/|_)(_| | |_\  |_)||_|_\ 
+     /               |         
+                        3.5.7 
+2026-11-03T00:47:51.362+08:00  INFO 109752 --- [myshop-platform] [           main] o.s.c.openfeign.FeignClientFactoryBean   : For 'myshop-message' URL not provided. Will try picking an instance via load-balancing.
+2026-11-03T00:47:52.650+08:00  WARN 109752 --- [myshop-platform] [           main] iguration$LoadBalancerCaffeineWarnLogger : Spring Cloud LoadBalancer is currently working with the default cache. While this cache implementation is useful for development and tests, it's recommended to use Caffeine cache in production.You can switch to using Caffeine cache, by adding it and org.springframework.cache.caffeine.CaffeineCacheManager to the classpath.
+2026-11-03T00:47:52.682+08:00  INFO 109752 --- [myshop-platform] [           main] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat started on port 8089 (http) with context path '/'
+2026-11-03T00:47:52.712+08:00  INFO 109752 --- [myshop-platform] [           main] c.a.n.p.a.s.c.ClientAuthPluginManager    : [ClientAuthPluginManager] Load ClientAuthService com.alibaba.nacos.client.auth.impl.NacosClientAuthServiceImpl success.
+2026-11-03T00:47:52.712+08:00  INFO 109752 --- [myshop-platform] [           main] c.a.n.p.a.s.c.ClientAuthPluginManager    : [ClientAuthPluginManager] Load ClientAuthService com.alibaba.nacos.client.auth.ram.RamClientAuthServiceImpl success.
+2026-11-03T00:47:52.758+08:00  INFO 109752 --- [myshop-platform] [           main] c.a.c.n.registry.NacosServiceRegistry    : nacos registry, config myshop-platform 192.168.174.1:8089 register finished
+2026-11-03T00:47:52.776+08:00  INFO 109752 --- [myshop-platform] [           main] c.f.platform.PlatformApplication         : Started PlatformApplication in 9.237 seconds (process running for 10.205)
+2026-11-03T00:47:52.803+08:00  INFO 109752 --- [myshop-platform] [           main] c.a.c.n.refresh.NacosContextRefresher    : [Nacos Config] Listening config: dataId=myshop-platform.yml, group=config

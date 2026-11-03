@@ -58,6 +58,8 @@ public final class AuthDtos {
         private String tokenType = "Bearer";
         private long expiresIn;
         private UserDtos.UserVO user;
+        /** 注册等场景随登录返回的短时效身份验证凭证，用于「信任此设备」提示 */
+        private String deviceVerifyToken;
     }
 
     @Data
@@ -88,8 +90,12 @@ public final class AuthDtos {
         @Email(message = "邮箱格式不正确")
         private String email;
 
+        /** 发往新邮箱的验证码（始终必填） */
         @NotBlank(message = "验证码不能为空")
         private String code;
+
+        /** 未信任设备需出示身份验证凭证（向当前邮箱验证后获得） */
+        private String verifyToken;
     }
 
     @Data
@@ -101,6 +107,9 @@ public final class AuthDtos {
         @NotBlank(message = "新密码不能为空")
         @Size(min = 6, max = 64, message = "新密码长度需为 6-64 位")
         private String newPassword;
+
+        /** 未信任设备需出示身份验证凭证（向当前邮箱验证后获得） */
+        private String verifyToken;
     }
 
     @Data
@@ -124,5 +133,36 @@ public final class AuthDtos {
         @NotBlank(message = "新密码不能为空")
         @Size(min = 6, max = 64, message = "新密码长度需为 6-64 位")
         private String newPassword;
+    }
+
+    @Data
+    public static class DeviceVerifyTokenVO {
+
+        /** 短时效身份验证凭证（10 分钟），用于「信任此设备」提示 */
+        private String verifyToken;
+    }
+
+    /** 在线登录设备（一个会话对应一次登录） */
+    @Data
+    public static class SessionVO {
+
+        /** 会话 ID（JWT 的 jti），用于单点下线 */
+        private String sessionId;
+
+        private Long userId;
+
+        private String username;
+
+        private String deviceId;
+
+        private String deviceName;
+
+        private String ip;
+
+        /** 登录时间，ISO-8601 字符串 */
+        private String loginAt;
+
+        /** 是否为当前请求所在的设备 */
+        private boolean current;
     }
 }

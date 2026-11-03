@@ -9,6 +9,7 @@ import com.four_person.order.api.dto.OrderCreateRequest;
 import com.four_person.order.api.dto.OrderPreviewRequest;
 import com.four_person.order.api.dto.OrderPreviewVO;
 import com.four_person.order.api.dto.OrderVO;
+import com.four_person.order.api.dto.ShipRequest;
 import com.four_person.order.application.OrderApplicationService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -81,11 +82,11 @@ public class OrderController {
         return Result.success();
     }
 
-    /** 商家发货（只能发本店铺订单） */
+    /** 商家发货（只能发本店铺订单）：订单服务编排创建运单并标记已发货 */
     @PostMapping("/{orderNo}/ship")
-    public Result<Void> ship(@PathVariable String orderNo) {
+    public Result<Void> ship(@PathVariable String orderNo, @Valid @RequestBody ShipRequest request) {
         AccessGuard.requireGroup("MERCHANT", "PLATFORM");
-        orderApplicationService.ship(UserContext.getShopId(), orderNo);
+        orderApplicationService.ship(UserContext.getShopId(), orderNo, request.getCompanyId());
         return Result.success();
     }
 }

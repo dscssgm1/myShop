@@ -37,6 +37,10 @@ public class Payment {
 
     private LocalDateTime paidAt;
 
+    private LocalDateTime refundedAt;
+
+    private String refundReason;
+
     private LocalDateTime createdAt;
 
     private LocalDateTime updatedAt;
@@ -61,6 +65,15 @@ public class Payment {
         this.tradeNo = tradeNo;
     }
 
+    public void refund(LocalDateTime refundedAt, String reason) {
+        if (!isSuccess()) {
+            throw new BusinessException(PaymentErrorCode.PAYMENT_STATUS_INVALID, "只有支付成功的支付单可以退款");
+        }
+        this.status = PaymentStatus.REFUNDED.name();
+        this.refundedAt = refundedAt;
+        this.refundReason = reason;
+    }
+
     public void close() {
         if (isSuccess()) {
             throw new BusinessException(PaymentErrorCode.PAYMENT_STATUS_INVALID, "已支付的支付单不能关闭");
@@ -76,5 +89,7 @@ public class Payment {
         this.channel = channel;
         this.tradeNo = null;
         this.paidAt = null;
+        this.refundedAt = null;
+        this.refundReason = null;
     }
 }

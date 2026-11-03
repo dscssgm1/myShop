@@ -12,5 +12,8 @@ public enum ScopeType {
     CATEGORY,
 
     /** 指定商品 */
-    PRODUCT
+    PRODUCT,
+
+    /** 本店铺全部商品（商家活动/商家券专用，按归属 shopId 匹配） */
+    SHOP
 }

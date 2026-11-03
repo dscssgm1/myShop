@@ -2,6 +2,7 @@ package com.four_person.order.domain.repository;
 
 import com.four_person.common.api.PageResult;
 import com.four_person.order.domain.model.Order;
+import com.four_person.order.domain.model.OrderCoupon;
 import com.four_person.order.domain.model.OrderItem;
 import com.four_person.order.domain.model.UserStats;
 
@@ -25,6 +26,12 @@ public interface OrderRepository {
 
     Map<String, List<OrderItem>> findItemsByOrderNos(List<String> orderNos);
 
+    /** 保存订单的优惠券核销明细（一单多券） */
+    void saveCoupons(String orderNo, List<OrderCoupon> coupons);
+
+    /** 订单实际核销的优惠券明细 */
+    List<OrderCoupon> findCoupons(String orderNo);
+
     Order save(Order order);
 
     void saveItems(List<OrderItem> items);
@@ -33,9 +40,25 @@ public interface OrderRepository {
 
     boolean markShipped(String orderNo, LocalDateTime time);
 
+    boolean markSigned(String orderNo, LocalDateTime time);
+
+    /** 签收已满期仍未确认收货的订单（物流签收联动自动完成） */
+    List<Order> findSignedExpired(LocalDateTime deadline);
+
     boolean markCompleted(String orderNo, LocalDateTime time);
 
     boolean markCancelled(String orderNo, LocalDateTime time);
+
+    boolean markAfterSale(String orderNo);
+
+    boolean restoreStatus(String orderNo, String status);
+
+    boolean markRefundedAfterCancel(String orderNo, LocalDateTime time);
+
+    boolean markRefundedAfterSale(String orderNo, LocalDateTime time);
+
+    /** 用户是否存在未支付的补款订单 */
+    boolean hasUnpaidRecovery(Long userId);
 
     List<Long> purchasedProductIds(Long userId);
 

@@ -32,8 +32,6 @@ public class ProductRequest {
     @DecimalMin(value = "0.01", message = "售价必须大于 0")
     private BigDecimal price;
 
-    private BigDecimal originPrice;
-
     /** 促销价，空则无折扣 */
     private BigDecimal discountPrice;
 
@@ -45,9 +43,19 @@ public class ProductRequest {
 
     private String color;
 
+    /** 主图 URL，来自文件服务 */
+    private String coverImage;
+
+    /** 图集 URL 列表，来自文件服务 */
+    private List<String> images;
+
     private List<String> tags;
 
-    private String description;
+    /** 服务保障（配置中心 service-guarantee 组的 key 列表） */
+    private List<String> serviceKeys;
+
+    /** 商品详情（富文本 HTML） */
+    private String detail;
 
     /** 商品规格定义 */
     private List<SpecGroupRequest> specs;
@@ -71,7 +79,6 @@ public class ProductRequest {
         @NotNull(message = "SKU 价格不能为空")
         @DecimalMin(value = "0.01", message = "SKU 价格必须大于 0")
         private BigDecimal price;
-        private BigDecimal originPrice;
         @Min(value = 0, message = "库存不能为负数")
         private Integer stock = 0;
     }

@@ -22,6 +22,12 @@ public class UserCouponVO {
 
     private String scopeText;
 
+    /** 0 平台券；>0 商家券发放店铺 */
+    private Long shopId;
+
+    /** 商家券发放店铺名称 */
+    private String shopName;
+
     private String status;
 
     private String statusText;

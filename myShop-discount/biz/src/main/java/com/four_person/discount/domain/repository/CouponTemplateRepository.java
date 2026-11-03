@@ -10,6 +10,9 @@ public interface CouponTemplateRepository {
 
     List<CouponTemplate> findActive(LocalDateTime now);
 
+    /** 指定店铺发放的全部券（含已结束），商家券管理用 */
+    List<CouponTemplate> findByShop(Long shopId);
+
     Optional<CouponTemplate> findById(Long id);
 
     List<CouponTemplate> findByIds(List<Long> ids);

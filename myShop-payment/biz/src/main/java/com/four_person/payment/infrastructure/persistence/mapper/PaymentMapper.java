@@ -26,4 +26,13 @@ public interface PaymentMapper extends BaseMapper<Payment> {
              WHERE payment_no = #{paymentNo} AND status = 'PENDING' AND deleted = 0
             """)
     int markClosed(@Param("paymentNo") String paymentNo);
+
+    @Update("""
+            UPDATE payment_order
+               SET status = 'REFUNDED', refunded_at = #{refundedAt}, refund_reason = #{reason}
+             WHERE payment_no = #{paymentNo} AND status = 'SUCCESS' AND deleted = 0
+            """)
+    int markRefunded(@Param("paymentNo") String paymentNo,
+                     @Param("refundedAt") LocalDateTime refundedAt,
+                     @Param("reason") String reason);
 }

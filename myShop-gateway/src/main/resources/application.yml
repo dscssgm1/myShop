@@ -7,6 +7,12 @@ spring:
   config:
     import:
       - optional:nacos:myshop-gateway.yml
+  data:
+    redis:
+      host: ${REDIS_HOST:127.0.0.1}
+      port: ${REDIS_PORT:6379}
+      password: ${REDIS_PASSWORD:}
+      timeout: 3s
   cloud:
     nacos:
       server-addr: ${NACOS_SERVER_ADDR:127.0.0.1:8848}
@@ -70,12 +76,28 @@ spring:
         - id: myshop-platform
           uri: lb://myshop-platform
           predicates:
-            - Path=/api/audit/**,/api/config/**,/api/logs/**,/api/dashboard/**
+            - Path=/api/audit/**,/api/config/**,/api/logs/**,/api/dashboard/**,/api/platform/**
+          filters:
+            - StripPrefix=1
+        - id: myshop-review
+          uri: lb://myshop-review
+          predicates:
+            - Path=/api/reviews/**
+          filters:
+            - StripPrefix=1
+        - id: myshop-file
+          uri: lb://myshop-file
+          predicates:
+            - Path=/api/files/**
           filters:
             - StripPrefix=1
       discovery:
         locator:
           enabled: false
+
+  # 网关转发大文件上传时避免 DataBufferLimitException
+  codec:
+    max-in-memory-size: 20MB
 
 # Token 鉴权：密钥需与 myshop-system 保持一致
 myshop:
@@ -83,7 +105,12 @@ myshop:
     jwt:
       secret: ${MYSHOP_JWT_SECRET:myshop-default-secret-please-change-in-production-2026}
     whitelist:
-      - /api/system/auth/
+      # 仅登录/注册/找回密码允许匿名；/auth/logout、/auth/sessions、/auth/me 需要有效会话
+      - /api/system/auth/login
+      - /api/system/auth/register
+      - /api/system/auth/email-code
+      - /api/system/auth/password/forgot
+      - /api/system/auth/password/reset
       - /api/products
       - /api/categories
       - /api/brands
@@ -91,3 +118,8 @@ myshop:
       - /api/shops
       - /api/promotions
       - /api/recommendations
+      - /api/reviews
+      # 积分商城商品浏览（兑换需登录）
+      - /api/system/points-mall/items
+      # 买家端公开运营配置（Banner、支付方式、系统参数等）
+      - /api/config/public/

@@ -1,9 +1,12 @@
 package com.four_person.product.interfaces.rest;
 
 import com.four_person.common.api.Result;
+import com.four_person.product.api.dto.CommissionRateRequest;
+import com.four_person.product.api.dto.CommissionRateVO;
 import com.four_person.product.api.dto.ProductBatchRequest;
 import com.four_person.product.api.dto.ProductVO;
 import com.four_person.product.api.dto.StockChangeRequest;
+import com.four_person.product.application.CategoryApplicationService;
 import com.four_person.product.application.ProductApplicationService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -25,6 +28,13 @@ import java.util.List;
 public class InternalProductController {
 
     private final ProductApplicationService productApplicationService;
+    private final CategoryApplicationService categoryApplicationService;
+
+    /** 订单完成结算佣金时批量取类目费率 */
+    @PostMapping("/commission-rates")
+    public Result<List<CommissionRateVO>> commissionRates(@Valid @RequestBody CommissionRateRequest request) {
+        return Result.success(categoryApplicationService.commissionRates(request.getCategoryIds()));
+    }
 
     @PostMapping("/batch")
     public Result<List<ProductVO>> batch(@Valid @RequestBody ProductBatchRequest request) {

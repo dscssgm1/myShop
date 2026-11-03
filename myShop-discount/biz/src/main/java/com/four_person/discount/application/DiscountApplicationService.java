@@ -1,64 +1,170 @@
 package com.four_person.discount.application;
 
+import com.four_person.discount.api.dto.AvailableCoupon;
 import com.four_person.discount.api.dto.DiscountItem;
 import com.four_person.discount.api.dto.DiscountResultVO;
+import com.four_person.discount.application.port.ShopQueryPort;
 import com.four_person.discount.domain.model.CouponOffer;
 import com.four_person.discount.domain.model.CouponTemplate;
 import com.four_person.discount.domain.model.DiscountSelection;
 import com.four_person.discount.domain.model.Money;
 import com.four_person.discount.domain.model.OrderLine;
+import com.four_person.discount.domain.model.ProductSnapshot;
 import com.four_person.discount.domain.model.Promotion;
+import com.four_person.discount.domain.model.PromotionSettings;
 import com.four_person.discount.domain.model.UserCoupon;
 import com.four_person.discount.domain.repository.CouponTemplateRepository;
+import com.four_person.discount.domain.repository.PromotionEnrollmentRepository;
 import com.four_person.discount.domain.repository.PromotionRepository;
 import com.four_person.discount.domain.repository.UserCouponRepository;
 import com.four_person.discount.domain.service.DiscountPricingService;
 import com.four_person.discount.enums.CouponStatus;
+import com.four_person.discount.enums.ScopeType;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StringUtils;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class DiscountApplicationService {
 
     private final PromotionRepository promotionRepository;
+    private final PromotionEnrollmentRepository enrollmentRepository;
     private final CouponTemplateRepository templateRepository;
     private final UserCouponRepository userCouponRepository;
     private final DiscountPricingService discountPricingService;
+    private final ShopQueryPort shopQueryPort;
+    private final JdbcTemplate jdbcTemplate;
 
+    /**
+     * 订单算价入口：按平台/商家活动与优惠券（可多张叠加）计算最终应付与费用承担，
+     * 报名制活动的范围收窄为「审核通过的商品」。
+     */
     @Transactional(readOnly = true)
-    public DiscountResultVO calculate(Long userId, Long couponId, List<DiscountItem> items) {
+    public DiscountResultVO calculate(Long userId, List<Long> selectedCouponIds, List<DiscountItem> items) {
         LocalDateTime now = LocalDateTime.now();
-        List<OrderLine> lines = items.stream()
-                .map(item -> new OrderLine(item.getProductId(), item.getCategoryId(),
-                        Money.of(item.getPrice()), item.getQuantity()))
-                .toList();
-        List<Promotion> promotions = promotionRepository.findActive(now);
+        List<OrderLine> lines = toLines(items);
+        List<Promotion> promotions = effectivePromotions(now);
         List<CouponOffer> offers = offers(userId, now);
 
         DiscountSelection selection = discountPricingService.calculate(
-                lines, promotions, offers, couponId, now);
+                lines, promotions, offers, selectedCouponIds, loadSettings(), now);
+        return toResultVO(selection);
+    }
 
-        DiscountResultVO vo = new DiscountResultVO();
-        vo.setOriginalAmount(selection.originalAmount().amount());
-        vo.setPromotionDiscount(selection.promotionDiscount().amount());
-        vo.setCouponDiscount(selection.couponDiscount().amount());
-        vo.setTotalDiscount(selection.totalDiscount().amount());
-        vo.setPayAmount(selection.payAmount().amount());
-        vo.setAppliedPromotionId(selection.promotionId());
-        vo.setAppliedPromotionTitle(selection.promotionTitle());
-        vo.setPromotionCouponStackable(selection.promotionCouponStackable());
-        vo.setAppliedCouponId(selection.couponId());
-        vo.setAppliedCouponTitle(selection.couponTitle());
-        return vo;
+    /**
+     * 结算页可用优惠券列表：按当前商品明细给出每张券的实际可抵扣金额
+     * （不满足门槛为 0，前端禁用），多券叠加由用户自行勾选。
+     */
+    @Transactional(readOnly = true)
+    public List<AvailableCoupon> availableCoupons(Long userId, List<DiscountItem> items) {
+        if (userId == null) {
+            return Collections.emptyList();
+        }
+        LocalDateTime now = LocalDateTime.now();
+        List<OrderLine> lines = toLines(items);
+        List<UserCoupon> coupons = userCouponRepository.findByUserIdAndStatus(userId, CouponStatus.UNUSED);
+        if (coupons.isEmpty()) {
+            return Collections.emptyList();
+        }
+        Map<Long, CouponTemplate> templates = templateRepository.findByIds(
+                        coupons.stream().map(UserCoupon::getTemplateId).distinct().toList())
+                .stream().collect(Collectors.toMap(CouponTemplate::getId, Function.identity()));
+        List<AvailableCoupon> result = new ArrayList<>();
+        for (UserCoupon coupon : coupons) {
+            CouponTemplate template = templates.get(coupon.getTemplateId());
+            if (template == null) {
+                continue;
+            }
+            AvailableCoupon vo = new AvailableCoupon();
+            vo.setUserCouponId(coupon.getId());
+            vo.setTemplateId(template.getId());
+            vo.setTitle(template.getTitle());
+            vo.setThresholdAmount(template.getThresholdAmount().amount());
+            vo.setDiscountAmount(template.getDiscountAmount().amount());
+            vo.setApplicableAmount(
+                    coupon.isUsable(now) ? template.discountFor(lines).amount() : BigDecimal.ZERO);
+            vo.setScopeType(template.getScope().type().name());
+            vo.setScopeText(scopeText(template.getScope().type()));
+            vo.setShopId(template.isMerchantCoupon() ? template.getShopId() : null);
+            vo.setShopName(template.isMerchantCoupon() ? shopName(template.getShopId()) : null);
+            vo.setExpiredAt(coupon.getExpiredAt());
+            result.add(vo);
+        }
+        return result;
+    }
+
+    private List<OrderLine> toLines(List<DiscountItem> items) {
+        return items.stream()
+                .map(item -> new OrderLine(item.getProductId(), item.getCategoryId(), item.getShopId(),
+                        Money.of(item.getPrice()), item.getQuantity()))
+                .toList();
+    }
+
+    /** 进行中的活动；报名制平台活动收窄为审核通过的商品范围，无通过商品则跳过 */
+    private List<Promotion> effectivePromotions(LocalDateTime now) {
+        List<Promotion> result = new ArrayList<>();
+        for (Promotion promotion : promotionRepository.findActive(now)) {
+            if (promotion.isMerchantActivity() || !promotion.isEnrollRequired()) {
+                result.add(promotion);
+                continue;
+            }
+            Set<Long> approved = Set.copyOf(enrollmentRepository.approvedProductIds(promotion.getId()));
+            if (approved.isEmpty()) {
+                continue;
+            }
+            result.add(promotion.narrowedToProducts(approved));
+        }
+        return result;
+    }
+
+    private PromotionSettings loadSettings() {
+        try {
+            Map<String, String> config = jdbcTemplate.query(
+                    "SELECT config_key, config_value FROM config_item WHERE config_group = 'discount'",
+                    rs -> {
+                        Map<String, String> values = new HashMap<>();
+                        while (rs.next()) {
+                            values.put(rs.getString("config_key"), rs.getString("config_value"));
+                        }
+                        return values;
+                    });
+            boolean stackable = !"false".equalsIgnoreCase(
+                    config.getOrDefault("promotion-coupon-stackable", "true"));
+            boolean multiCoupon = !"false".equalsIgnoreCase(
+                    config.getOrDefault("multi-coupon-enabled", "true"));
+            int maxCoupons = parseMaxCoupons(config.get("max-coupons-per-order"));
+            return new PromotionSettings(stackable, multiCoupon, maxCoupons);
+        } catch (Exception ex) {
+            log.warn("读取折扣规则配置失败，使用默认设置", ex);
+            return PromotionSettings.defaults();
+        }
+    }
+
+    private int parseMaxCoupons(String raw) {
+        if (!StringUtils.hasText(raw)) {
+            return 3;
+        }
+        try {
+            return Integer.parseInt(raw.trim());
+        } catch (NumberFormatException ex) {
+            return 3;
+        }
     }
 
     private List<CouponOffer> offers(Long userId, LocalDateTime now) {
@@ -79,5 +185,49 @@ public class DiscountApplicationService {
                 .filter(coupon -> templates.containsKey(coupon.getTemplateId()))
                 .map(coupon -> new CouponOffer(coupon, templates.get(coupon.getTemplateId())))
                 .toList();
+    }
+
+    private DiscountResultVO toResultVO(DiscountSelection selection) {
+        DiscountResultVO vo = new DiscountResultVO();
+        vo.setOriginalAmount(selection.originalAmount().amount());
+        vo.setPromotionDiscount(selection.promotionDiscount().amount());
+        vo.setCouponDiscount(selection.couponDiscount().amount());
+        vo.setTotalDiscount(selection.totalDiscount().amount());
+        vo.setPayAmount(selection.payAmount().amount());
+        vo.setMerchantBearAmount(selection.merchantBearAmount().amount());
+        vo.setPlatformBearAmount(selection.platformBearAmount().amount());
+        selection.primaryPromotion().ifPresent(promotion -> {
+            vo.setAppliedPromotionId(promotion.getId());
+            vo.setAppliedPromotionTitle(promotion.getTitle());
+        });
+        vo.setPromotionCouponStackable(selection.promotionCouponStackable());
+        List<DiscountResultVO.CouponUsage> usages = new ArrayList<>();
+        for (int i = 0; i < selection.coupons().size(); i++) {
+            CouponOffer offer = selection.coupons().get(i);
+            DiscountResultVO.CouponUsage usage = new DiscountResultVO.CouponUsage();
+            usage.setCouponId(offer.coupon().getId());
+            usage.setTitle(offer.template().getTitle());
+            usage.setDiscount(selection.couponHits().get(i).amount());
+            usages.add(usage);
+        }
+        vo.setAppliedCoupons(usages);
+        selection.primaryCoupon().ifPresent(offer -> {
+            vo.setAppliedCouponId(offer.coupon().getId());
+            vo.setAppliedCouponTitle(offer.template().getTitle());
+        });
+        return vo;
+    }
+
+    private String shopName(Long shopId) {
+        return shopQueryPort.shopName(shopId);
+    }
+
+    private String scopeText(ScopeType type) {
+        return switch (type) {
+            case CATEGORY -> "指定分类";
+            case PRODUCT -> "指定商品";
+            case SHOP -> "本店商品";
+            case ALL -> "全品类";
+        };
     }
 }

@@ -9,7 +9,9 @@ public enum OrderStatus {
     PAID("待发货"),
     SHIPPED("待收货"),
     COMPLETED("已完成"),
-    CANCELLED("已取消");
+    CANCELLED("已取消"),
+    AFTER_SALE("售后中"),
+    REFUNDED("已退款");
 
     private final String text;
 
@@ -29,7 +31,9 @@ public enum OrderStatus {
         }
     }
 
+    /** 是否已支付过（退款中/已退款不再计入购买统计） */
     public static boolean isPaid(String status) {
-        return PAID.name().equals(status) || SHIPPED.name().equals(status) || COMPLETED.name().equals(status);
+        return PAID.name().equals(status) || SHIPPED.name().equals(status)
+                || COMPLETED.name().equals(status) || AFTER_SALE.name().equals(status);
     }
 }

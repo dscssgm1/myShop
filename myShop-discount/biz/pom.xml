@@ -32,6 +32,10 @@
             <artifactId>myShop-order-api</artifactId>
         </dependency>
         <dependency>
+            <groupId>com.four_person</groupId>
+            <artifactId>myShop-merchant-api</artifactId>
+        </dependency>
+        <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-web</artifactId>
         </dependency>

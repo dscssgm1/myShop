@@ -12,7 +12,17 @@ public enum OrderErrorCode implements ErrorCode {
     PRODUCT_NOT_FOUND(40407, "商品不存在"),
     PRODUCT_OFF_SHELF(40012, "商品已下架"),
     STOCK_INSUFFICIENT(40013, "商品库存不足"),
-    ORDER_FORBIDDEN(40301, "无权操作该订单");
+    CANNOT_BUY_OWN_PRODUCT(40024, "商家不能购买自己店铺的商品"),
+    AFTER_SALE_NOT_FOUND(40410, "售后单不存在"),
+    AFTER_SALE_STATUS_INVALID(40026, "售后单状态不允许该操作"),
+    AFTER_SALE_EXISTS(40027, "该订单已有进行中的售后申请"),
+    UNPAID_RECOVERY_EXISTS(40028, "您有未支付的补款订单，请先完成支付后再进行其他购买"),
+    APPOINTMENT_INVALID(40029, "上门取件时间需在两天以内"),
+    REFUND_FAILED(40030, "退款失败，请稍后重试或联系客服"),
+    RETURN_SHIPMENT_FAILED(40031, "生成退货运单失败，请稍后重试"),
+    SHIPMENT_FAILED(40032, "创建物流运单失败，请稍后重试"),
+    ORDER_FORBIDDEN(40301, "无权操作该订单"),
+    AFTER_SALE_FORBIDDEN(40303, "无权操作该售后单");
 
     private final int code;
     private final String message;

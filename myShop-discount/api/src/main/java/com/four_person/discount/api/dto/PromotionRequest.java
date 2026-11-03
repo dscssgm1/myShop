@@ -37,6 +37,12 @@ public class PromotionRequest {
 
     private Boolean couponStackable;
 
+    /** 是否需要商家报名商品参加（仅平台活动，商家活动固定 false） */
+    private Boolean enrollRequired;
+
+    /** 平台承担优惠比例（%），0~100；空/0 表示商家全额承担，商家活动固定 0 */
+    private BigDecimal platformBearRate;
+
     private LocalDateTime startTime;
 
     private LocalDateTime endTime;

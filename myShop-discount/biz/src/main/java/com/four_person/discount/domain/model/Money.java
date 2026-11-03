@@ -42,6 +42,10 @@ public record Money(BigDecimal amount) implements Comparable<Money> {
         return amount.compareTo(other.amount) <= 0 ? this : other;
     }
 
+    public Money max(Money other) {
+        return amount.compareTo(other.amount) >= 0 ? this : other;
+    }
+
     public boolean isPositive() {
         return amount.signum() > 0;
     }

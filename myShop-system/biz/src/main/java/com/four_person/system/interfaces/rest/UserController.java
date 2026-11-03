@@ -2,18 +2,22 @@ package com.four_person.system.interfaces.rest;
 
 import com.four_person.common.api.PageResult;
 import com.four_person.common.api.Result;
+import com.four_person.common.web.AccessGuard;
 import com.four_person.system.api.dto.AuthDtos;
 import com.four_person.system.api.dto.UserDtos;
 import com.four_person.system.application.UserApplicationService;
 import com.four_person.system.infrastructure.security.SecurityUtils;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/users")
@@ -25,6 +29,7 @@ public class UserController {
     /** 平台管理员：分页查询用户 */
     @GetMapping
     public Result<PageResult<UserDtos.UserVO>> page(UserDtos.UserQuery query) {
+        AccessGuard.requireGroup("PLATFORM");
         return Result.success(userApplicationService.page(query));
     }
 
@@ -53,6 +58,7 @@ public class UserController {
     /** 平台管理员：启用 / 禁用用户 */
     @PutMapping("/{id}/status")
     public Result<Void> updateStatus(@PathVariable Long id, @Valid @RequestBody UserDtos.UpdateStatusRequest request) {
+        AccessGuard.requireGroup("PLATFORM");
         userApplicationService.updateStatus(id, request.getStatus());
         return Result.success("状态已更新", null);
     }
@@ -60,7 +66,23 @@ public class UserController {
     /** 平台管理员：调整用户角色 */
     @PutMapping("/{id}/role")
     public Result<Void> updateRole(@PathVariable Long id, @Valid @RequestBody UserDtos.UpdateRoleRequest request) {
+        AccessGuard.requireGroup("PLATFORM");
         userApplicationService.updateRole(id, request.getRoleCode());
         return Result.success("角色已更新", null);
+    }
+
+    /** 平台管理员：查看用户在线登录设备 */
+    @GetMapping("/{id}/sessions")
+    public Result<List<AuthDtos.SessionVO>> sessions(@PathVariable Long id) {
+        AccessGuard.requireGroup("PLATFORM");
+        return Result.success(userApplicationService.sessions(id, SecurityUtils.currentUser().getSessionId()));
+    }
+
+    /** 平台管理员：单点下线用户的指定设备 */
+    @DeleteMapping("/{id}/sessions/{sessionId}")
+    public Result<Void> kickSession(@PathVariable Long id, @PathVariable String sessionId) {
+        AccessGuard.requireGroup("PLATFORM");
+        userApplicationService.kickSession(id, sessionId);
+        return Result.success("该设备已下线", null);
     }
 }

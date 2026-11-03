@@ -47,4 +47,9 @@ public class PaymentRepositoryImpl implements PaymentRepository {
     public boolean markClosed(String paymentNo) {
         return paymentMapper.markClosed(paymentNo) > 0;
     }
+
+    @Override
+    public boolean markRefunded(String paymentNo, LocalDateTime refundedAt, String reason) {
+        return paymentMapper.markRefunded(paymentNo, refundedAt, reason) > 0;
+    }
 }

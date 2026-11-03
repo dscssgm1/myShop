@@ -18,4 +18,9 @@ public class OrderNoGenerator {
         return "MS" + LocalDateTime.now().format(FORMATTER)
                 + ThreadLocalRandom.current().nextInt(100, 1000);
     }
+
+    public String nextAfterSale() {
+        return "AS" + LocalDateTime.now().format(FORMATTER)
+                + ThreadLocalRandom.current().nextInt(100, 1000);
+    }
 }

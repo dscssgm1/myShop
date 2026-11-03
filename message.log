@@ -1,0 +1,84 @@
+00:47:44.985 [main] INFO com.alibaba.nacos.plugin.auth.spi.client.ClientAuthPluginManager -- [ClientAuthPluginManager] Load ClientAuthService com.alibaba.nacos.client.auth.impl.NacosClientAuthServiceImpl success.
+00:47:44.985 [main] INFO com.alibaba.nacos.plugin.auth.spi.client.ClientAuthPluginManager -- [ClientAuthPluginManager] Load ClientAuthService com.alibaba.nacos.client.auth.ram.RamClientAuthServiceImpl success.
+00:47:45.997 [main] INFO com.alibaba.nacos.common.ability.AbstractAbilityControlManager -- Ready to get current node abilities...
+00:47:45.999 [main] INFO com.alibaba.nacos.common.ability.AbstractAbilityControlManager -- Ready to initialize current node abilities, support modes: [SDK_CLIENT]
+00:47:45.999 [main] INFO com.alibaba.nacos.common.ability.AbstractAbilityControlManager -- Initialize current abilities finish...
+00:47:46.001 [main] INFO com.alibaba.nacos.common.ability.discover.NacosAbilityManagerHolder -- [AbilityControlManager] Successfully initialize AbilityControlManager
+
+  .   ____          _            __ _ _
+ /\\ / ___'_ __ _ _(_)_ __  __ _ \ \ \ \
+( ( )\___ | '_ | '_| | '_ \/ _` | \ \ \ \
+ \\/  ___)| |_)| | | | | || (_| |  ) ) ) )
+  '  |____| .__|_| |_|_| |_\__, | / / / /
+ =========|_|==============|___/=/_/_/_/
+
+ :: Spring Boot ::                (v3.3.1)
+
+2026-11-03T00:47:46.635+08:00  INFO 109048 --- [myshop-message] [           main] c.f.message.MessageApplication           : Starting MessageApplication v1.0-SNAPSHOT using Java 21.0.10 with PID 109048 (E:\JavaProject\myShop\myShop\myShop-message\biz\target\myShop-message-biz-1.0-SNAPSHOT.jar started by Dawn in E:\JavaProject\myShop\myShop\myShop-message\biz)
+2026-11-03T00:47:46.635+08:00 DEBUG 109048 --- [myshop-message] [           main] c.f.message.MessageApplication           : Running with Spring Boot v3.3.1, Spring v6.1.10
+2026-11-03T00:47:46.636+08:00  INFO 109048 --- [myshop-message] [           main] c.f.message.MessageApplication           : No active profile set, falling back to 1 default profile: "default"
+2026-11-03T00:47:46.834+08:00  INFO 109048 --- [myshop-message] [           main] c.a.c.n.c.NacosConfigDataLoader          : [Nacos Config] Load config[dataId=myshop-message.yml, group=config] success
+2026-11-03T00:47:48.480+08:00  INFO 109048 --- [myshop-message] [           main] o.s.cloud.context.scope.GenericScope     : BeanFactory id=851ce2b5-1598-3b7c-85ad-ddfef8474460
+2026-11-03T00:47:48.549+08:00  WARN 109048 --- [myshop-message] [           main] trationDelegate$BeanPostProcessorChecker : Bean 'com.alibaba.cloud.nacos.NacosConfigAutoConfiguration' of type [com.alibaba.cloud.nacos.NacosConfigAutoConfiguration] is not eligible for getting processed by all BeanPostProcessors (for example: not eligible for auto-proxying). The currently created BeanPostProcessor [nacosAnnotationProcessor] is declared through a non-static factory method on that class; consider declaring it as static instead.
+2026-11-03T00:47:49.127+08:00  INFO 109048 --- [myshop-message] [           main] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat initialized with port 8088 (http)
+2026-11-03T00:47:49.150+08:00  INFO 109048 --- [myshop-message] [           main] o.apache.catalina.core.StandardService   : Starting service [Tomcat]
+2026-11-03T00:47:49.151+08:00  INFO 109048 --- [myshop-message] [           main] o.apache.catalina.core.StandardEngine    : Starting Servlet engine: [Apache Tomcat/10.1.25]
+2026-11-03T00:47:49.217+08:00  INFO 109048 --- [myshop-message] [           main] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring embedded WebApplicationContext
+2026-11-03T00:47:49.219+08:00  INFO 109048 --- [myshop-message] [           main] w.s.c.ServletWebServerApplicationContext : Root WebApplicationContext: initialization completed in 2376 ms
+ _ _   |_  _ _|_. ___ _ |    _ 
+| | |\/|_)(_| | |_\  |_)||_|_\ 
+     /               |         
+                        3.5.7 
+2026-11-03T00:47:52.126+08:00  INFO 109048 --- [myshop-message] [           main] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat started on port 8088 (http) with context path '/'
+2026-11-03T00:47:52.192+08:00  INFO 109048 --- [myshop-message] [           main] c.a.n.p.a.s.c.ClientAuthPluginManager    : [ClientAuthPluginManager] Load ClientAuthService com.alibaba.nacos.client.auth.impl.NacosClientAuthServiceImpl success.
+2026-11-03T00:47:52.193+08:00  INFO 109048 --- [myshop-message] [           main] c.a.n.p.a.s.c.ClientAuthPluginManager    : [ClientAuthPluginManager] Load ClientAuthService com.alibaba.nacos.client.auth.ram.RamClientAuthServiceImpl success.
+2026-11-03T00:47:52.314+08:00  INFO 109048 --- [myshop-message] [           main] c.a.c.n.registry.NacosServiceRegistry    : nacos registry, config myshop-message 192.168.174.1:8088 register finished
+2026-11-03T00:47:52.349+08:00  INFO 109048 --- [myshop-message] [           main] c.f.message.MessageApplication           : Started MessageApplication in 8.767 seconds (process running for 9.76)
+2026-11-03T00:47:52.383+08:00  INFO 109048 --- [myshop-message] [           main] c.a.c.n.refresh.NacosContextRefresher    : [Nacos Config] Listening config: dataId=myshop-message.yml, group=config
+2026-11-03T01:10:25.058+08:00  INFO 109048 --- [myshop-message] [nio-8088-exec-1] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring DispatcherServlet 'dispatcherServlet'
+2026-11-03T01:10:25.063+08:00  INFO 109048 --- [myshop-message] [nio-8088-exec-1] o.s.web.servlet.DispatcherServlet        : Initializing Servlet 'dispatcherServlet'
+2026-11-03T01:10:25.083+08:00  INFO 109048 --- [myshop-message] [nio-8088-exec-1] o.s.web.servlet.DispatcherServlet        : Completed initialization in 20 ms
+2026-11-03T01:10:25.303+08:00  INFO 109048 --- [myshop-message] [nio-8088-exec-1] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Starting...
+2026-11-03T01:10:25.349+08:00  INFO 109048 --- [myshop-message] [nio-8088-exec-1] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Start completed.
+2026-11-03T01:10:25.892+08:00 DEBUG 109048 --- [myshop-message] [nio-8088-exec-1] c.f.m.i.p.mapper.NoticeMapper.insert     : ==>  Preparing: INSERT INTO notice ( user_id, title, content, read_flag ) VALUES ( ?, ?, ?, ? )
+2026-11-03T01:10:25.932+08:00 DEBUG 109048 --- [myshop-message] [nio-8088-exec-1] c.f.m.i.p.mapper.NoticeMapper.insert     : ==> Parameters: 2(Long), 订单已取消并退款(String), 订单 MS20261101232950012375 已取消，退款将原路退回，库存与优惠券已释放(String), 0(Integer)
+2026-11-03T01:10:25.959+08:00 DEBUG 109048 --- [myshop-message] [nio-8088-exec-1] c.f.m.i.p.mapper.NoticeMapper.insert     : <==    Updates: 1
+2026-11-03T01:10:34.233+08:00 DEBUG 109048 --- [myshop-message] [nio-8088-exec-2] c.f.m.i.p.mapper.NoticeMapper.insert     : ==>  Preparing: INSERT INTO notice ( user_id, title, content, read_flag ) VALUES ( ?, ?, ?, ? )
+2026-11-03T01:10:34.234+08:00 DEBUG 109048 --- [myshop-message] [nio-8088-exec-2] c.f.m.i.p.mapper.NoticeMapper.insert     : ==> Parameters: 2(Long), 售后申请已提交(String), 订单 MS20261101234544381660 的「退货退款」申请已提交，商家将在 24 小时内处理(String), 0(Integer)
+2026-11-03T01:10:34.249+08:00 DEBUG 109048 --- [myshop-message] [nio-8088-exec-2] c.f.m.i.p.mapper.NoticeMapper.insert     : <==    Updates: 1
+2026-11-03T01:10:43.559+08:00 DEBUG 109048 --- [myshop-message] [nio-8088-exec-5] c.f.m.i.p.mapper.NoticeMapper.insert     : ==>  Preparing: INSERT INTO notice ( user_id, title, content, read_flag ) VALUES ( ?, ?, ?, ? )
+2026-11-03T01:10:43.560+08:00 DEBUG 109048 --- [myshop-message] [nio-8088-exec-5] c.f.m.i.p.mapper.NoticeMapper.insert     : ==> Parameters: 2(Long), 商家已同意售后(String), 退货申请已通过，请按取件码预约快递上门取件，商家收到退货后将为您退款(String), 0(Integer)
+2026-11-03T01:10:43.573+08:00 DEBUG 109048 --- [myshop-message] [nio-8088-exec-5] c.f.m.i.p.mapper.NoticeMapper.insert     : <==    Updates: 1
+2026-11-03T01:10:50.494+08:00 DEBUG 109048 --- [myshop-message] [nio-8088-exec-6] c.f.m.i.p.mapper.NoticeMapper.insert     : ==>  Preparing: INSERT INTO notice ( user_id, title, content, read_flag ) VALUES ( ?, ?, ?, ? )
+2026-11-03T01:10:50.495+08:00 DEBUG 109048 --- [myshop-message] [nio-8088-exec-6] c.f.m.i.p.mapper.NoticeMapper.insert     : ==> Parameters: 2(Long), 取件预约成功(String), 已预约快递员上门取件，请保持电话畅通，取件码 654304(String), 0(Integer)
+2026-11-03T01:10:50.510+08:00 DEBUG 109048 --- [myshop-message] [nio-8088-exec-6] c.f.m.i.p.mapper.NoticeMapper.insert     : <==    Updates: 1
+2026-11-03T01:11:02.168+08:00 DEBUG 109048 --- [myshop-message] [nio-8088-exec-9] c.f.m.i.p.mapper.NoticeMapper.insert     : ==>  Preparing: INSERT INTO notice ( user_id, title, content, read_flag ) VALUES ( ?, ?, ?, ? )
+2026-11-03T01:11:02.169+08:00 DEBUG 109048 --- [myshop-message] [nio-8088-exec-9] c.f.m.i.p.mapper.NoticeMapper.insert     : ==> Parameters: 2(Long), 售后退款成功(String), 售后单 AS20261103011034206802 已退款，金额 ¥357.33(String), 0(Integer)
+2026-11-03T01:11:02.183+08:00 DEBUG 109048 --- [myshop-message] [nio-8088-exec-9] c.f.m.i.p.mapper.NoticeMapper.insert     : <==    Updates: 1
+2026-11-03T01:11:09.646+08:00 DEBUG 109048 --- [myshop-message] [io-8088-exec-10] c.f.m.i.p.mapper.NoticeMapper.insert     : ==>  Preparing: INSERT INTO notice ( user_id, title, content, read_flag ) VALUES ( ?, ?, ?, ? )
+2026-11-03T01:11:09.647+08:00 DEBUG 109048 --- [myshop-message] [io-8088-exec-10] c.f.m.i.p.mapper.NoticeMapper.insert     : ==> Parameters: 2(Long), 商家已发起售后申诉(String), 商家对已退款的售后单提出申诉，平台将复核，请留意后续通知(String), 0(Integer)
+2026-11-03T01:11:09.728+08:00 DEBUG 109048 --- [myshop-message] [io-8088-exec-10] c.f.m.i.p.mapper.NoticeMapper.insert     : <==    Updates: 1
+2026-11-03T01:11:27.855+08:00 DEBUG 109048 --- [myshop-message] [nio-8088-exec-7] c.f.m.i.p.mapper.NoticeMapper.insert     : ==>  Preparing: INSERT INTO notice ( user_id, title, content, read_flag ) VALUES ( ?, ?, ?, ? )
+2026-11-03T01:11:27.856+08:00 DEBUG 109048 --- [myshop-message] [nio-8088-exec-7] c.f.m.i.p.mapper.NoticeMapper.insert     : ==> Parameters: 2(Long), 商家申诉成立，请支付补款订单(String), 平台复核后认为退货不满足退款条件，已生成补款订单 MS20261103011127773962，请完成支付后商家将把货物重新寄回。支付前其他购买操作将受限(String), 0(Integer)
+2026-11-03T01:11:27.871+08:00 DEBUG 109048 --- [myshop-message] [nio-8088-exec-7] c.f.m.i.p.mapper.NoticeMapper.insert     : <==    Updates: 1
+2026-11-03T01:11:54.747+08:00 DEBUG 109048 --- [myshop-message] [nio-8088-exec-8] c.f.m.i.p.mapper.NoticeMapper.insert     : ==>  Preparing: INSERT INTO notice ( user_id, title, content, read_flag ) VALUES ( ?, ?, ?, ? )
+2026-11-03T01:11:54.747+08:00 DEBUG 109048 --- [myshop-message] [nio-8088-exec-8] c.f.m.i.p.mapper.NoticeMapper.insert     : ==> Parameters: 2(Long), 支付成功(String), 订单 MS20261103011127773962 支付成功，商家将尽快为您发货(String), 0(Integer)
+2026-11-03T01:11:54.758+08:00 DEBUG 109048 --- [myshop-message] [nio-8088-exec-8] c.f.m.i.p.mapper.NoticeMapper.insert     : <==    Updates: 1
+2026-11-03T01:15:25.985+08:00 DEBUG 109048 --- [myshop-message] [nio-8088-exec-4] c.f.m.i.p.mapper.NoticeMapper.insert     : ==>  Preparing: INSERT INTO notice ( user_id, title, content, read_flag ) VALUES ( ?, ?, ?, ? )
+2026-11-03T01:15:25.991+08:00 DEBUG 109048 --- [myshop-message] [nio-8088-exec-4] c.f.m.i.p.mapper.NoticeMapper.insert     : ==> Parameters: 2(Long), 售后申请已提交(String), 订单 MS20261101234544381660 的「仅退款」申请已提交，商家将在 24 小时内处理(String), 0(Integer)
+2026-11-03T01:15:26.007+08:00 DEBUG 109048 --- [myshop-message] [nio-8088-exec-4] c.f.m.i.p.mapper.NoticeMapper.insert     : <==    Updates: 1
+2026-11-03T01:16:18.393+08:00 DEBUG 109048 --- [myshop-message] [nio-8088-exec-1] c.f.m.i.p.mapper.NoticeMapper.insert     : ==>  Preparing: INSERT INTO notice ( user_id, title, content, read_flag ) VALUES ( ?, ?, ?, ? )
+2026-11-03T01:16:18.394+08:00 DEBUG 109048 --- [myshop-message] [nio-8088-exec-1] c.f.m.i.p.mapper.NoticeMapper.insert     : ==> Parameters: 2(Long), 售后已转平台审核(String), 商家超过 24 小时未处理您的售后申请，系统已自动转交平台审核(String), 0(Integer)
+2026-11-03T01:16:18.406+08:00 DEBUG 109048 --- [myshop-message] [nio-8088-exec-1] c.f.m.i.p.mapper.NoticeMapper.insert     : <==    Updates: 1
+2026-11-03T01:17:41.134+08:00 DEBUG 109048 --- [myshop-message] [nio-8088-exec-5] c.f.m.i.p.mapper.NoticeMapper.insert     : ==>  Preparing: INSERT INTO notice ( user_id, title, content, read_flag ) VALUES ( ?, ?, ?, ? )
+2026-11-03T01:17:41.136+08:00 DEBUG 109048 --- [myshop-message] [nio-8088-exec-5] c.f.m.i.p.mapper.NoticeMapper.insert     : ==> Parameters: 2(Long), 售后申请已提交(String), 订单 MS20261101234544381660 的「退货退款」申请已提交，商家将在 24 小时内处理(String), 0(Integer)
+2026-11-03T01:17:41.152+08:00 DEBUG 109048 --- [myshop-message] [nio-8088-exec-5] c.f.m.i.p.mapper.NoticeMapper.insert     : <==    Updates: 1
+2026-11-03T01:17:46.933+08:00 DEBUG 109048 --- [myshop-message] [nio-8088-exec-6] c.f.m.i.p.mapper.NoticeMapper.insert     : ==>  Preparing: INSERT INTO notice ( user_id, title, content, read_flag ) VALUES ( ?, ?, ?, ? )
+2026-11-03T01:17:46.933+08:00 DEBUG 109048 --- [myshop-message] [nio-8088-exec-6] c.f.m.i.p.mapper.NoticeMapper.insert     : ==> Parameters: 2(Long), 商家已同意售后(String), 退货申请已通过，请按取件码预约快递上门取件，商家收到退货后将为您退款(String), 0(Integer)
+2026-11-03T01:17:46.949+08:00 DEBUG 109048 --- [myshop-message] [nio-8088-exec-6] c.f.m.i.p.mapper.NoticeMapper.insert     : <==    Updates: 1
+2026-11-03T01:17:47.395+08:00 DEBUG 109048 --- [myshop-message] [nio-8088-exec-9] c.f.m.i.p.mapper.NoticeMapper.insert     : ==>  Preparing: INSERT INTO notice ( user_id, title, content, read_flag ) VALUES ( ?, ?, ?, ? )
+2026-11-03T01:17:47.396+08:00 DEBUG 109048 --- [myshop-message] [nio-8088-exec-9] c.f.m.i.p.mapper.NoticeMapper.insert     : ==> Parameters: 2(Long), 售后退款成功(String), 售后单 AS20261103011740979969 已退款，金额 ¥357.33(String), 0(Integer)
+2026-11-03T01:17:47.416+08:00 DEBUG 109048 --- [myshop-message] [nio-8088-exec-9] c.f.m.i.p.mapper.NoticeMapper.insert     : <==    Updates: 1
+2026-11-03T01:18:42.267+08:00 DEBUG 109048 --- [myshop-message] [nio-8088-exec-7] c.f.m.i.p.mapper.NoticeMapper.insert     : ==>  Preparing: INSERT INTO notice ( user_id, title, content, read_flag ) VALUES ( ?, ?, ?, ? )
+2026-11-03T01:18:42.268+08:00 DEBUG 109048 --- [myshop-message] [nio-8088-exec-7] c.f.m.i.p.mapper.NoticeMapper.insert     : ==> Parameters: 2(Long), 取件预约成功(String), 已预约快递员上门取件，请保持电话畅通，取件码 392314(String), 0(Integer)
+2026-11-03T01:18:42.282+08:00 DEBUG 109048 --- [myshop-message] [nio-8088-exec-7] c.f.m.i.p.mapper.NoticeMapper.insert     : <==    Updates: 1

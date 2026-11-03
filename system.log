@@ -1,0 +1,624 @@
+00:46:15.553 [main] INFO com.alibaba.nacos.plugin.auth.spi.client.ClientAuthPluginManager -- [ClientAuthPluginManager] Load ClientAuthService com.alibaba.nacos.client.auth.impl.NacosClientAuthServiceImpl success.
+00:46:15.554 [main] INFO com.alibaba.nacos.plugin.auth.spi.client.ClientAuthPluginManager -- [ClientAuthPluginManager] Load ClientAuthService com.alibaba.nacos.client.auth.ram.RamClientAuthServiceImpl success.
+00:46:16.458 [main] INFO com.alibaba.nacos.common.ability.AbstractAbilityControlManager -- Ready to get current node abilities...
+00:46:16.463 [main] INFO com.alibaba.nacos.common.ability.AbstractAbilityControlManager -- Ready to initialize current node abilities, support modes: [SDK_CLIENT]
+00:46:16.465 [main] INFO com.alibaba.nacos.common.ability.AbstractAbilityControlManager -- Initialize current abilities finish...
+00:46:16.469 [main] INFO com.alibaba.nacos.common.ability.discover.NacosAbilityManagerHolder -- [AbilityControlManager] Successfully initialize AbilityControlManager
+
+  .   ____          _            __ _ _
+ /\\ / ___'_ __ _ _(_)_ __  __ _ \ \ \ \
+( ( )\___ | '_ | '_| | '_ \/ _` | \ \ \ \
+ \\/  ___)| |_)| | | | | || (_| |  ) ) ) )
+  '  |____| .__|_| |_|_| |_\__, | / / / /
+ =========|_|==============|___/=/_/_/_/
+
+ :: Spring Boot ::                (v3.3.1)
+
+2026-11-03T00:46:16.915+08:00  INFO 8364 --- [myshop-system] [           main] c.four_person.system.SystemApplication   : Starting SystemApplication v1.0-SNAPSHOT using Java 21.0.10 with PID 8364 (E:\JavaProject\myShop\myShop\myShop-system\biz\target\myShop-system-biz-1.0-SNAPSHOT.jar started by Dawn in E:\JavaProject\myShop\myShop\myShop-system\biz)
+2026-11-03T00:46:16.916+08:00 DEBUG 8364 --- [myshop-system] [           main] c.four_person.system.SystemApplication   : Running with Spring Boot v3.3.1, Spring v6.1.10
+2026-11-03T00:46:16.917+08:00  INFO 8364 --- [myshop-system] [           main] c.four_person.system.SystemApplication   : No active profile set, falling back to 1 default profile: "default"
+2026-11-03T00:46:16.999+08:00  INFO 8364 --- [myshop-system] [           main] c.a.c.n.c.NacosConfigDataLoader          : [Nacos Config] Load config[dataId=myshop-system.yml, group=config] success
+2026-11-03T00:46:18.090+08:00  INFO 8364 --- [myshop-system] [           main] .s.d.r.c.RepositoryConfigurationDelegate : Multiple Spring Data modules found, entering strict repository configuration mode
+2026-11-03T00:46:18.092+08:00  INFO 8364 --- [myshop-system] [           main] .s.d.r.c.RepositoryConfigurationDelegate : Bootstrapping Spring Data Redis repositories in DEFAULT mode.
+2026-11-03T00:46:18.132+08:00  INFO 8364 --- [myshop-system] [           main] .s.d.r.c.RepositoryConfigurationDelegate : Finished Spring Data repository scanning in 21 ms. Found 0 Redis repository interfaces.
+2026-11-03T00:46:18.506+08:00  INFO 8364 --- [myshop-system] [           main] o.s.cloud.context.scope.GenericScope     : BeanFactory id=76db20f6-cdd7-3f1f-bbbc-ddda37427453
+2026-11-03T00:46:18.595+08:00  WARN 8364 --- [myshop-system] [           main] trationDelegate$BeanPostProcessorChecker : Bean 'com.alibaba.cloud.nacos.NacosConfigAutoConfiguration' of type [com.alibaba.cloud.nacos.NacosConfigAutoConfiguration] is not eligible for getting processed by all BeanPostProcessors (for example: not eligible for auto-proxying). The currently created BeanPostProcessor [nacosAnnotationProcessor] is declared through a non-static factory method on that class; consider declaring it as static instead.
+2026-11-03T00:46:19.414+08:00  INFO 8364 --- [myshop-system] [           main] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat initialized with port 8081 (http)
+2026-11-03T00:46:19.445+08:00  INFO 8364 --- [myshop-system] [           main] o.apache.catalina.core.StandardService   : Starting service [Tomcat]
+2026-11-03T00:46:19.446+08:00  INFO 8364 --- [myshop-system] [           main] o.apache.catalina.core.StandardEngine    : Starting Servlet engine: [Apache Tomcat/10.1.25]
+2026-11-03T00:46:19.504+08:00  INFO 8364 --- [myshop-system] [           main] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring embedded WebApplicationContext
+2026-11-03T00:46:19.506+08:00  INFO 8364 --- [myshop-system] [           main] w.s.c.ServletWebServerApplicationContext : Root WebApplicationContext: initialization completed in 2503 ms
+ _ _   |_  _ _|_. ___ _ |    _ 
+| | |\/|_)(_| | |_\  |_)||_|_\ 
+     /               |         
+                        3.5.7 
+2026-11-03T00:46:20.459+08:00  INFO 8364 --- [myshop-system] [           main] o.s.boot.web.servlet.RegistrationBean    : Filter jwtFilterRegistration was not registered (disabled)
+2026-11-03T00:46:21.784+08:00  WARN 8364 --- [myshop-system] [           main] .s.s.UserDetailsServiceAutoConfiguration : 
+
+Using generated security password: bba42615-2181-4410-bf1d-657ef45b2969
+
+This generated password is for development use only. Your security configuration must be updated before running your application in production.
+
+2026-11-03T00:46:21.798+08:00  INFO 8364 --- [myshop-system] [           main] r$InitializeUserDetailsManagerConfigurer : Global AuthenticationManager configured with UserDetailsService bean with name inMemoryUserDetailsManager
+2026-11-03T00:46:22.715+08:00  INFO 8364 --- [myshop-system] [           main] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat started on port 8081 (http) with context path '/'
+2026-11-03T00:46:22.744+08:00  INFO 8364 --- [myshop-system] [           main] c.a.n.p.a.s.c.ClientAuthPluginManager    : [ClientAuthPluginManager] Load ClientAuthService com.alibaba.nacos.client.auth.impl.NacosClientAuthServiceImpl success.
+2026-11-03T00:46:22.744+08:00  INFO 8364 --- [myshop-system] [           main] c.a.n.p.a.s.c.ClientAuthPluginManager    : [ClientAuthPluginManager] Load ClientAuthService com.alibaba.nacos.client.auth.ram.RamClientAuthServiceImpl success.
+2026-11-03T00:46:22.782+08:00  INFO 8364 --- [myshop-system] [           main] c.a.c.n.registry.NacosServiceRegistry    : nacos registry, config myshop-system 192.168.174.1:8081 register finished
+2026-11-03T00:46:22.801+08:00  INFO 8364 --- [myshop-system] [           main] c.four_person.system.SystemApplication   : Started SystemApplication in 7.981 seconds (process running for 8.508)
+2026-11-03T00:46:22.879+08:00  INFO 8364 --- [myshop-system] [           main] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Starting...
+2026-11-03T00:46:22.896+08:00  INFO 8364 --- [myshop-system] [           main] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Start completed.
+2026-11-03T00:46:23.271+08:00 DEBUG 8364 --- [myshop-system] [           main] c.f.s.i.p.m.SysUserMapper.selectCount    : ==>  Preparing: SELECT COUNT( * ) AS total FROM sys_user WHERE deleted=0 AND (username = ?)
+2026-11-03T00:46:23.310+08:00 DEBUG 8364 --- [myshop-system] [           main] c.f.s.i.p.m.SysUserMapper.selectCount    : ==> Parameters: buyer(String)
+2026-11-03T00:46:23.344+08:00 DEBUG 8364 --- [myshop-system] [           main] c.f.s.i.p.m.SysUserMapper.selectCount    : <==      Total: 1
+2026-11-03T00:46:23.351+08:00 DEBUG 8364 --- [myshop-system] [           main] c.f.s.i.p.m.SysUserMapper.selectCount    : ==>  Preparing: SELECT COUNT( * ) AS total FROM sys_user WHERE deleted=0 AND (username = ?)
+2026-11-03T00:46:23.352+08:00 DEBUG 8364 --- [myshop-system] [           main] c.f.s.i.p.m.SysUserMapper.selectCount    : ==> Parameters: merchant(String)
+2026-11-03T00:46:23.355+08:00 DEBUG 8364 --- [myshop-system] [           main] c.f.s.i.p.m.SysUserMapper.selectCount    : <==      Total: 1
+2026-11-03T00:46:23.355+08:00 DEBUG 8364 --- [myshop-system] [           main] c.f.s.i.p.m.SysUserMapper.selectCount    : ==>  Preparing: SELECT COUNT( * ) AS total FROM sys_user WHERE deleted=0 AND (username = ?)
+2026-11-03T00:46:23.356+08:00 DEBUG 8364 --- [myshop-system] [           main] c.f.s.i.p.m.SysUserMapper.selectCount    : ==> Parameters: sales(String)
+2026-11-03T00:46:23.359+08:00 DEBUG 8364 --- [myshop-system] [           main] c.f.s.i.p.m.SysUserMapper.selectCount    : <==      Total: 1
+2026-11-03T00:46:23.360+08:00 DEBUG 8364 --- [myshop-system] [           main] c.f.s.i.p.m.SysUserMapper.selectCount    : ==>  Preparing: SELECT COUNT( * ) AS total FROM sys_user WHERE deleted=0 AND (username = ?)
+2026-11-03T00:46:23.360+08:00 DEBUG 8364 --- [myshop-system] [           main] c.f.s.i.p.m.SysUserMapper.selectCount    : ==> Parameters: shopcs(String)
+2026-11-03T00:46:23.362+08:00 DEBUG 8364 --- [myshop-system] [           main] c.f.s.i.p.m.SysUserMapper.selectCount    : <==      Total: 1
+2026-11-03T00:46:23.363+08:00 DEBUG 8364 --- [myshop-system] [           main] c.f.s.i.p.m.SysUserMapper.selectCount    : ==>  Preparing: SELECT COUNT( * ) AS total FROM sys_user WHERE deleted=0 AND (username = ?)
+2026-11-03T00:46:23.363+08:00 DEBUG 8364 --- [myshop-system] [           main] c.f.s.i.p.m.SysUserMapper.selectCount    : ==> Parameters: logistics(String)
+2026-11-03T00:46:23.366+08:00 DEBUG 8364 --- [myshop-system] [           main] c.f.s.i.p.m.SysUserMapper.selectCount    : <==      Total: 1
+2026-11-03T00:46:23.367+08:00 DEBUG 8364 --- [myshop-system] [           main] c.f.s.i.p.m.SysUserMapper.selectCount    : ==>  Preparing: SELECT COUNT( * ) AS total FROM sys_user WHERE deleted=0 AND (username = ?)
+2026-11-03T00:46:23.367+08:00 DEBUG 8364 --- [myshop-system] [           main] c.f.s.i.p.m.SysUserMapper.selectCount    : ==> Parameters: ltops(String)
+2026-11-03T00:46:23.369+08:00 DEBUG 8364 --- [myshop-system] [           main] c.f.s.i.p.m.SysUserMapper.selectCount    : <==      Total: 1
+2026-11-03T00:46:23.370+08:00 DEBUG 8364 --- [myshop-system] [           main] c.f.s.i.p.m.SysUserMapper.selectCount    : ==>  Preparing: SELECT COUNT( * ) AS total FROM sys_user WHERE deleted=0 AND (username = ?)
+2026-11-03T00:46:23.370+08:00 DEBUG 8364 --- [myshop-system] [           main] c.f.s.i.p.m.SysUserMapper.selectCount    : ==> Parameters: courier(String)
+2026-11-03T00:46:23.372+08:00 DEBUG 8364 --- [myshop-system] [           main] c.f.s.i.p.m.SysUserMapper.selectCount    : <==      Total: 1
+2026-11-03T00:46:23.373+08:00 DEBUG 8364 --- [myshop-system] [           main] c.f.s.i.p.m.SysUserMapper.selectCount    : ==>  Preparing: SELECT COUNT( * ) AS total FROM sys_user WHERE deleted=0 AND (username = ?)
+2026-11-03T00:46:23.373+08:00 DEBUG 8364 --- [myshop-system] [           main] c.f.s.i.p.m.SysUserMapper.selectCount    : ==> Parameters: courier2(String)
+2026-11-03T00:46:23.375+08:00 DEBUG 8364 --- [myshop-system] [           main] c.f.s.i.p.m.SysUserMapper.selectCount    : <==      Total: 1
+2026-11-03T00:46:23.376+08:00 DEBUG 8364 --- [myshop-system] [           main] c.f.s.i.p.m.SysUserMapper.selectCount    : ==>  Preparing: SELECT COUNT( * ) AS total FROM sys_user WHERE deleted=0 AND (username = ?)
+2026-11-03T00:46:23.376+08:00 DEBUG 8364 --- [myshop-system] [           main] c.f.s.i.p.m.SysUserMapper.selectCount    : ==> Parameters: courier3(String)
+2026-11-03T00:46:23.378+08:00 DEBUG 8364 --- [myshop-system] [           main] c.f.s.i.p.m.SysUserMapper.selectCount    : <==      Total: 1
+2026-11-03T00:46:23.379+08:00 DEBUG 8364 --- [myshop-system] [           main] c.f.s.i.p.m.SysUserMapper.selectCount    : ==>  Preparing: SELECT COUNT( * ) AS total FROM sys_user WHERE deleted=0 AND (username = ?)
+2026-11-03T00:46:23.379+08:00 DEBUG 8364 --- [myshop-system] [           main] c.f.s.i.p.m.SysUserMapper.selectCount    : ==> Parameters: admin(String)
+2026-11-03T00:46:23.381+08:00 DEBUG 8364 --- [myshop-system] [           main] c.f.s.i.p.m.SysUserMapper.selectCount    : <==      Total: 1
+2026-11-03T00:46:23.382+08:00 DEBUG 8364 --- [myshop-system] [           main] c.f.s.i.p.m.SysUserMapper.selectCount    : ==>  Preparing: SELECT COUNT( * ) AS total FROM sys_user WHERE deleted=0 AND (username = ?)
+2026-11-03T00:46:23.382+08:00 DEBUG 8364 --- [myshop-system] [           main] c.f.s.i.p.m.SysUserMapper.selectCount    : ==> Parameters: ops(String)
+2026-11-03T00:46:23.384+08:00 DEBUG 8364 --- [myshop-system] [           main] c.f.s.i.p.m.SysUserMapper.selectCount    : <==      Total: 1
+2026-11-03T00:46:23.385+08:00 DEBUG 8364 --- [myshop-system] [           main] c.f.s.i.p.m.SysUserMapper.selectCount    : ==>  Preparing: SELECT COUNT( * ) AS total FROM sys_user WHERE deleted=0 AND (username = ?)
+2026-11-03T00:46:23.385+08:00 DEBUG 8364 --- [myshop-system] [           main] c.f.s.i.p.m.SysUserMapper.selectCount    : ==> Parameters: ptcs(String)
+2026-11-03T00:46:23.388+08:00 DEBUG 8364 --- [myshop-system] [           main] c.f.s.i.p.m.SysUserMapper.selectCount    : <==      Total: 1
+2026-11-03T00:46:23.389+08:00 DEBUG 8364 --- [myshop-system] [           main] c.f.s.i.p.m.SysUserMapper.selectCount    : ==>  Preparing: SELECT COUNT( * ) AS total FROM sys_user WHERE deleted=0 AND (username = ?)
+2026-11-03T00:46:23.389+08:00 DEBUG 8364 --- [myshop-system] [           main] c.f.s.i.p.m.SysUserMapper.selectCount    : ==> Parameters: devops(String)
+2026-11-03T00:46:23.391+08:00 DEBUG 8364 --- [myshop-system] [           main] c.f.s.i.p.m.SysUserMapper.selectCount    : <==      Total: 1
+2026-11-03T00:46:23.391+08:00  INFO 8364 --- [myshop-system] [           main] c.f.s.i.config.SystemDataInitializer     : 系统演示账号初始化完成，默认密码：123456
+2026-11-03T00:46:23.411+08:00  INFO 8364 --- [myshop-system] [           main] c.a.c.n.refresh.NacosContextRefresher    : [Nacos Config] Listening config: dataId=myshop-system.yml, group=config
+2026-11-03T00:46:36.551+08:00  INFO 8364 --- [myshop-system] [nio-8081-exec-1] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring DispatcherServlet 'dispatcherServlet'
+2026-11-03T00:46:36.552+08:00  INFO 8364 --- [myshop-system] [nio-8081-exec-1] o.s.web.servlet.DispatcherServlet        : Initializing Servlet 'dispatcherServlet'
+2026-11-03T00:46:36.552+08:00  INFO 8364 --- [myshop-system] [nio-8081-exec-1] o.s.web.servlet.DispatcherServlet        : Completed initialization in 0 ms
+2026-11-03T00:46:36.638+08:00 DEBUG 8364 --- [myshop-system] [nio-8081-exec-1] c.f.s.i.p.m.SysUserMapper.selectList     : ==>  Preparing: SELECT id,username,password,nickname,email,phone,avatar,role_code,shop_id,company_id,courier_id,status,last_login_at,created_at,updated_at,deleted FROM sys_user WHERE deleted=0 AND (username = ?)
+2026-11-03T00:46:36.638+08:00 DEBUG 8364 --- [myshop-system] [nio-8081-exec-1] c.f.s.i.p.m.SysUserMapper.selectList     : ==> Parameters: merchant(String)
+2026-11-03T00:46:36.644+08:00 DEBUG 8364 --- [myshop-system] [nio-8081-exec-1] c.f.s.i.p.m.SysUserMapper.selectList     : <==      Total: 1
+2026-11-03T00:46:36.716+08:00 DEBUG 8364 --- [myshop-system] [nio-8081-exec-1] c.f.s.i.p.mapper.SysUserMapper.update    : ==>  Preparing: UPDATE sys_user SET last_login_at=? WHERE deleted=0 AND (id = ?)
+2026-11-03T00:46:36.719+08:00 DEBUG 8364 --- [myshop-system] [nio-8081-exec-1] c.f.s.i.p.mapper.SysUserMapper.update    : ==> Parameters: 2026-11-03T00:46:36.713214(LocalDateTime), 3(Long)
+2026-11-03T00:46:36.740+08:00 DEBUG 8364 --- [myshop-system] [nio-8081-exec-1] c.f.s.i.p.mapper.SysUserMapper.update    : <==    Updates: 1
+2026-11-03T00:46:36.745+08:00 DEBUG 8364 --- [myshop-system] [nio-8081-exec-1] c.f.s.i.p.m.U.insert                     : ==>  Preparing: INSERT INTO sys_login_record ( user_id, ip, device_id, device_name, login_at ) VALUES ( ?, ?, ?, ?, ? )
+2026-11-03T00:46:36.746+08:00 DEBUG 8364 --- [myshop-system] [nio-8081-exec-1] c.f.s.i.p.m.U.insert                     : ==> Parameters: 3(Long), 127.0.0.1(String), dev-pc(String), Chrome / Windows(String), 2026-11-03T00:46:36.742897500(LocalDateTime)
+2026-11-03T00:46:36.760+08:00 DEBUG 8364 --- [myshop-system] [nio-8081-exec-1] c.f.s.i.p.m.U.insert                     : <==    Updates: 1
+2026-11-03T00:46:36.764+08:00 DEBUG 8364 --- [myshop-system] [nio-8081-exec-1] c.f.s.i.p.m.SysRoleMapper.selectList     : ==>  Preparing: SELECT id,code,name,group_code,icon,description,sort,status,created_at,updated_at,deleted FROM sys_role WHERE deleted=0 AND (code = ?)
+2026-11-03T00:46:36.764+08:00 DEBUG 8364 --- [myshop-system] [nio-8081-exec-1] c.f.s.i.p.m.SysRoleMapper.selectList     : ==> Parameters: merchant(String)
+2026-11-03T00:46:36.767+08:00 DEBUG 8364 --- [myshop-system] [nio-8081-exec-1] c.f.s.i.p.m.SysRoleMapper.selectList     : <==      Total: 1
+2026-11-03T00:46:36.815+08:00 DEBUG 8364 --- [myshop-system] [nio-8081-exec-1] c.f.s.i.p.m.SysRoleMapper.selectList     : ==>  Preparing: SELECT id,code,name,group_code,icon,description,sort,status,created_at,updated_at,deleted FROM sys_role WHERE deleted=0 AND (code = ?)
+2026-11-03T00:46:36.815+08:00 DEBUG 8364 --- [myshop-system] [nio-8081-exec-1] c.f.s.i.p.m.SysRoleMapper.selectList     : ==> Parameters: merchant(String)
+2026-11-03T00:46:36.820+08:00 DEBUG 8364 --- [myshop-system] [nio-8081-exec-1] c.f.s.i.p.m.SysRoleMapper.selectList     : <==      Total: 1
+2026-11-03T00:46:42.304+08:00 DEBUG 8364 --- [myshop-system] [nio-8081-exec-2] c.f.s.i.p.m.SysUserMapper.selectById     : ==>  Preparing: SELECT id,username,password,nickname,email,phone,avatar,role_code,shop_id,company_id,courier_id,status,last_login_at,created_at,updated_at,deleted FROM sys_user WHERE id=? AND deleted=0
+2026-11-03T00:46:42.305+08:00 DEBUG 8364 --- [myshop-system] [nio-8081-exec-2] c.f.s.i.p.m.SysUserMapper.selectById     : ==> Parameters: 3(Long)
+2026-11-03T00:46:42.307+08:00 DEBUG 8364 --- [myshop-system] [nio-8081-exec-2] c.f.s.i.p.m.SysUserMapper.selectById     : <==      Total: 1
+2026-11-03T00:46:42.308+08:00 DEBUG 8364 --- [myshop-system] [nio-8081-exec-2] c.f.s.i.p.m.SysRoleMapper.selectList     : ==>  Preparing: SELECT id,code,name,group_code,icon,description,sort,status,created_at,updated_at,deleted FROM sys_role WHERE deleted=0 AND (code = ?)
+2026-11-03T00:46:42.308+08:00 DEBUG 8364 --- [myshop-system] [nio-8081-exec-2] c.f.s.i.p.m.SysRoleMapper.selectList     : ==> Parameters: merchant(String)
+2026-11-03T00:46:42.311+08:00 DEBUG 8364 --- [myshop-system] [nio-8081-exec-2] c.f.s.i.p.m.SysRoleMapper.selectList     : <==      Total: 1
+2026-11-03T00:46:47.544+08:00 DEBUG 8364 --- [myshop-system] [nio-8081-exec-3] c.f.s.i.p.m.SysUserMapper.selectList     : ==>  Preparing: SELECT id,username,password,nickname,email,phone,avatar,role_code,shop_id,company_id,courier_id,status,last_login_at,created_at,updated_at,deleted FROM sys_user WHERE deleted=0 AND (username = ?)
+2026-11-03T00:46:47.545+08:00 DEBUG 8364 --- [myshop-system] [nio-8081-exec-3] c.f.s.i.p.m.SysUserMapper.selectList     : ==> Parameters: merchant(String)
+2026-11-03T00:46:47.547+08:00 DEBUG 8364 --- [myshop-system] [nio-8081-exec-3] c.f.s.i.p.m.SysUserMapper.selectList     : <==      Total: 1
+2026-11-03T00:46:47.598+08:00 DEBUG 8364 --- [myshop-system] [nio-8081-exec-3] c.f.s.i.p.mapper.SysUserMapper.update    : ==>  Preparing: UPDATE sys_user SET last_login_at=? WHERE deleted=0 AND (id = ?)
+2026-11-03T00:46:47.598+08:00 DEBUG 8364 --- [myshop-system] [nio-8081-exec-3] c.f.s.i.p.mapper.SysUserMapper.update    : ==> Parameters: 2026-11-03T00:46:47.597369600(LocalDateTime), 3(Long)
+2026-11-03T00:46:47.614+08:00 DEBUG 8364 --- [myshop-system] [nio-8081-exec-3] c.f.s.i.p.mapper.SysUserMapper.update    : <==    Updates: 1
+2026-11-03T00:46:47.615+08:00 DEBUG 8364 --- [myshop-system] [nio-8081-exec-3] c.f.s.i.p.m.U.insert                     : ==>  Preparing: INSERT INTO sys_login_record ( user_id, ip, device_id, device_name, login_at ) VALUES ( ?, ?, ?, ?, ? )
+2026-11-03T00:46:47.616+08:00 DEBUG 8364 --- [myshop-system] [nio-8081-exec-3] c.f.s.i.p.m.U.insert                     : ==> Parameters: 3(Long), 127.0.0.1(String), dev-phone(String), Safari / iPhone(String), 2026-11-03T00:46:47.615039700(LocalDateTime)
+2026-11-03T00:46:47.633+08:00 DEBUG 8364 --- [myshop-system] [nio-8081-exec-3] c.f.s.i.p.m.U.insert                     : <==    Updates: 1
+2026-11-03T00:46:47.635+08:00 DEBUG 8364 --- [myshop-system] [nio-8081-exec-3] c.f.s.i.p.m.SysRoleMapper.selectList     : ==>  Preparing: SELECT id,code,name,group_code,icon,description,sort,status,created_at,updated_at,deleted FROM sys_role WHERE deleted=0 AND (code = ?)
+2026-11-03T00:46:47.635+08:00 DEBUG 8364 --- [myshop-system] [nio-8081-exec-3] c.f.s.i.p.m.SysRoleMapper.selectList     : ==> Parameters: merchant(String)
+2026-11-03T00:46:47.637+08:00 DEBUG 8364 --- [myshop-system] [nio-8081-exec-3] c.f.s.i.p.m.SysRoleMapper.selectList     : <==      Total: 1
+2026-11-03T00:46:47.639+08:00 DEBUG 8364 --- [myshop-system] [nio-8081-exec-3] c.f.s.i.p.m.SysRoleMapper.selectList     : ==>  Preparing: SELECT id,code,name,group_code,icon,description,sort,status,created_at,updated_at,deleted FROM sys_role WHERE deleted=0 AND (code = ?)
+2026-11-03T00:46:47.639+08:00 DEBUG 8364 --- [myshop-system] [nio-8081-exec-3] c.f.s.i.p.m.SysRoleMapper.selectList     : ==> Parameters: merchant(String)
+2026-11-03T00:46:47.641+08:00 DEBUG 8364 --- [myshop-system] [nio-8081-exec-3] c.f.s.i.p.m.SysRoleMapper.selectList     : <==      Total: 1
+2026-11-03T00:46:47.954+08:00 DEBUG 8364 --- [myshop-system] [nio-8081-exec-4] c.f.s.i.p.m.SysUserMapper.selectById     : ==>  Preparing: SELECT id,username,password,nickname,email,phone,avatar,role_code,shop_id,company_id,courier_id,status,last_login_at,created_at,updated_at,deleted FROM sys_user WHERE id=? AND deleted=0
+2026-11-03T00:46:47.954+08:00 DEBUG 8364 --- [myshop-system] [nio-8081-exec-4] c.f.s.i.p.m.SysUserMapper.selectById     : ==> Parameters: 3(Long)
+2026-11-03T00:46:47.957+08:00 DEBUG 8364 --- [myshop-system] [nio-8081-exec-4] c.f.s.i.p.m.SysUserMapper.selectById     : <==      Total: 1
+2026-11-03T00:46:47.958+08:00 DEBUG 8364 --- [myshop-system] [nio-8081-exec-4] c.f.s.i.p.m.SysRoleMapper.selectList     : ==>  Preparing: SELECT id,code,name,group_code,icon,description,sort,status,created_at,updated_at,deleted FROM sys_role WHERE deleted=0 AND (code = ?)
+2026-11-03T00:46:47.958+08:00 DEBUG 8364 --- [myshop-system] [nio-8081-exec-4] c.f.s.i.p.m.SysRoleMapper.selectList     : ==> Parameters: merchant(String)
+2026-11-03T00:46:47.960+08:00 DEBUG 8364 --- [myshop-system] [nio-8081-exec-4] c.f.s.i.p.m.SysRoleMapper.selectList     : <==      Total: 1
+2026-11-03T00:46:48.189+08:00 DEBUG 8364 --- [myshop-system] [nio-8081-exec-5] c.f.s.i.p.m.SysUserMapper.selectById     : ==>  Preparing: SELECT id,username,password,nickname,email,phone,avatar,role_code,shop_id,company_id,courier_id,status,last_login_at,created_at,updated_at,deleted FROM sys_user WHERE id=? AND deleted=0
+2026-11-03T00:46:48.189+08:00 DEBUG 8364 --- [myshop-system] [nio-8081-exec-5] c.f.s.i.p.m.SysUserMapper.selectById     : ==> Parameters: 3(Long)
+2026-11-03T00:46:48.191+08:00 DEBUG 8364 --- [myshop-system] [nio-8081-exec-5] c.f.s.i.p.m.SysUserMapper.selectById     : <==      Total: 1
+2026-11-03T00:46:48.192+08:00 DEBUG 8364 --- [myshop-system] [nio-8081-exec-5] c.f.s.i.p.m.SysRoleMapper.selectList     : ==>  Preparing: SELECT id,code,name,group_code,icon,description,sort,status,created_at,updated_at,deleted FROM sys_role WHERE deleted=0 AND (code = ?)
+2026-11-03T00:46:48.192+08:00 DEBUG 8364 --- [myshop-system] [nio-8081-exec-5] c.f.s.i.p.m.SysRoleMapper.selectList     : ==> Parameters: merchant(String)
+2026-11-03T00:46:48.194+08:00 DEBUG 8364 --- [myshop-system] [nio-8081-exec-5] c.f.s.i.p.m.SysRoleMapper.selectList     : <==      Total: 1
+2026-11-03T00:46:48.261+08:00 DEBUG 8364 --- [myshop-system] [nio-8081-exec-6] c.f.s.i.p.m.SysUserMapper.selectById     : ==>  Preparing: SELECT id,username,password,nickname,email,phone,avatar,role_code,shop_id,company_id,courier_id,status,last_login_at,created_at,updated_at,deleted FROM sys_user WHERE id=? AND deleted=0
+2026-11-03T00:46:48.262+08:00 DEBUG 8364 --- [myshop-system] [nio-8081-exec-6] c.f.s.i.p.m.SysUserMapper.selectById     : ==> Parameters: 3(Long)
+2026-11-03T00:46:48.264+08:00 DEBUG 8364 --- [myshop-system] [nio-8081-exec-6] c.f.s.i.p.m.SysUserMapper.selectById     : <==      Total: 1
+2026-11-03T00:46:48.265+08:00 DEBUG 8364 --- [myshop-system] [nio-8081-exec-6] c.f.s.i.p.m.SysRoleMapper.selectList     : ==>  Preparing: SELECT id,code,name,group_code,icon,description,sort,status,created_at,updated_at,deleted FROM sys_role WHERE deleted=0 AND (code = ?)
+2026-11-03T00:46:48.265+08:00 DEBUG 8364 --- [myshop-system] [nio-8081-exec-6] c.f.s.i.p.m.SysRoleMapper.selectList     : ==> Parameters: merchant(String)
+2026-11-03T00:46:48.267+08:00 DEBUG 8364 --- [myshop-system] [nio-8081-exec-6] c.f.s.i.p.m.SysRoleMapper.selectList     : <==      Total: 1
+2026-11-03T00:46:48.327+08:00 DEBUG 8364 --- [myshop-system] [nio-8081-exec-7] c.f.s.i.p.m.SysUserMapper.selectById     : ==>  Preparing: SELECT id,username,password,nickname,email,phone,avatar,role_code,shop_id,company_id,courier_id,status,last_login_at,created_at,updated_at,deleted FROM sys_user WHERE id=? AND deleted=0
+2026-11-03T00:46:48.328+08:00 DEBUG 8364 --- [myshop-system] [nio-8081-exec-7] c.f.s.i.p.m.SysUserMapper.selectById     : ==> Parameters: 3(Long)
+2026-11-03T00:46:48.330+08:00 DEBUG 8364 --- [myshop-system] [nio-8081-exec-7] c.f.s.i.p.m.SysUserMapper.selectById     : <==      Total: 1
+2026-11-03T00:46:48.330+08:00 DEBUG 8364 --- [myshop-system] [nio-8081-exec-7] c.f.s.i.p.m.SysRoleMapper.selectList     : ==>  Preparing: SELECT id,code,name,group_code,icon,description,sort,status,created_at,updated_at,deleted FROM sys_role WHERE deleted=0 AND (code = ?)
+2026-11-03T00:46:48.330+08:00 DEBUG 8364 --- [myshop-system] [nio-8081-exec-7] c.f.s.i.p.m.SysRoleMapper.selectList     : ==> Parameters: merchant(String)
+2026-11-03T00:46:48.333+08:00 DEBUG 8364 --- [myshop-system] [nio-8081-exec-7] c.f.s.i.p.m.SysRoleMapper.selectList     : <==      Total: 1
+2026-11-03T00:47:14.634+08:00 DEBUG 8364 --- [myshop-system] [nio-8081-exec-9] c.f.s.i.p.m.SysUserMapper.selectList     : ==>  Preparing: SELECT id,username,password,nickname,email,phone,avatar,role_code,shop_id,company_id,courier_id,status,last_login_at,created_at,updated_at,deleted FROM sys_user WHERE deleted=0 AND (username = ?)
+2026-11-03T00:47:14.634+08:00 DEBUG 8364 --- [myshop-system] [nio-8081-exec-9] c.f.s.i.p.m.SysUserMapper.selectList     : ==> Parameters: merchant(String)
+2026-11-03T00:47:14.636+08:00 DEBUG 8364 --- [myshop-system] [nio-8081-exec-9] c.f.s.i.p.m.SysUserMapper.selectList     : <==      Total: 1
+2026-11-03T00:47:14.695+08:00 DEBUG 8364 --- [myshop-system] [nio-8081-exec-9] c.f.s.i.p.mapper.SysUserMapper.update    : ==>  Preparing: UPDATE sys_user SET last_login_at=? WHERE deleted=0 AND (id = ?)
+2026-11-03T00:47:14.695+08:00 DEBUG 8364 --- [myshop-system] [nio-8081-exec-9] c.f.s.i.p.mapper.SysUserMapper.update    : ==> Parameters: 2026-11-03T00:47:14.694542100(LocalDateTime), 3(Long)
+2026-11-03T00:47:14.723+08:00 DEBUG 8364 --- [myshop-system] [nio-8081-exec-9] c.f.s.i.p.mapper.SysUserMapper.update    : <==    Updates: 1
+2026-11-03T00:47:14.723+08:00 DEBUG 8364 --- [myshop-system] [nio-8081-exec-9] c.f.s.i.p.m.U.insert                     : ==>  Preparing: INSERT INTO sys_login_record ( user_id, ip, device_id, device_name, login_at ) VALUES ( ?, ?, ?, ?, ? )
+2026-11-03T00:47:14.724+08:00 DEBUG 8364 --- [myshop-system] [nio-8081-exec-9] c.f.s.i.p.m.U.insert                     : ==> Parameters: 3(Long), 127.0.0.1(String), dev-pc(String), Chrome / Windows(String), 2026-11-03T00:47:14.723695300(LocalDateTime)
+2026-11-03T00:47:14.736+08:00 DEBUG 8364 --- [myshop-system] [nio-8081-exec-9] c.f.s.i.p.m.U.insert                     : <==    Updates: 1
+2026-11-03T00:47:14.736+08:00 DEBUG 8364 --- [myshop-system] [nio-8081-exec-9] c.f.s.i.p.m.SysRoleMapper.selectList     : ==>  Preparing: SELECT id,code,name,group_code,icon,description,sort,status,created_at,updated_at,deleted FROM sys_role WHERE deleted=0 AND (code = ?)
+2026-11-03T00:47:14.737+08:00 DEBUG 8364 --- [myshop-system] [nio-8081-exec-9] c.f.s.i.p.m.SysRoleMapper.selectList     : ==> Parameters: merchant(String)
+2026-11-03T00:47:14.739+08:00 DEBUG 8364 --- [myshop-system] [nio-8081-exec-9] c.f.s.i.p.m.SysRoleMapper.selectList     : <==      Total: 1
+2026-11-03T00:47:14.741+08:00 DEBUG 8364 --- [myshop-system] [nio-8081-exec-9] c.f.s.i.p.m.SysRoleMapper.selectList     : ==>  Preparing: SELECT id,code,name,group_code,icon,description,sort,status,created_at,updated_at,deleted FROM sys_role WHERE deleted=0 AND (code = ?)
+2026-11-03T00:47:14.741+08:00 DEBUG 8364 --- [myshop-system] [nio-8081-exec-9] c.f.s.i.p.m.SysRoleMapper.selectList     : ==> Parameters: merchant(String)
+2026-11-03T00:47:14.742+08:00 DEBUG 8364 --- [myshop-system] [nio-8081-exec-9] c.f.s.i.p.m.SysRoleMapper.selectList     : <==      Total: 1
+2026-11-03T00:47:14.818+08:00 DEBUG 8364 --- [myshop-system] [io-8081-exec-10] c.f.s.i.p.m.SysUserMapper.selectList     : ==>  Preparing: SELECT id,username,password,nickname,email,phone,avatar,role_code,shop_id,company_id,courier_id,status,last_login_at,created_at,updated_at,deleted FROM sys_user WHERE deleted=0 AND (username = ?)
+2026-11-03T00:47:14.819+08:00 DEBUG 8364 --- [myshop-system] [io-8081-exec-10] c.f.s.i.p.m.SysUserMapper.selectList     : ==> Parameters: merchant(String)
+2026-11-03T00:47:14.822+08:00 DEBUG 8364 --- [myshop-system] [io-8081-exec-10] c.f.s.i.p.m.SysUserMapper.selectList     : <==      Total: 1
+2026-11-03T00:47:14.876+08:00 DEBUG 8364 --- [myshop-system] [io-8081-exec-10] c.f.s.i.p.mapper.SysUserMapper.update    : ==>  Preparing: UPDATE sys_user SET last_login_at=? WHERE deleted=0 AND (id = ?)
+2026-11-03T00:47:14.876+08:00 DEBUG 8364 --- [myshop-system] [io-8081-exec-10] c.f.s.i.p.mapper.SysUserMapper.update    : ==> Parameters: 2026-11-03T00:47:14.875906600(LocalDateTime), 3(Long)
+2026-11-03T00:47:14.880+08:00 DEBUG 8364 --- [myshop-system] [io-8081-exec-10] c.f.s.i.p.mapper.SysUserMapper.update    : <==    Updates: 1
+2026-11-03T00:47:14.880+08:00 DEBUG 8364 --- [myshop-system] [io-8081-exec-10] c.f.s.i.p.m.U.insert                     : ==>  Preparing: INSERT INTO sys_login_record ( user_id, ip, device_id, device_name, login_at ) VALUES ( ?, ?, ?, ?, ? )
+2026-11-03T00:47:14.881+08:00 DEBUG 8364 --- [myshop-system] [io-8081-exec-10] c.f.s.i.p.m.U.insert                     : ==> Parameters: 3(Long), 127.0.0.1(String), dev-phone(String), Safari / iPhone(String), 2026-11-03T00:47:14.880021700(LocalDateTime)
+2026-11-03T00:47:14.911+08:00 DEBUG 8364 --- [myshop-system] [io-8081-exec-10] c.f.s.i.p.m.U.insert                     : <==    Updates: 1
+2026-11-03T00:47:14.913+08:00 DEBUG 8364 --- [myshop-system] [io-8081-exec-10] c.f.s.i.p.m.SysRoleMapper.selectList     : ==>  Preparing: SELECT id,code,name,group_code,icon,description,sort,status,created_at,updated_at,deleted FROM sys_role WHERE deleted=0 AND (code = ?)
+2026-11-03T00:47:14.913+08:00 DEBUG 8364 --- [myshop-system] [io-8081-exec-10] c.f.s.i.p.m.SysRoleMapper.selectList     : ==> Parameters: merchant(String)
+2026-11-03T00:47:14.915+08:00 DEBUG 8364 --- [myshop-system] [io-8081-exec-10] c.f.s.i.p.m.SysRoleMapper.selectList     : <==      Total: 1
+2026-11-03T00:47:14.916+08:00 DEBUG 8364 --- [myshop-system] [io-8081-exec-10] c.f.s.i.p.m.SysRoleMapper.selectList     : ==>  Preparing: SELECT id,code,name,group_code,icon,description,sort,status,created_at,updated_at,deleted FROM sys_role WHERE deleted=0 AND (code = ?)
+2026-11-03T00:47:14.916+08:00 DEBUG 8364 --- [myshop-system] [io-8081-exec-10] c.f.s.i.p.m.SysRoleMapper.selectList     : ==> Parameters: merchant(String)
+2026-11-03T00:47:14.918+08:00 DEBUG 8364 --- [myshop-system] [io-8081-exec-10] c.f.s.i.p.m.SysRoleMapper.selectList     : <==      Total: 1
+2026-11-03T00:47:15.705+08:00 DEBUG 8364 --- [myshop-system] [nio-8081-exec-1] c.f.s.i.p.m.SysUserMapper.selectById     : ==>  Preparing: SELECT id,username,password,nickname,email,phone,avatar,role_code,shop_id,company_id,courier_id,status,last_login_at,created_at,updated_at,deleted FROM sys_user WHERE id=? AND deleted=0
+2026-11-03T00:47:15.706+08:00 DEBUG 8364 --- [myshop-system] [nio-8081-exec-1] c.f.s.i.p.m.SysUserMapper.selectById     : ==> Parameters: 3(Long)
+2026-11-03T00:47:15.708+08:00 DEBUG 8364 --- [myshop-system] [nio-8081-exec-1] c.f.s.i.p.m.SysUserMapper.selectById     : <==      Total: 1
+2026-11-03T00:47:15.708+08:00 DEBUG 8364 --- [myshop-system] [nio-8081-exec-1] c.f.s.i.p.m.SysRoleMapper.selectList     : ==>  Preparing: SELECT id,code,name,group_code,icon,description,sort,status,created_at,updated_at,deleted FROM sys_role WHERE deleted=0 AND (code = ?)
+2026-11-03T00:47:15.709+08:00 DEBUG 8364 --- [myshop-system] [nio-8081-exec-1] c.f.s.i.p.m.SysRoleMapper.selectList     : ==> Parameters: merchant(String)
+2026-11-03T00:47:15.710+08:00 DEBUG 8364 --- [myshop-system] [nio-8081-exec-1] c.f.s.i.p.m.SysRoleMapper.selectList     : <==      Total: 1
+2026-11-03T00:47:15.843+08:00 DEBUG 8364 --- [myshop-system] [nio-8081-exec-2] c.f.s.i.p.m.SysUserMapper.selectById     : ==>  Preparing: SELECT id,username,password,nickname,email,phone,avatar,role_code,shop_id,company_id,courier_id,status,last_login_at,created_at,updated_at,deleted FROM sys_user WHERE id=? AND deleted=0
+2026-11-03T00:47:15.844+08:00 DEBUG 8364 --- [myshop-system] [nio-8081-exec-2] c.f.s.i.p.m.SysUserMapper.selectById     : ==> Parameters: 3(Long)
+2026-11-03T00:47:15.846+08:00 DEBUG 8364 --- [myshop-system] [nio-8081-exec-2] c.f.s.i.p.m.SysUserMapper.selectById     : <==      Total: 1
+2026-11-03T00:47:15.847+08:00 DEBUG 8364 --- [myshop-system] [nio-8081-exec-2] c.f.s.i.p.m.SysRoleMapper.selectList     : ==>  Preparing: SELECT id,code,name,group_code,icon,description,sort,status,created_at,updated_at,deleted FROM sys_role WHERE deleted=0 AND (code = ?)
+2026-11-03T00:47:15.847+08:00 DEBUG 8364 --- [myshop-system] [nio-8081-exec-2] c.f.s.i.p.m.SysRoleMapper.selectList     : ==> Parameters: merchant(String)
+2026-11-03T00:47:15.849+08:00 DEBUG 8364 --- [myshop-system] [nio-8081-exec-2] c.f.s.i.p.m.SysRoleMapper.selectList     : <==      Total: 1
+2026-11-03T00:47:15.917+08:00 DEBUG 8364 --- [myshop-system] [nio-8081-exec-3] c.f.s.i.p.m.SysUserMapper.selectById     : ==>  Preparing: SELECT id,username,password,nickname,email,phone,avatar,role_code,shop_id,company_id,courier_id,status,last_login_at,created_at,updated_at,deleted FROM sys_user WHERE id=? AND deleted=0
+2026-11-03T00:47:15.917+08:00 DEBUG 8364 --- [myshop-system] [nio-8081-exec-3] c.f.s.i.p.m.SysUserMapper.selectById     : ==> Parameters: 3(Long)
+2026-11-03T00:47:15.920+08:00 DEBUG 8364 --- [myshop-system] [nio-8081-exec-3] c.f.s.i.p.m.SysUserMapper.selectById     : <==      Total: 1
+2026-11-03T00:47:15.921+08:00 DEBUG 8364 --- [myshop-system] [nio-8081-exec-3] c.f.s.i.p.m.SysRoleMapper.selectList     : ==>  Preparing: SELECT id,code,name,group_code,icon,description,sort,status,created_at,updated_at,deleted FROM sys_role WHERE deleted=0 AND (code = ?)
+2026-11-03T00:47:15.921+08:00 DEBUG 8364 --- [myshop-system] [nio-8081-exec-3] c.f.s.i.p.m.SysRoleMapper.selectList     : ==> Parameters: merchant(String)
+2026-11-03T00:47:15.923+08:00 DEBUG 8364 --- [myshop-system] [nio-8081-exec-3] c.f.s.i.p.m.SysRoleMapper.selectList     : <==      Total: 1
+2026-11-03T00:47:22.125+08:00 DEBUG 8364 --- [myshop-system] [nio-8081-exec-4] c.f.s.i.p.m.SysUserMapper.selectList     : ==>  Preparing: SELECT id,username,password,nickname,email,phone,avatar,role_code,shop_id,company_id,courier_id,status,last_login_at,created_at,updated_at,deleted FROM sys_user WHERE deleted=0 AND (username = ?)
+2026-11-03T00:47:22.125+08:00 DEBUG 8364 --- [myshop-system] [nio-8081-exec-4] c.f.s.i.p.m.SysUserMapper.selectList     : ==> Parameters: admin(String)
+2026-11-03T00:47:22.128+08:00 DEBUG 8364 --- [myshop-system] [nio-8081-exec-4] c.f.s.i.p.m.SysUserMapper.selectList     : <==      Total: 1
+2026-11-03T00:47:22.182+08:00 DEBUG 8364 --- [myshop-system] [nio-8081-exec-4] c.f.s.i.p.mapper.SysUserMapper.update    : ==>  Preparing: UPDATE sys_user SET last_login_at=? WHERE deleted=0 AND (id = ?)
+2026-11-03T00:47:22.182+08:00 DEBUG 8364 --- [myshop-system] [nio-8081-exec-4] c.f.s.i.p.mapper.SysUserMapper.update    : ==> Parameters: 2026-11-03T00:47:22.181463900(LocalDateTime), 11(Long)
+2026-11-03T00:47:22.199+08:00 DEBUG 8364 --- [myshop-system] [nio-8081-exec-4] c.f.s.i.p.mapper.SysUserMapper.update    : <==    Updates: 1
+2026-11-03T00:47:22.200+08:00 DEBUG 8364 --- [myshop-system] [nio-8081-exec-4] c.f.s.i.p.m.U.insert                     : ==>  Preparing: INSERT INTO sys_login_record ( user_id, ip, device_id, device_name, login_at ) VALUES ( ?, ?, ?, ?, ? )
+2026-11-03T00:47:22.201+08:00 DEBUG 8364 --- [myshop-system] [nio-8081-exec-4] c.f.s.i.p.m.U.insert                     : ==> Parameters: 11(Long), 127.0.0.1(String), admin-pc(String), Admin Chrome(String), 2026-11-03T00:47:22.200033600(LocalDateTime)
+2026-11-03T00:47:22.214+08:00 DEBUG 8364 --- [myshop-system] [nio-8081-exec-4] c.f.s.i.p.m.U.insert                     : <==    Updates: 1
+2026-11-03T00:47:22.216+08:00 DEBUG 8364 --- [myshop-system] [nio-8081-exec-4] c.f.s.i.p.m.SysRoleMapper.selectList     : ==>  Preparing: SELECT id,code,name,group_code,icon,description,sort,status,created_at,updated_at,deleted FROM sys_role WHERE deleted=0 AND (code = ?)
+2026-11-03T00:47:22.216+08:00 DEBUG 8364 --- [myshop-system] [nio-8081-exec-4] c.f.s.i.p.m.SysRoleMapper.selectList     : ==> Parameters: admin(String)
+2026-11-03T00:47:22.218+08:00 DEBUG 8364 --- [myshop-system] [nio-8081-exec-4] c.f.s.i.p.m.SysRoleMapper.selectList     : <==      Total: 1
+2026-11-03T00:47:22.219+08:00 DEBUG 8364 --- [myshop-system] [nio-8081-exec-4] c.f.s.i.p.m.SysRoleMapper.selectList     : ==>  Preparing: SELECT id,code,name,group_code,icon,description,sort,status,created_at,updated_at,deleted FROM sys_role WHERE deleted=0 AND (code = ?)
+2026-11-03T00:47:22.220+08:00 DEBUG 8364 --- [myshop-system] [nio-8081-exec-4] c.f.s.i.p.m.SysRoleMapper.selectList     : ==> Parameters: admin(String)
+2026-11-03T00:47:22.222+08:00 DEBUG 8364 --- [myshop-system] [nio-8081-exec-4] c.f.s.i.p.m.SysRoleMapper.selectList     : <==      Total: 1
+2026-11-03T00:47:22.582+08:00 DEBUG 8364 --- [myshop-system] [nio-8081-exec-5] c.f.s.i.p.m.SysUserMapper.selectList     : ==>  Preparing: SELECT id,username,password,nickname,email,phone,avatar,role_code,shop_id,company_id,courier_id,status,last_login_at,created_at,updated_at,deleted FROM sys_user WHERE deleted=0 AND (username = ?)
+2026-11-03T00:47:22.582+08:00 DEBUG 8364 --- [myshop-system] [nio-8081-exec-5] c.f.s.i.p.m.SysUserMapper.selectList     : ==> Parameters: merchant(String)
+2026-11-03T00:47:22.585+08:00 DEBUG 8364 --- [myshop-system] [nio-8081-exec-5] c.f.s.i.p.m.SysUserMapper.selectList     : <==      Total: 1
+2026-11-03T00:47:22.642+08:00 DEBUG 8364 --- [myshop-system] [nio-8081-exec-5] c.f.s.i.p.mapper.SysUserMapper.update    : ==>  Preparing: UPDATE sys_user SET last_login_at=? WHERE deleted=0 AND (id = ?)
+2026-11-03T00:47:22.642+08:00 DEBUG 8364 --- [myshop-system] [nio-8081-exec-5] c.f.s.i.p.mapper.SysUserMapper.update    : ==> Parameters: 2026-11-03T00:47:22.641772800(LocalDateTime), 3(Long)
+2026-11-03T00:47:22.716+08:00 DEBUG 8364 --- [myshop-system] [nio-8081-exec-5] c.f.s.i.p.mapper.SysUserMapper.update    : <==    Updates: 1
+2026-11-03T00:47:22.717+08:00 DEBUG 8364 --- [myshop-system] [nio-8081-exec-5] c.f.s.i.p.m.U.insert                     : ==>  Preparing: INSERT INTO sys_login_record ( user_id, ip, device_id, device_name, login_at ) VALUES ( ?, ?, ?, ?, ? )
+2026-11-03T00:47:22.718+08:00 DEBUG 8364 --- [myshop-system] [nio-8081-exec-5] c.f.s.i.p.m.U.insert                     : ==> Parameters: 3(Long), 127.0.0.1(String), dev-pc(String), Chrome / Windows(String), 2026-11-03T00:47:22.717312500(LocalDateTime)
+2026-11-03T00:47:22.734+08:00 DEBUG 8364 --- [myshop-system] [nio-8081-exec-5] c.f.s.i.p.m.U.insert                     : <==    Updates: 1
+2026-11-03T00:47:22.735+08:00 DEBUG 8364 --- [myshop-system] [nio-8081-exec-5] c.f.s.i.p.m.SysRoleMapper.selectList     : ==>  Preparing: SELECT id,code,name,group_code,icon,description,sort,status,created_at,updated_at,deleted FROM sys_role WHERE deleted=0 AND (code = ?)
+2026-11-03T00:47:22.736+08:00 DEBUG 8364 --- [myshop-system] [nio-8081-exec-5] c.f.s.i.p.m.SysRoleMapper.selectList     : ==> Parameters: merchant(String)
+2026-11-03T00:47:22.738+08:00 DEBUG 8364 --- [myshop-system] [nio-8081-exec-5] c.f.s.i.p.m.SysRoleMapper.selectList     : <==      Total: 1
+2026-11-03T00:47:22.740+08:00 DEBUG 8364 --- [myshop-system] [nio-8081-exec-5] c.f.s.i.p.m.SysRoleMapper.selectList     : ==>  Preparing: SELECT id,code,name,group_code,icon,description,sort,status,created_at,updated_at,deleted FROM sys_role WHERE deleted=0 AND (code = ?)
+2026-11-03T00:47:22.740+08:00 DEBUG 8364 --- [myshop-system] [nio-8081-exec-5] c.f.s.i.p.m.SysRoleMapper.selectList     : ==> Parameters: merchant(String)
+2026-11-03T00:47:22.742+08:00 DEBUG 8364 --- [myshop-system] [nio-8081-exec-5] c.f.s.i.p.m.SysRoleMapper.selectList     : <==      Total: 1
+2026-11-03T00:47:23.037+08:00 DEBUG 8364 --- [myshop-system] [nio-8081-exec-6] c.f.s.i.p.m.SysUserMapper.selectById     : ==>  Preparing: SELECT id,username,password,nickname,email,phone,avatar,role_code,shop_id,company_id,courier_id,status,last_login_at,created_at,updated_at,deleted FROM sys_user WHERE id=? AND deleted=0
+2026-11-03T00:47:23.038+08:00 DEBUG 8364 --- [myshop-system] [nio-8081-exec-6] c.f.s.i.p.m.SysUserMapper.selectById     : ==> Parameters: 11(Long)
+2026-11-03T00:47:23.040+08:00 DEBUG 8364 --- [myshop-system] [nio-8081-exec-6] c.f.s.i.p.m.SysUserMapper.selectById     : <==      Total: 1
+2026-11-03T00:47:23.040+08:00 DEBUG 8364 --- [myshop-system] [nio-8081-exec-6] c.f.s.i.p.m.SysRoleMapper.selectList     : ==>  Preparing: SELECT id,code,name,group_code,icon,description,sort,status,created_at,updated_at,deleted FROM sys_role WHERE deleted=0 AND (code = ?)
+2026-11-03T00:47:23.041+08:00 DEBUG 8364 --- [myshop-system] [nio-8081-exec-6] c.f.s.i.p.m.SysRoleMapper.selectList     : ==> Parameters: admin(String)
+2026-11-03T00:47:23.042+08:00 DEBUG 8364 --- [myshop-system] [nio-8081-exec-6] c.f.s.i.p.m.SysRoleMapper.selectList     : <==      Total: 1
+2026-11-03T00:47:23.044+08:00 DEBUG 8364 --- [myshop-system] [nio-8081-exec-6] c.f.s.i.p.m.SysUserMapper.selectById     : ==>  Preparing: SELECT id,username,password,nickname,email,phone,avatar,role_code,shop_id,company_id,courier_id,status,last_login_at,created_at,updated_at,deleted FROM sys_user WHERE id=? AND deleted=0
+2026-11-03T00:47:23.044+08:00 DEBUG 8364 --- [myshop-system] [nio-8081-exec-6] c.f.s.i.p.m.SysUserMapper.selectById     : ==> Parameters: 3(Long)
+2026-11-03T00:47:23.046+08:00 DEBUG 8364 --- [myshop-system] [nio-8081-exec-6] c.f.s.i.p.m.SysUserMapper.selectById     : <==      Total: 1
+2026-11-03T00:47:23.222+08:00 DEBUG 8364 --- [myshop-system] [nio-8081-exec-7] c.f.s.i.p.m.SysUserMapper.selectById     : ==>  Preparing: SELECT id,username,password,nickname,email,phone,avatar,role_code,shop_id,company_id,courier_id,status,last_login_at,created_at,updated_at,deleted FROM sys_user WHERE id=? AND deleted=0
+2026-11-03T00:47:23.222+08:00 DEBUG 8364 --- [myshop-system] [nio-8081-exec-7] c.f.s.i.p.m.SysUserMapper.selectById     : ==> Parameters: 11(Long)
+2026-11-03T00:47:23.224+08:00 DEBUG 8364 --- [myshop-system] [nio-8081-exec-7] c.f.s.i.p.m.SysUserMapper.selectById     : <==      Total: 1
+2026-11-03T00:47:23.224+08:00 DEBUG 8364 --- [myshop-system] [nio-8081-exec-7] c.f.s.i.p.m.SysRoleMapper.selectList     : ==>  Preparing: SELECT id,code,name,group_code,icon,description,sort,status,created_at,updated_at,deleted FROM sys_role WHERE deleted=0 AND (code = ?)
+2026-11-03T00:47:23.225+08:00 DEBUG 8364 --- [myshop-system] [nio-8081-exec-7] c.f.s.i.p.m.SysRoleMapper.selectList     : ==> Parameters: admin(String)
+2026-11-03T00:47:23.226+08:00 DEBUG 8364 --- [myshop-system] [nio-8081-exec-7] c.f.s.i.p.m.SysRoleMapper.selectList     : <==      Total: 1
+2026-11-03T00:47:29.190+08:00 DEBUG 8364 --- [myshop-system] [nio-8081-exec-8] c.f.s.i.p.m.SysUserMapper.selectList     : ==>  Preparing: SELECT id,username,password,nickname,email,phone,avatar,role_code,shop_id,company_id,courier_id,status,last_login_at,created_at,updated_at,deleted FROM sys_user WHERE deleted=0 AND (username = ?)
+2026-11-03T00:47:29.190+08:00 DEBUG 8364 --- [myshop-system] [nio-8081-exec-8] c.f.s.i.p.m.SysUserMapper.selectList     : ==> Parameters: merchant(String)
+2026-11-03T00:47:29.192+08:00 DEBUG 8364 --- [myshop-system] [nio-8081-exec-8] c.f.s.i.p.m.SysUserMapper.selectList     : <==      Total: 1
+2026-11-03T00:47:29.246+08:00 DEBUG 8364 --- [myshop-system] [nio-8081-exec-8] c.f.s.i.p.mapper.SysUserMapper.update    : ==>  Preparing: UPDATE sys_user SET last_login_at=? WHERE deleted=0 AND (id = ?)
+2026-11-03T00:47:29.246+08:00 DEBUG 8364 --- [myshop-system] [nio-8081-exec-8] c.f.s.i.p.mapper.SysUserMapper.update    : ==> Parameters: 2026-11-03T00:47:29.244699900(LocalDateTime), 3(Long)
+2026-11-03T00:47:29.263+08:00 DEBUG 8364 --- [myshop-system] [nio-8081-exec-8] c.f.s.i.p.mapper.SysUserMapper.update    : <==    Updates: 1
+2026-11-03T00:47:29.264+08:00 DEBUG 8364 --- [myshop-system] [nio-8081-exec-8] c.f.s.i.p.m.U.insert                     : ==>  Preparing: INSERT INTO sys_login_record ( user_id, ip, device_id, device_name, login_at ) VALUES ( ?, ?, ?, ?, ? )
+2026-11-03T00:47:29.264+08:00 DEBUG 8364 --- [myshop-system] [nio-8081-exec-8] c.f.s.i.p.m.U.insert                     : ==> Parameters: 3(Long), 127.0.0.1(String), dev-pc(String), Chrome / Windows(String), 2026-11-03T00:47:29.263657500(LocalDateTime)
+2026-11-03T00:47:29.278+08:00 DEBUG 8364 --- [myshop-system] [nio-8081-exec-8] c.f.s.i.p.m.U.insert                     : <==    Updates: 1
+2026-11-03T00:47:29.279+08:00 DEBUG 8364 --- [myshop-system] [nio-8081-exec-8] c.f.s.i.p.m.SysRoleMapper.selectList     : ==>  Preparing: SELECT id,code,name,group_code,icon,description,sort,status,created_at,updated_at,deleted FROM sys_role WHERE deleted=0 AND (code = ?)
+2026-11-03T00:47:29.280+08:00 DEBUG 8364 --- [myshop-system] [nio-8081-exec-8] c.f.s.i.p.m.SysRoleMapper.selectList     : ==> Parameters: merchant(String)
+2026-11-03T00:47:29.282+08:00 DEBUG 8364 --- [myshop-system] [nio-8081-exec-8] c.f.s.i.p.m.SysRoleMapper.selectList     : <==      Total: 1
+2026-11-03T00:47:29.283+08:00 DEBUG 8364 --- [myshop-system] [nio-8081-exec-8] c.f.s.i.p.m.SysRoleMapper.selectList     : ==>  Preparing: SELECT id,code,name,group_code,icon,description,sort,status,created_at,updated_at,deleted FROM sys_role WHERE deleted=0 AND (code = ?)
+2026-11-03T00:47:29.284+08:00 DEBUG 8364 --- [myshop-system] [nio-8081-exec-8] c.f.s.i.p.m.SysRoleMapper.selectList     : ==> Parameters: merchant(String)
+2026-11-03T00:47:29.285+08:00 DEBUG 8364 --- [myshop-system] [nio-8081-exec-8] c.f.s.i.p.m.SysRoleMapper.selectList     : <==      Total: 1
+2026-11-03T00:47:29.580+08:00 DEBUG 8364 --- [myshop-system] [nio-8081-exec-9] c.f.s.i.p.m.SysUserMapper.selectById     : ==>  Preparing: SELECT id,username,password,nickname,email,phone,avatar,role_code,shop_id,company_id,courier_id,status,last_login_at,created_at,updated_at,deleted FROM sys_user WHERE id=? AND deleted=0
+2026-11-03T00:47:29.580+08:00 DEBUG 8364 --- [myshop-system] [nio-8081-exec-9] c.f.s.i.p.m.SysUserMapper.selectById     : ==> Parameters: 3(Long)
+2026-11-03T00:47:29.582+08:00 DEBUG 8364 --- [myshop-system] [nio-8081-exec-9] c.f.s.i.p.m.SysUserMapper.selectById     : <==      Total: 1
+2026-11-03T00:47:29.582+08:00 DEBUG 8364 --- [myshop-system] [nio-8081-exec-9] c.f.s.i.p.m.SysRoleMapper.selectList     : ==>  Preparing: SELECT id,code,name,group_code,icon,description,sort,status,created_at,updated_at,deleted FROM sys_role WHERE deleted=0 AND (code = ?)
+2026-11-03T00:47:29.582+08:00 DEBUG 8364 --- [myshop-system] [nio-8081-exec-9] c.f.s.i.p.m.SysRoleMapper.selectList     : ==> Parameters: merchant(String)
+2026-11-03T00:47:29.584+08:00 DEBUG 8364 --- [myshop-system] [nio-8081-exec-9] c.f.s.i.p.m.SysRoleMapper.selectList     : <==      Total: 1
+2026-11-03T00:47:29.640+08:00 DEBUG 8364 --- [myshop-system] [io-8081-exec-10] c.f.s.i.p.m.SysUserMapper.selectById     : ==>  Preparing: SELECT id,username,password,nickname,email,phone,avatar,role_code,shop_id,company_id,courier_id,status,last_login_at,created_at,updated_at,deleted FROM sys_user WHERE id=? AND deleted=0
+2026-11-03T00:47:29.641+08:00 DEBUG 8364 --- [myshop-system] [io-8081-exec-10] c.f.s.i.p.m.SysUserMapper.selectById     : ==> Parameters: 11(Long)
+2026-11-03T00:47:29.643+08:00 DEBUG 8364 --- [myshop-system] [io-8081-exec-10] c.f.s.i.p.m.SysUserMapper.selectById     : <==      Total: 1
+2026-11-03T00:47:29.644+08:00 DEBUG 8364 --- [myshop-system] [io-8081-exec-10] c.f.s.i.p.m.SysRoleMapper.selectList     : ==>  Preparing: SELECT id,code,name,group_code,icon,description,sort,status,created_at,updated_at,deleted FROM sys_role WHERE deleted=0 AND (code = ?)
+2026-11-03T00:47:29.644+08:00 DEBUG 8364 --- [myshop-system] [io-8081-exec-10] c.f.s.i.p.m.SysRoleMapper.selectList     : ==> Parameters: admin(String)
+2026-11-03T00:47:29.645+08:00 DEBUG 8364 --- [myshop-system] [io-8081-exec-10] c.f.s.i.p.m.SysRoleMapper.selectList     : <==      Total: 1
+2026-11-03T00:47:29.654+08:00 DEBUG 8364 --- [myshop-system] [io-8081-exec-10] c.f.s.i.p.m.SysUserMapper.selectById     : ==>  Preparing: SELECT id,username,password,nickname,email,phone,avatar,role_code,shop_id,company_id,courier_id,status,last_login_at,created_at,updated_at,deleted FROM sys_user WHERE id=? AND deleted=0
+2026-11-03T00:47:29.655+08:00 DEBUG 8364 --- [myshop-system] [io-8081-exec-10] c.f.s.i.p.m.SysUserMapper.selectById     : ==> Parameters: 3(Long)
+2026-11-03T00:47:29.657+08:00 DEBUG 8364 --- [myshop-system] [io-8081-exec-10] c.f.s.i.p.m.SysUserMapper.selectById     : <==      Total: 1
+2026-11-03T00:47:29.660+08:00 DEBUG 8364 --- [myshop-system] [io-8081-exec-10] c.f.s.i.p.m.SysUserMapper.updateById     : ==>  Preparing: UPDATE sys_user SET username=?, password=?, nickname=?, email=?, role_code=?, shop_id=?, status=?, last_login_at=?, created_at=?, updated_at=? WHERE id=? AND deleted=0
+2026-11-03T00:47:29.661+08:00 DEBUG 8364 --- [myshop-system] [io-8081-exec-10] c.f.s.i.p.m.SysUserMapper.updateById     : ==> Parameters: merchant(String), $2a$10$7.sfOgilY1.EzZlD1EABbeo0W6yDebUlHcrRyKZp.GZIC7TIhNcEO(String), 数码旗舰店(String), merchant@myshop.com(String), merchant(String), 1(Long), 0(Integer), 2026-11-03T00:47:29(LocalDateTime), 2026-11-01T23:11:59(LocalDateTime), 2026-11-03T00:47:29(LocalDateTime), 3(Long)
+2026-11-03T00:47:29.679+08:00 DEBUG 8364 --- [myshop-system] [io-8081-exec-10] c.f.s.i.p.m.SysUserMapper.updateById     : <==    Updates: 1
+2026-11-03T00:47:30.077+08:00 DEBUG 8364 --- [myshop-system] [nio-8081-exec-1] c.f.s.i.p.m.SysUserMapper.selectById     : ==>  Preparing: SELECT id,username,password,nickname,email,phone,avatar,role_code,shop_id,company_id,courier_id,status,last_login_at,created_at,updated_at,deleted FROM sys_user WHERE id=? AND deleted=0
+2026-11-03T00:47:30.078+08:00 DEBUG 8364 --- [myshop-system] [nio-8081-exec-1] c.f.s.i.p.m.SysUserMapper.selectById     : ==> Parameters: 11(Long)
+2026-11-03T00:47:30.080+08:00 DEBUG 8364 --- [myshop-system] [nio-8081-exec-1] c.f.s.i.p.m.SysUserMapper.selectById     : <==      Total: 1
+2026-11-03T00:47:30.081+08:00 DEBUG 8364 --- [myshop-system] [nio-8081-exec-1] c.f.s.i.p.m.SysRoleMapper.selectList     : ==>  Preparing: SELECT id,code,name,group_code,icon,description,sort,status,created_at,updated_at,deleted FROM sys_role WHERE deleted=0 AND (code = ?)
+2026-11-03T00:47:30.081+08:00 DEBUG 8364 --- [myshop-system] [nio-8081-exec-1] c.f.s.i.p.m.SysRoleMapper.selectList     : ==> Parameters: admin(String)
+2026-11-03T00:47:30.083+08:00 DEBUG 8364 --- [myshop-system] [nio-8081-exec-1] c.f.s.i.p.m.SysRoleMapper.selectList     : <==      Total: 1
+2026-11-03T00:47:30.085+08:00 DEBUG 8364 --- [myshop-system] [nio-8081-exec-1] c.f.s.i.p.m.SysUserMapper.selectById     : ==>  Preparing: SELECT id,username,password,nickname,email,phone,avatar,role_code,shop_id,company_id,courier_id,status,last_login_at,created_at,updated_at,deleted FROM sys_user WHERE id=? AND deleted=0
+2026-11-03T00:47:30.085+08:00 DEBUG 8364 --- [myshop-system] [nio-8081-exec-1] c.f.s.i.p.m.SysUserMapper.selectById     : ==> Parameters: 3(Long)
+2026-11-03T00:47:30.087+08:00 DEBUG 8364 --- [myshop-system] [nio-8081-exec-1] c.f.s.i.p.m.SysUserMapper.selectById     : <==      Total: 1
+2026-11-03T00:47:30.088+08:00 DEBUG 8364 --- [myshop-system] [nio-8081-exec-1] c.f.s.i.p.m.SysUserMapper.updateById     : ==>  Preparing: UPDATE sys_user SET username=?, password=?, nickname=?, email=?, role_code=?, shop_id=?, status=?, last_login_at=?, created_at=?, updated_at=? WHERE id=? AND deleted=0
+2026-11-03T00:47:30.088+08:00 DEBUG 8364 --- [myshop-system] [nio-8081-exec-1] c.f.s.i.p.m.SysUserMapper.updateById     : ==> Parameters: merchant(String), $2a$10$7.sfOgilY1.EzZlD1EABbeo0W6yDebUlHcrRyKZp.GZIC7TIhNcEO(String), 数码旗舰店(String), merchant@myshop.com(String), merchant(String), 1(Long), 1(Integer), 2026-11-03T00:47:29(LocalDateTime), 2026-11-01T23:11:59(LocalDateTime), 2026-11-03T00:47:29(LocalDateTime), 3(Long)
+2026-11-03T00:47:30.101+08:00 DEBUG 8364 --- [myshop-system] [nio-8081-exec-1] c.f.s.i.p.m.SysUserMapper.updateById     : <==    Updates: 1
+2026-11-03T00:47:30.151+08:00 DEBUG 8364 --- [myshop-system] [nio-8081-exec-2] c.f.s.i.p.m.SysUserMapper.selectList     : ==>  Preparing: SELECT id,username,password,nickname,email,phone,avatar,role_code,shop_id,company_id,courier_id,status,last_login_at,created_at,updated_at,deleted FROM sys_user WHERE deleted=0 AND (username = ?)
+2026-11-03T00:47:30.152+08:00 DEBUG 8364 --- [myshop-system] [nio-8081-exec-2] c.f.s.i.p.m.SysUserMapper.selectList     : ==> Parameters: merchant(String)
+2026-11-03T00:47:30.154+08:00 DEBUG 8364 --- [myshop-system] [nio-8081-exec-2] c.f.s.i.p.m.SysUserMapper.selectList     : <==      Total: 1
+2026-11-03T00:47:30.209+08:00 DEBUG 8364 --- [myshop-system] [nio-8081-exec-2] c.f.s.i.p.mapper.SysUserMapper.update    : ==>  Preparing: UPDATE sys_user SET last_login_at=? WHERE deleted=0 AND (id = ?)
+2026-11-03T00:47:30.210+08:00 DEBUG 8364 --- [myshop-system] [nio-8081-exec-2] c.f.s.i.p.mapper.SysUserMapper.update    : ==> Parameters: 2026-11-03T00:47:30.208631(LocalDateTime), 3(Long)
+2026-11-03T00:47:30.271+08:00 DEBUG 8364 --- [myshop-system] [nio-8081-exec-2] c.f.s.i.p.mapper.SysUserMapper.update    : <==    Updates: 1
+2026-11-03T00:47:30.272+08:00 DEBUG 8364 --- [myshop-system] [nio-8081-exec-2] c.f.s.i.p.m.U.insert                     : ==>  Preparing: INSERT INTO sys_login_record ( user_id, ip, device_id, device_name, login_at ) VALUES ( ?, ?, ?, ?, ? )
+2026-11-03T00:47:30.273+08:00 DEBUG 8364 --- [myshop-system] [nio-8081-exec-2] c.f.s.i.p.m.U.insert                     : ==> Parameters: 3(Long), 127.0.0.1(String), dev-pc(String), Chrome / Windows(String), 2026-11-03T00:47:30.272218400(LocalDateTime)
+2026-11-03T00:47:30.296+08:00 DEBUG 8364 --- [myshop-system] [nio-8081-exec-2] c.f.s.i.p.m.U.insert                     : <==    Updates: 1
+2026-11-03T00:47:30.297+08:00 DEBUG 8364 --- [myshop-system] [nio-8081-exec-2] c.f.s.i.p.m.SysRoleMapper.selectList     : ==>  Preparing: SELECT id,code,name,group_code,icon,description,sort,status,created_at,updated_at,deleted FROM sys_role WHERE deleted=0 AND (code = ?)
+2026-11-03T00:47:30.297+08:00 DEBUG 8364 --- [myshop-system] [nio-8081-exec-2] c.f.s.i.p.m.SysRoleMapper.selectList     : ==> Parameters: merchant(String)
+2026-11-03T00:47:30.299+08:00 DEBUG 8364 --- [myshop-system] [nio-8081-exec-2] c.f.s.i.p.m.SysRoleMapper.selectList     : <==      Total: 1
+2026-11-03T00:47:30.301+08:00 DEBUG 8364 --- [myshop-system] [nio-8081-exec-2] c.f.s.i.p.m.SysRoleMapper.selectList     : ==>  Preparing: SELECT id,code,name,group_code,icon,description,sort,status,created_at,updated_at,deleted FROM sys_role WHERE deleted=0 AND (code = ?)
+2026-11-03T00:47:30.301+08:00 DEBUG 8364 --- [myshop-system] [nio-8081-exec-2] c.f.s.i.p.m.SysRoleMapper.selectList     : ==> Parameters: merchant(String)
+2026-11-03T00:47:30.303+08:00 DEBUG 8364 --- [myshop-system] [nio-8081-exec-2] c.f.s.i.p.m.SysRoleMapper.selectList     : <==      Total: 1
+2026-11-03T00:47:30.617+08:00 DEBUG 8364 --- [myshop-system] [nio-8081-exec-3] c.f.s.i.p.m.SysUserMapper.selectById     : ==>  Preparing: SELECT id,username,password,nickname,email,phone,avatar,role_code,shop_id,company_id,courier_id,status,last_login_at,created_at,updated_at,deleted FROM sys_user WHERE id=? AND deleted=0
+2026-11-03T00:47:30.617+08:00 DEBUG 8364 --- [myshop-system] [nio-8081-exec-3] c.f.s.i.p.m.SysUserMapper.selectById     : ==> Parameters: 3(Long)
+2026-11-03T00:47:30.620+08:00 DEBUG 8364 --- [myshop-system] [nio-8081-exec-3] c.f.s.i.p.m.SysUserMapper.selectById     : <==      Total: 1
+2026-11-03T00:47:30.621+08:00 DEBUG 8364 --- [myshop-system] [nio-8081-exec-3] c.f.s.i.p.m.SysRoleMapper.selectList     : ==>  Preparing: SELECT id,code,name,group_code,icon,description,sort,status,created_at,updated_at,deleted FROM sys_role WHERE deleted=0 AND (code = ?)
+2026-11-03T00:47:30.621+08:00 DEBUG 8364 --- [myshop-system] [nio-8081-exec-3] c.f.s.i.p.m.SysRoleMapper.selectList     : ==> Parameters: merchant(String)
+2026-11-03T00:47:30.622+08:00 DEBUG 8364 --- [myshop-system] [nio-8081-exec-3] c.f.s.i.p.m.SysRoleMapper.selectList     : <==      Total: 1
+2026-11-03T00:47:35.274+08:00 DEBUG 8364 --- [myshop-system] [nio-8081-exec-4] c.f.s.i.p.m.SysUserMapper.selectById     : ==>  Preparing: SELECT id,username,password,nickname,email,phone,avatar,role_code,shop_id,company_id,courier_id,status,last_login_at,created_at,updated_at,deleted FROM sys_user WHERE id=? AND deleted=0
+2026-11-03T00:47:35.274+08:00 DEBUG 8364 --- [myshop-system] [nio-8081-exec-4] c.f.s.i.p.m.SysUserMapper.selectById     : ==> Parameters: 11(Long)
+2026-11-03T00:47:35.276+08:00 DEBUG 8364 --- [myshop-system] [nio-8081-exec-4] c.f.s.i.p.m.SysUserMapper.selectById     : <==      Total: 1
+2026-11-03T00:47:35.277+08:00 DEBUG 8364 --- [myshop-system] [nio-8081-exec-4] c.f.s.i.p.m.SysRoleMapper.selectList     : ==>  Preparing: SELECT id,code,name,group_code,icon,description,sort,status,created_at,updated_at,deleted FROM sys_role WHERE deleted=0 AND (code = ?)
+2026-11-03T00:47:35.277+08:00 DEBUG 8364 --- [myshop-system] [nio-8081-exec-4] c.f.s.i.p.m.SysRoleMapper.selectList     : ==> Parameters: admin(String)
+2026-11-03T00:47:35.278+08:00 DEBUG 8364 --- [myshop-system] [nio-8081-exec-4] c.f.s.i.p.m.SysRoleMapper.selectList     : <==      Total: 1
+2026-11-03T00:47:35.282+08:00 DEBUG 8364 --- [myshop-system] [nio-8081-exec-4] c.f.s.i.p.m.SysRoleMapper.selectList     : ==>  Preparing: SELECT id,code,name,group_code,icon,description,sort,status,created_at,updated_at,deleted FROM sys_role WHERE deleted=0 AND (code = ?)
+2026-11-03T00:47:35.283+08:00 DEBUG 8364 --- [myshop-system] [nio-8081-exec-4] c.f.s.i.p.m.SysRoleMapper.selectList     : ==> Parameters: merchant-sales(String)
+2026-11-03T00:47:35.285+08:00 DEBUG 8364 --- [myshop-system] [nio-8081-exec-4] c.f.s.i.p.m.SysRoleMapper.selectList     : <==      Total: 1
+2026-11-03T00:47:35.286+08:00 DEBUG 8364 --- [myshop-system] [nio-8081-exec-4] c.f.s.i.p.m.SysUserMapper.selectById     : ==>  Preparing: SELECT id,username,password,nickname,email,phone,avatar,role_code,shop_id,company_id,courier_id,status,last_login_at,created_at,updated_at,deleted FROM sys_user WHERE id=? AND deleted=0
+2026-11-03T00:47:35.286+08:00 DEBUG 8364 --- [myshop-system] [nio-8081-exec-4] c.f.s.i.p.m.SysUserMapper.selectById     : ==> Parameters: 3(Long)
+2026-11-03T00:47:35.287+08:00 DEBUG 8364 --- [myshop-system] [nio-8081-exec-4] c.f.s.i.p.m.SysUserMapper.selectById     : <==      Total: 1
+2026-11-03T00:47:35.288+08:00 DEBUG 8364 --- [myshop-system] [nio-8081-exec-4] c.f.s.i.p.m.SysUserMapper.updateById     : ==>  Preparing: UPDATE sys_user SET username=?, password=?, nickname=?, email=?, role_code=?, shop_id=?, status=?, last_login_at=?, created_at=?, updated_at=? WHERE id=? AND deleted=0
+2026-11-03T00:47:35.288+08:00 DEBUG 8364 --- [myshop-system] [nio-8081-exec-4] c.f.s.i.p.m.SysUserMapper.updateById     : ==> Parameters: merchant(String), $2a$10$7.sfOgilY1.EzZlD1EABbeo0W6yDebUlHcrRyKZp.GZIC7TIhNcEO(String), 数码旗舰店(String), merchant@myshop.com(String), merchant-sales(String), 1(Long), 1(Integer), 2026-11-03T00:47:30(LocalDateTime), 2026-11-01T23:11:59(LocalDateTime), 2026-11-03T00:47:30(LocalDateTime), 3(Long)
+2026-11-03T00:47:35.303+08:00 DEBUG 8364 --- [myshop-system] [nio-8081-exec-4] c.f.s.i.p.m.SysUserMapper.updateById     : <==    Updates: 1
+2026-11-03T00:47:35.614+08:00 DEBUG 8364 --- [myshop-system] [nio-8081-exec-5] c.f.s.i.p.m.SysUserMapper.selectById     : ==>  Preparing: SELECT id,username,password,nickname,email,phone,avatar,role_code,shop_id,company_id,courier_id,status,last_login_at,created_at,updated_at,deleted FROM sys_user WHERE id=? AND deleted=0
+2026-11-03T00:47:35.614+08:00 DEBUG 8364 --- [myshop-system] [nio-8081-exec-5] c.f.s.i.p.m.SysUserMapper.selectById     : ==> Parameters: 11(Long)
+2026-11-03T00:47:35.616+08:00 DEBUG 8364 --- [myshop-system] [nio-8081-exec-5] c.f.s.i.p.m.SysUserMapper.selectById     : <==      Total: 1
+2026-11-03T00:47:35.617+08:00 DEBUG 8364 --- [myshop-system] [nio-8081-exec-5] c.f.s.i.p.m.SysRoleMapper.selectList     : ==>  Preparing: SELECT id,code,name,group_code,icon,description,sort,status,created_at,updated_at,deleted FROM sys_role WHERE deleted=0 AND (code = ?)
+2026-11-03T00:47:35.617+08:00 DEBUG 8364 --- [myshop-system] [nio-8081-exec-5] c.f.s.i.p.m.SysRoleMapper.selectList     : ==> Parameters: admin(String)
+2026-11-03T00:47:35.618+08:00 DEBUG 8364 --- [myshop-system] [nio-8081-exec-5] c.f.s.i.p.m.SysRoleMapper.selectList     : <==      Total: 1
+2026-11-03T00:47:35.621+08:00 DEBUG 8364 --- [myshop-system] [nio-8081-exec-5] c.f.s.i.p.m.SysRoleMapper.selectList     : ==>  Preparing: SELECT id,code,name,group_code,icon,description,sort,status,created_at,updated_at,deleted FROM sys_role WHERE deleted=0 AND (code = ?)
+2026-11-03T00:47:35.621+08:00 DEBUG 8364 --- [myshop-system] [nio-8081-exec-5] c.f.s.i.p.m.SysRoleMapper.selectList     : ==> Parameters: merchant(String)
+2026-11-03T00:47:35.622+08:00 DEBUG 8364 --- [myshop-system] [nio-8081-exec-5] c.f.s.i.p.m.SysRoleMapper.selectList     : <==      Total: 1
+2026-11-03T00:47:35.622+08:00 DEBUG 8364 --- [myshop-system] [nio-8081-exec-5] c.f.s.i.p.m.SysUserMapper.selectById     : ==>  Preparing: SELECT id,username,password,nickname,email,phone,avatar,role_code,shop_id,company_id,courier_id,status,last_login_at,created_at,updated_at,deleted FROM sys_user WHERE id=? AND deleted=0
+2026-11-03T00:47:35.622+08:00 DEBUG 8364 --- [myshop-system] [nio-8081-exec-5] c.f.s.i.p.m.SysUserMapper.selectById     : ==> Parameters: 3(Long)
+2026-11-03T00:47:35.624+08:00 DEBUG 8364 --- [myshop-system] [nio-8081-exec-5] c.f.s.i.p.m.SysUserMapper.selectById     : <==      Total: 1
+2026-11-03T00:47:35.625+08:00 DEBUG 8364 --- [myshop-system] [nio-8081-exec-5] c.f.s.i.p.m.SysUserMapper.updateById     : ==>  Preparing: UPDATE sys_user SET username=?, password=?, nickname=?, email=?, role_code=?, shop_id=?, status=?, last_login_at=?, created_at=?, updated_at=? WHERE id=? AND deleted=0
+2026-11-03T00:47:35.625+08:00 DEBUG 8364 --- [myshop-system] [nio-8081-exec-5] c.f.s.i.p.m.SysUserMapper.updateById     : ==> Parameters: merchant(String), $2a$10$7.sfOgilY1.EzZlD1EABbeo0W6yDebUlHcrRyKZp.GZIC7TIhNcEO(String), 数码旗舰店(String), merchant@myshop.com(String), merchant(String), 1(Long), 1(Integer), 2026-11-03T00:47:30(LocalDateTime), 2026-11-01T23:11:59(LocalDateTime), 2026-11-03T00:47:30(LocalDateTime), 3(Long)
+2026-11-03T00:47:35.643+08:00 DEBUG 8364 --- [myshop-system] [nio-8081-exec-5] c.f.s.i.p.m.SysUserMapper.updateById     : <==    Updates: 1
+2026-11-03T00:48:13.086+08:00 DEBUG 8364 --- [myshop-system] [nio-8081-exec-6] c.f.s.i.p.m.SysUserMapper.selectList     : ==>  Preparing: SELECT id,username,password,nickname,email,phone,avatar,role_code,shop_id,company_id,courier_id,status,last_login_at,created_at,updated_at,deleted FROM sys_user WHERE deleted=0 AND (username = ?)
+2026-11-03T00:48:13.087+08:00 DEBUG 8364 --- [myshop-system] [nio-8081-exec-6] c.f.s.i.p.m.SysUserMapper.selectList     : ==> Parameters: merchant(String)
+2026-11-03T00:48:13.088+08:00 DEBUG 8364 --- [myshop-system] [nio-8081-exec-6] c.f.s.i.p.m.SysUserMapper.selectList     : <==      Total: 1
+2026-11-03T00:48:13.143+08:00 DEBUG 8364 --- [myshop-system] [nio-8081-exec-6] c.f.s.i.p.mapper.SysUserMapper.update    : ==>  Preparing: UPDATE sys_user SET last_login_at=? WHERE deleted=0 AND (id = ?)
+2026-11-03T00:48:13.143+08:00 DEBUG 8364 --- [myshop-system] [nio-8081-exec-6] c.f.s.i.p.mapper.SysUserMapper.update    : ==> Parameters: 2026-11-03T00:48:13.142785100(LocalDateTime), 3(Long)
+2026-11-03T00:48:13.156+08:00 DEBUG 8364 --- [myshop-system] [nio-8081-exec-6] c.f.s.i.p.mapper.SysUserMapper.update    : <==    Updates: 1
+2026-11-03T00:48:13.156+08:00 DEBUG 8364 --- [myshop-system] [nio-8081-exec-6] c.f.s.i.p.m.U.insert                     : ==>  Preparing: INSERT INTO sys_login_record ( user_id, ip, device_id, device_name, login_at ) VALUES ( ?, ?, ?, ?, ? )
+2026-11-03T00:48:13.157+08:00 DEBUG 8364 --- [myshop-system] [nio-8081-exec-6] c.f.s.i.p.m.U.insert                     : ==> Parameters: 3(Long), 127.0.0.1(String), dev-final(String), Final Test(String), 2026-11-03T00:48:13.156794400(LocalDateTime)
+2026-11-03T00:48:13.174+08:00 DEBUG 8364 --- [myshop-system] [nio-8081-exec-6] c.f.s.i.p.m.U.insert                     : <==    Updates: 1
+2026-11-03T00:48:13.175+08:00 DEBUG 8364 --- [myshop-system] [nio-8081-exec-6] c.f.s.i.p.m.SysRoleMapper.selectList     : ==>  Preparing: SELECT id,code,name,group_code,icon,description,sort,status,created_at,updated_at,deleted FROM sys_role WHERE deleted=0 AND (code = ?)
+2026-11-03T00:48:13.175+08:00 DEBUG 8364 --- [myshop-system] [nio-8081-exec-6] c.f.s.i.p.m.SysRoleMapper.selectList     : ==> Parameters: merchant(String)
+2026-11-03T00:48:13.177+08:00 DEBUG 8364 --- [myshop-system] [nio-8081-exec-6] c.f.s.i.p.m.SysRoleMapper.selectList     : <==      Total: 1
+2026-11-03T00:48:13.178+08:00 DEBUG 8364 --- [myshop-system] [nio-8081-exec-6] c.f.s.i.p.m.SysRoleMapper.selectList     : ==>  Preparing: SELECT id,code,name,group_code,icon,description,sort,status,created_at,updated_at,deleted FROM sys_role WHERE deleted=0 AND (code = ?)
+2026-11-03T00:48:13.178+08:00 DEBUG 8364 --- [myshop-system] [nio-8081-exec-6] c.f.s.i.p.m.SysRoleMapper.selectList     : ==> Parameters: merchant(String)
+2026-11-03T00:48:13.180+08:00 DEBUG 8364 --- [myshop-system] [nio-8081-exec-6] c.f.s.i.p.m.SysRoleMapper.selectList     : <==      Total: 1
+2026-11-03T00:48:13.463+08:00 DEBUG 8364 --- [myshop-system] [nio-8081-exec-7] c.f.s.i.p.m.SysUserMapper.selectById     : ==>  Preparing: SELECT id,username,password,nickname,email,phone,avatar,role_code,shop_id,company_id,courier_id,status,last_login_at,created_at,updated_at,deleted FROM sys_user WHERE id=? AND deleted=0
+2026-11-03T00:48:13.464+08:00 DEBUG 8364 --- [myshop-system] [nio-8081-exec-7] c.f.s.i.p.m.SysUserMapper.selectById     : ==> Parameters: 3(Long)
+2026-11-03T00:48:13.466+08:00 DEBUG 8364 --- [myshop-system] [nio-8081-exec-7] c.f.s.i.p.m.SysUserMapper.selectById     : <==      Total: 1
+2026-11-03T00:48:13.467+08:00 DEBUG 8364 --- [myshop-system] [nio-8081-exec-7] c.f.s.i.p.m.SysRoleMapper.selectList     : ==>  Preparing: SELECT id,code,name,group_code,icon,description,sort,status,created_at,updated_at,deleted FROM sys_role WHERE deleted=0 AND (code = ?)
+2026-11-03T00:48:13.467+08:00 DEBUG 8364 --- [myshop-system] [nio-8081-exec-7] c.f.s.i.p.m.SysRoleMapper.selectList     : ==> Parameters: merchant(String)
+2026-11-03T00:48:13.468+08:00 DEBUG 8364 --- [myshop-system] [nio-8081-exec-7] c.f.s.i.p.m.SysRoleMapper.selectList     : <==      Total: 1
+2026-11-03T00:48:13.469+08:00 DEBUG 8364 --- [myshop-system] [nio-8081-exec-7] c.f.s.i.p.m.SysUserMapper.selectById     : ==>  Preparing: SELECT id,username,password,nickname,email,phone,avatar,role_code,shop_id,company_id,courier_id,status,last_login_at,created_at,updated_at,deleted FROM sys_user WHERE id=? AND deleted=0
+2026-11-03T00:48:13.469+08:00 DEBUG 8364 --- [myshop-system] [nio-8081-exec-7] c.f.s.i.p.m.SysUserMapper.selectById     : ==> Parameters: 3(Long)
+2026-11-03T00:48:13.470+08:00 DEBUG 8364 --- [myshop-system] [nio-8081-exec-7] c.f.s.i.p.m.SysUserMapper.selectById     : <==      Total: 1
+2026-11-03T00:48:13.470+08:00 DEBUG 8364 --- [myshop-system] [nio-8081-exec-7] c.f.s.i.p.m.SysRoleMapper.selectList     : ==>  Preparing: SELECT id,code,name,group_code,icon,description,sort,status,created_at,updated_at,deleted FROM sys_role WHERE deleted=0 AND (code = ?)
+2026-11-03T00:48:13.470+08:00 DEBUG 8364 --- [myshop-system] [nio-8081-exec-7] c.f.s.i.p.m.SysRoleMapper.selectList     : ==> Parameters: merchant(String)
+2026-11-03T00:48:13.471+08:00 DEBUG 8364 --- [myshop-system] [nio-8081-exec-7] c.f.s.i.p.m.SysRoleMapper.selectList     : <==      Total: 1
+2026-11-03T01:10:13.942+08:00 DEBUG 8364 --- [myshop-system] [nio-8081-exec-9] c.f.s.i.p.m.SysUserMapper.selectList     : ==>  Preparing: SELECT id,username,password,nickname,email,phone,avatar,role_code,shop_id,company_id,courier_id,status,last_login_at,created_at,updated_at,deleted FROM sys_user WHERE deleted=0 AND (username = ?)
+2026-11-03T01:10:13.952+08:00 DEBUG 8364 --- [myshop-system] [nio-8081-exec-9] c.f.s.i.p.m.SysUserMapper.selectList     : ==> Parameters: buyer(String)
+2026-11-03T01:10:13.974+08:00 DEBUG 8364 --- [myshop-system] [nio-8081-exec-9] c.f.s.i.p.m.SysUserMapper.selectList     : <==      Total: 1
+2026-11-03T01:10:14.034+08:00 DEBUG 8364 --- [myshop-system] [nio-8081-exec-9] c.f.s.i.p.mapper.SysUserMapper.update    : ==>  Preparing: UPDATE sys_user SET last_login_at=? WHERE deleted=0 AND (id = ?)
+2026-11-03T01:10:14.035+08:00 DEBUG 8364 --- [myshop-system] [nio-8081-exec-9] c.f.s.i.p.mapper.SysUserMapper.update    : ==> Parameters: 2026-11-03T01:10:14.032041800(LocalDateTime), 2(Long)
+2026-11-03T01:10:14.063+08:00 DEBUG 8364 --- [myshop-system] [nio-8081-exec-9] c.f.s.i.p.mapper.SysUserMapper.update    : <==    Updates: 1
+2026-11-03T01:10:14.067+08:00 DEBUG 8364 --- [myshop-system] [nio-8081-exec-9] c.f.s.i.p.m.U.insert                     : ==>  Preparing: INSERT INTO sys_login_record ( user_id, ip, device_id, device_name, login_at ) VALUES ( ?, ?, ?, ?, ? )
+2026-11-03T01:10:14.068+08:00 DEBUG 8364 --- [myshop-system] [nio-8081-exec-9] c.f.s.i.p.m.U.insert                     : ==> Parameters: 2(Long), 0:0:0:0:0:0:0:1(String), (String), (String), 2026-11-03T01:10:14.065150300(LocalDateTime)
+2026-11-03T01:10:14.091+08:00 DEBUG 8364 --- [myshop-system] [nio-8081-exec-9] c.f.s.i.p.m.U.insert                     : <==    Updates: 1
+2026-11-03T01:10:14.093+08:00 DEBUG 8364 --- [myshop-system] [nio-8081-exec-9] c.f.s.i.p.m.SysRoleMapper.selectList     : ==>  Preparing: SELECT id,code,name,group_code,icon,description,sort,status,created_at,updated_at,deleted FROM sys_role WHERE deleted=0 AND (code = ?)
+2026-11-03T01:10:14.093+08:00 DEBUG 8364 --- [myshop-system] [nio-8081-exec-9] c.f.s.i.p.m.SysRoleMapper.selectList     : ==> Parameters: user(String)
+2026-11-03T01:10:14.096+08:00 DEBUG 8364 --- [myshop-system] [nio-8081-exec-9] c.f.s.i.p.m.SysRoleMapper.selectList     : <==      Total: 1
+2026-11-03T01:10:14.108+08:00 DEBUG 8364 --- [myshop-system] [nio-8081-exec-9] c.f.s.i.p.m.SysRoleMapper.selectList     : ==>  Preparing: SELECT id,code,name,group_code,icon,description,sort,status,created_at,updated_at,deleted FROM sys_role WHERE deleted=0 AND (code = ?)
+2026-11-03T01:10:14.108+08:00 DEBUG 8364 --- [myshop-system] [nio-8081-exec-9] c.f.s.i.p.m.SysRoleMapper.selectList     : ==> Parameters: user(String)
+2026-11-03T01:10:14.111+08:00 DEBUG 8364 --- [myshop-system] [nio-8081-exec-9] c.f.s.i.p.m.SysRoleMapper.selectList     : <==      Total: 1
+2026-11-03T01:10:14.246+08:00 DEBUG 8364 --- [myshop-system] [io-8081-exec-10] c.f.s.i.p.m.SysUserMapper.selectList     : ==>  Preparing: SELECT id,username,password,nickname,email,phone,avatar,role_code,shop_id,company_id,courier_id,status,last_login_at,created_at,updated_at,deleted FROM sys_user WHERE deleted=0 AND (username = ?)
+2026-11-03T01:10:14.246+08:00 DEBUG 8364 --- [myshop-system] [io-8081-exec-10] c.f.s.i.p.m.SysUserMapper.selectList     : ==> Parameters: merchant(String)
+2026-11-03T01:10:14.249+08:00 DEBUG 8364 --- [myshop-system] [io-8081-exec-10] c.f.s.i.p.m.SysUserMapper.selectList     : <==      Total: 1
+2026-11-03T01:10:14.308+08:00 DEBUG 8364 --- [myshop-system] [io-8081-exec-10] c.f.s.i.p.mapper.SysUserMapper.update    : ==>  Preparing: UPDATE sys_user SET last_login_at=? WHERE deleted=0 AND (id = ?)
+2026-11-03T01:10:14.309+08:00 DEBUG 8364 --- [myshop-system] [io-8081-exec-10] c.f.s.i.p.mapper.SysUserMapper.update    : ==> Parameters: 2026-11-03T01:10:14.307105100(LocalDateTime), 3(Long)
+2026-11-03T01:10:14.327+08:00 DEBUG 8364 --- [myshop-system] [io-8081-exec-10] c.f.s.i.p.mapper.SysUserMapper.update    : <==    Updates: 1
+2026-11-03T01:10:14.328+08:00 DEBUG 8364 --- [myshop-system] [io-8081-exec-10] c.f.s.i.p.m.U.insert                     : ==>  Preparing: INSERT INTO sys_login_record ( user_id, ip, device_id, device_name, login_at ) VALUES ( ?, ?, ?, ?, ? )
+2026-11-03T01:10:14.328+08:00 DEBUG 8364 --- [myshop-system] [io-8081-exec-10] c.f.s.i.p.m.U.insert                     : ==> Parameters: 3(Long), 0:0:0:0:0:0:0:1(String), (String), (String), 2026-11-03T01:10:14.327844600(LocalDateTime)
+2026-11-03T01:10:14.346+08:00 DEBUG 8364 --- [myshop-system] [io-8081-exec-10] c.f.s.i.p.m.U.insert                     : <==    Updates: 1
+2026-11-03T01:10:14.347+08:00 DEBUG 8364 --- [myshop-system] [io-8081-exec-10] c.f.s.i.p.m.SysRoleMapper.selectList     : ==>  Preparing: SELECT id,code,name,group_code,icon,description,sort,status,created_at,updated_at,deleted FROM sys_role WHERE deleted=0 AND (code = ?)
+2026-11-03T01:10:14.348+08:00 DEBUG 8364 --- [myshop-system] [io-8081-exec-10] c.f.s.i.p.m.SysRoleMapper.selectList     : ==> Parameters: merchant(String)
+2026-11-03T01:10:14.351+08:00 DEBUG 8364 --- [myshop-system] [io-8081-exec-10] c.f.s.i.p.m.SysRoleMapper.selectList     : <==      Total: 1
+2026-11-03T01:10:14.352+08:00 DEBUG 8364 --- [myshop-system] [io-8081-exec-10] c.f.s.i.p.m.SysRoleMapper.selectList     : ==>  Preparing: SELECT id,code,name,group_code,icon,description,sort,status,created_at,updated_at,deleted FROM sys_role WHERE deleted=0 AND (code = ?)
+2026-11-03T01:10:14.353+08:00 DEBUG 8364 --- [myshop-system] [io-8081-exec-10] c.f.s.i.p.m.SysRoleMapper.selectList     : ==> Parameters: merchant(String)
+2026-11-03T01:10:14.355+08:00 DEBUG 8364 --- [myshop-system] [io-8081-exec-10] c.f.s.i.p.m.SysRoleMapper.selectList     : <==      Total: 1
+2026-11-03T01:10:14.445+08:00 DEBUG 8364 --- [myshop-system] [nio-8081-exec-1] c.f.s.i.p.m.SysUserMapper.selectList     : ==>  Preparing: SELECT id,username,password,nickname,email,phone,avatar,role_code,shop_id,company_id,courier_id,status,last_login_at,created_at,updated_at,deleted FROM sys_user WHERE deleted=0 AND (username = ?)
+2026-11-03T01:10:14.445+08:00 DEBUG 8364 --- [myshop-system] [nio-8081-exec-1] c.f.s.i.p.m.SysUserMapper.selectList     : ==> Parameters: admin(String)
+2026-11-03T01:10:14.448+08:00 DEBUG 8364 --- [myshop-system] [nio-8081-exec-1] c.f.s.i.p.m.SysUserMapper.selectList     : <==      Total: 1
+2026-11-03T01:10:14.503+08:00 DEBUG 8364 --- [myshop-system] [nio-8081-exec-1] c.f.s.i.p.mapper.SysUserMapper.update    : ==>  Preparing: UPDATE sys_user SET last_login_at=? WHERE deleted=0 AND (id = ?)
+2026-11-03T01:10:14.503+08:00 DEBUG 8364 --- [myshop-system] [nio-8081-exec-1] c.f.s.i.p.mapper.SysUserMapper.update    : ==> Parameters: 2026-11-03T01:10:14.501774400(LocalDateTime), 11(Long)
+2026-11-03T01:10:14.517+08:00 DEBUG 8364 --- [myshop-system] [nio-8081-exec-1] c.f.s.i.p.mapper.SysUserMapper.update    : <==    Updates: 1
+2026-11-03T01:10:14.518+08:00 DEBUG 8364 --- [myshop-system] [nio-8081-exec-1] c.f.s.i.p.m.U.insert                     : ==>  Preparing: INSERT INTO sys_login_record ( user_id, ip, device_id, device_name, login_at ) VALUES ( ?, ?, ?, ?, ? )
+2026-11-03T01:10:14.519+08:00 DEBUG 8364 --- [myshop-system] [nio-8081-exec-1] c.f.s.i.p.m.U.insert                     : ==> Parameters: 11(Long), 0:0:0:0:0:0:0:1(String), (String), (String), 2026-11-03T01:10:14.518427500(LocalDateTime)
+2026-11-03T01:10:14.539+08:00 DEBUG 8364 --- [myshop-system] [nio-8081-exec-1] c.f.s.i.p.m.U.insert                     : <==    Updates: 1
+2026-11-03T01:10:14.540+08:00 DEBUG 8364 --- [myshop-system] [nio-8081-exec-1] c.f.s.i.p.m.SysRoleMapper.selectList     : ==>  Preparing: SELECT id,code,name,group_code,icon,description,sort,status,created_at,updated_at,deleted FROM sys_role WHERE deleted=0 AND (code = ?)
+2026-11-03T01:10:14.540+08:00 DEBUG 8364 --- [myshop-system] [nio-8081-exec-1] c.f.s.i.p.m.SysRoleMapper.selectList     : ==> Parameters: admin(String)
+2026-11-03T01:10:14.543+08:00 DEBUG 8364 --- [myshop-system] [nio-8081-exec-1] c.f.s.i.p.m.SysRoleMapper.selectList     : <==      Total: 1
+2026-11-03T01:10:14.544+08:00 DEBUG 8364 --- [myshop-system] [nio-8081-exec-1] c.f.s.i.p.m.SysRoleMapper.selectList     : ==>  Preparing: SELECT id,code,name,group_code,icon,description,sort,status,created_at,updated_at,deleted FROM sys_role WHERE deleted=0 AND (code = ?)
+2026-11-03T01:10:14.545+08:00 DEBUG 8364 --- [myshop-system] [nio-8081-exec-1] c.f.s.i.p.m.SysRoleMapper.selectList     : ==> Parameters: admin(String)
+2026-11-03T01:10:14.546+08:00 DEBUG 8364 --- [myshop-system] [nio-8081-exec-1] c.f.s.i.p.m.SysRoleMapper.selectList     : <==      Total: 1
+2026-11-03T01:10:14.643+08:00 DEBUG 8364 --- [myshop-system] [nio-8081-exec-2] c.f.s.i.p.m.SysUserMapper.selectList     : ==>  Preparing: SELECT id,username,password,nickname,email,phone,avatar,role_code,shop_id,company_id,courier_id,status,last_login_at,created_at,updated_at,deleted FROM sys_user WHERE deleted=0 AND (username = ?)
+2026-11-03T01:10:14.643+08:00 DEBUG 8364 --- [myshop-system] [nio-8081-exec-2] c.f.s.i.p.m.SysUserMapper.selectList     : ==> Parameters: courier(String)
+2026-11-03T01:10:14.649+08:00 DEBUG 8364 --- [myshop-system] [nio-8081-exec-2] c.f.s.i.p.m.SysUserMapper.selectList     : <==      Total: 1
+2026-11-03T01:10:14.705+08:00 DEBUG 8364 --- [myshop-system] [nio-8081-exec-2] c.f.s.i.p.mapper.SysUserMapper.update    : ==>  Preparing: UPDATE sys_user SET last_login_at=? WHERE deleted=0 AND (id = ?)
+2026-11-03T01:10:14.706+08:00 DEBUG 8364 --- [myshop-system] [nio-8081-exec-2] c.f.s.i.p.mapper.SysUserMapper.update    : ==> Parameters: 2026-11-03T01:10:14.704062800(LocalDateTime), 8(Long)
+2026-11-03T01:10:14.722+08:00 DEBUG 8364 --- [myshop-system] [nio-8081-exec-2] c.f.s.i.p.mapper.SysUserMapper.update    : <==    Updates: 1
+2026-11-03T01:10:14.723+08:00 DEBUG 8364 --- [myshop-system] [nio-8081-exec-2] c.f.s.i.p.m.U.insert                     : ==>  Preparing: INSERT INTO sys_login_record ( user_id, ip, device_id, device_name, login_at ) VALUES ( ?, ?, ?, ?, ? )
+2026-11-03T01:10:14.737+08:00 DEBUG 8364 --- [myshop-system] [nio-8081-exec-2] c.f.s.i.p.m.U.insert                     : ==> Parameters: 8(Long), 0:0:0:0:0:0:0:1(String), (String), (String), 2026-11-03T01:10:14.723237700(LocalDateTime)
+2026-11-03T01:10:14.748+08:00 DEBUG 8364 --- [myshop-system] [nio-8081-exec-2] c.f.s.i.p.m.U.insert                     : <==    Updates: 1
+2026-11-03T01:10:14.749+08:00 DEBUG 8364 --- [myshop-system] [nio-8081-exec-2] c.f.s.i.p.m.SysRoleMapper.selectList     : ==>  Preparing: SELECT id,code,name,group_code,icon,description,sort,status,created_at,updated_at,deleted FROM sys_role WHERE deleted=0 AND (code = ?)
+2026-11-03T01:10:14.750+08:00 DEBUG 8364 --- [myshop-system] [nio-8081-exec-2] c.f.s.i.p.m.SysRoleMapper.selectList     : ==> Parameters: logistics-courier(String)
+2026-11-03T01:10:14.752+08:00 DEBUG 8364 --- [myshop-system] [nio-8081-exec-2] c.f.s.i.p.m.SysRoleMapper.selectList     : <==      Total: 1
+2026-11-03T01:10:14.754+08:00 DEBUG 8364 --- [myshop-system] [nio-8081-exec-2] c.f.s.i.p.m.SysRoleMapper.selectList     : ==>  Preparing: SELECT id,code,name,group_code,icon,description,sort,status,created_at,updated_at,deleted FROM sys_role WHERE deleted=0 AND (code = ?)
+2026-11-03T01:10:14.754+08:00 DEBUG 8364 --- [myshop-system] [nio-8081-exec-2] c.f.s.i.p.m.SysRoleMapper.selectList     : ==> Parameters: logistics-courier(String)
+2026-11-03T01:10:14.756+08:00 DEBUG 8364 --- [myshop-system] [nio-8081-exec-2] c.f.s.i.p.m.SysRoleMapper.selectList     : <==      Total: 1
+2026-11-03T01:10:22.464+08:00 DEBUG 8364 --- [myshop-system] [nio-8081-exec-3] c.f.s.i.p.m.SysUserMapper.selectList     : ==>  Preparing: SELECT id,username,password,nickname,email,phone,avatar,role_code,shop_id,company_id,courier_id,status,last_login_at,created_at,updated_at,deleted FROM sys_user WHERE deleted=0 AND (username = ?)
+2026-11-03T01:10:22.464+08:00 DEBUG 8364 --- [myshop-system] [nio-8081-exec-3] c.f.s.i.p.m.SysUserMapper.selectList     : ==> Parameters: buyer(String)
+2026-11-03T01:10:22.466+08:00 DEBUG 8364 --- [myshop-system] [nio-8081-exec-3] c.f.s.i.p.m.SysUserMapper.selectList     : <==      Total: 1
+2026-11-03T01:10:22.523+08:00 DEBUG 8364 --- [myshop-system] [nio-8081-exec-3] c.f.s.i.p.mapper.SysUserMapper.update    : ==>  Preparing: UPDATE sys_user SET last_login_at=? WHERE deleted=0 AND (id = ?)
+2026-11-03T01:10:22.524+08:00 DEBUG 8364 --- [myshop-system] [nio-8081-exec-3] c.f.s.i.p.mapper.SysUserMapper.update    : ==> Parameters: 2026-11-03T01:10:22.521528200(LocalDateTime), 2(Long)
+2026-11-03T01:10:22.538+08:00 DEBUG 8364 --- [myshop-system] [nio-8081-exec-3] c.f.s.i.p.mapper.SysUserMapper.update    : <==    Updates: 1
+2026-11-03T01:10:22.542+08:00 DEBUG 8364 --- [myshop-system] [nio-8081-exec-3] c.f.s.i.p.m.U.insert                     : ==>  Preparing: INSERT INTO sys_login_record ( user_id, ip, device_id, device_name, login_at ) VALUES ( ?, ?, ?, ?, ? )
+2026-11-03T01:10:22.545+08:00 DEBUG 8364 --- [myshop-system] [nio-8081-exec-3] c.f.s.i.p.m.U.insert                     : ==> Parameters: 2(Long), 0:0:0:0:0:0:0:1(String), (String), (String), 2026-11-03T01:10:22.539666200(LocalDateTime)
+2026-11-03T01:10:22.564+08:00 DEBUG 8364 --- [myshop-system] [nio-8081-exec-3] c.f.s.i.p.m.U.insert                     : <==    Updates: 1
+2026-11-03T01:10:22.567+08:00 DEBUG 8364 --- [myshop-system] [nio-8081-exec-3] c.f.s.i.p.m.SysRoleMapper.selectList     : ==>  Preparing: SELECT id,code,name,group_code,icon,description,sort,status,created_at,updated_at,deleted FROM sys_role WHERE deleted=0 AND (code = ?)
+2026-11-03T01:10:22.568+08:00 DEBUG 8364 --- [myshop-system] [nio-8081-exec-3] c.f.s.i.p.m.SysRoleMapper.selectList     : ==> Parameters: user(String)
+2026-11-03T01:10:22.570+08:00 DEBUG 8364 --- [myshop-system] [nio-8081-exec-3] c.f.s.i.p.m.SysRoleMapper.selectList     : <==      Total: 1
+2026-11-03T01:10:22.574+08:00 DEBUG 8364 --- [myshop-system] [nio-8081-exec-3] c.f.s.i.p.m.SysRoleMapper.selectList     : ==>  Preparing: SELECT id,code,name,group_code,icon,description,sort,status,created_at,updated_at,deleted FROM sys_role WHERE deleted=0 AND (code = ?)
+2026-11-03T01:10:22.574+08:00 DEBUG 8364 --- [myshop-system] [nio-8081-exec-3] c.f.s.i.p.m.SysRoleMapper.selectList     : ==> Parameters: user(String)
+2026-11-03T01:10:22.577+08:00 DEBUG 8364 --- [myshop-system] [nio-8081-exec-3] c.f.s.i.p.m.SysRoleMapper.selectList     : <==      Total: 1
+2026-11-03T01:10:33.934+08:00 DEBUG 8364 --- [myshop-system] [nio-8081-exec-4] c.f.s.i.p.m.SysUserMapper.selectList     : ==>  Preparing: SELECT id,username,password,nickname,email,phone,avatar,role_code,shop_id,company_id,courier_id,status,last_login_at,created_at,updated_at,deleted FROM sys_user WHERE deleted=0 AND (username = ?)
+2026-11-03T01:10:33.934+08:00 DEBUG 8364 --- [myshop-system] [nio-8081-exec-4] c.f.s.i.p.m.SysUserMapper.selectList     : ==> Parameters: buyer(String)
+2026-11-03T01:10:33.937+08:00 DEBUG 8364 --- [myshop-system] [nio-8081-exec-4] c.f.s.i.p.m.SysUserMapper.selectList     : <==      Total: 1
+2026-11-03T01:10:33.996+08:00 DEBUG 8364 --- [myshop-system] [nio-8081-exec-4] c.f.s.i.p.mapper.SysUserMapper.update    : ==>  Preparing: UPDATE sys_user SET last_login_at=? WHERE deleted=0 AND (id = ?)
+2026-11-03T01:10:33.997+08:00 DEBUG 8364 --- [myshop-system] [nio-8081-exec-4] c.f.s.i.p.mapper.SysUserMapper.update    : ==> Parameters: 2026-11-03T01:10:33.996254(LocalDateTime), 2(Long)
+2026-11-03T01:10:34.012+08:00 DEBUG 8364 --- [myshop-system] [nio-8081-exec-4] c.f.s.i.p.mapper.SysUserMapper.update    : <==    Updates: 1
+2026-11-03T01:10:34.013+08:00 DEBUG 8364 --- [myshop-system] [nio-8081-exec-4] c.f.s.i.p.m.U.insert                     : ==>  Preparing: INSERT INTO sys_login_record ( user_id, ip, device_id, device_name, login_at ) VALUES ( ?, ?, ?, ?, ? )
+2026-11-03T01:10:34.013+08:00 DEBUG 8364 --- [myshop-system] [nio-8081-exec-4] c.f.s.i.p.m.U.insert                     : ==> Parameters: 2(Long), 0:0:0:0:0:0:0:1(String), (String), (String), 2026-11-03T01:10:34.012939500(LocalDateTime)
+2026-11-03T01:10:34.028+08:00 DEBUG 8364 --- [myshop-system] [nio-8081-exec-4] c.f.s.i.p.m.U.insert                     : <==    Updates: 1
+2026-11-03T01:10:34.029+08:00 DEBUG 8364 --- [myshop-system] [nio-8081-exec-4] c.f.s.i.p.m.SysRoleMapper.selectList     : ==>  Preparing: SELECT id,code,name,group_code,icon,description,sort,status,created_at,updated_at,deleted FROM sys_role WHERE deleted=0 AND (code = ?)
+2026-11-03T01:10:34.030+08:00 DEBUG 8364 --- [myshop-system] [nio-8081-exec-4] c.f.s.i.p.m.SysRoleMapper.selectList     : ==> Parameters: user(String)
+2026-11-03T01:10:34.032+08:00 DEBUG 8364 --- [myshop-system] [nio-8081-exec-4] c.f.s.i.p.m.SysRoleMapper.selectList     : <==      Total: 1
+2026-11-03T01:10:34.033+08:00 DEBUG 8364 --- [myshop-system] [nio-8081-exec-4] c.f.s.i.p.m.SysRoleMapper.selectList     : ==>  Preparing: SELECT id,code,name,group_code,icon,description,sort,status,created_at,updated_at,deleted FROM sys_role WHERE deleted=0 AND (code = ?)
+2026-11-03T01:10:34.034+08:00 DEBUG 8364 --- [myshop-system] [nio-8081-exec-4] c.f.s.i.p.m.SysRoleMapper.selectList     : ==> Parameters: user(String)
+2026-11-03T01:10:34.037+08:00 DEBUG 8364 --- [myshop-system] [nio-8081-exec-4] c.f.s.i.p.m.SysRoleMapper.selectList     : <==      Total: 1
+2026-11-03T01:10:41.070+08:00 DEBUG 8364 --- [myshop-system] [nio-8081-exec-5] c.f.s.i.p.m.SysUserMapper.selectList     : ==>  Preparing: SELECT id,username,password,nickname,email,phone,avatar,role_code,shop_id,company_id,courier_id,status,last_login_at,created_at,updated_at,deleted FROM sys_user WHERE deleted=0 AND (username = ?)
+2026-11-03T01:10:41.071+08:00 DEBUG 8364 --- [myshop-system] [nio-8081-exec-5] c.f.s.i.p.m.SysUserMapper.selectList     : ==> Parameters: merchant(String)
+2026-11-03T01:10:41.073+08:00 DEBUG 8364 --- [myshop-system] [nio-8081-exec-5] c.f.s.i.p.m.SysUserMapper.selectList     : <==      Total: 1
+2026-11-03T01:10:41.128+08:00 DEBUG 8364 --- [myshop-system] [nio-8081-exec-5] c.f.s.i.p.mapper.SysUserMapper.update    : ==>  Preparing: UPDATE sys_user SET last_login_at=? WHERE deleted=0 AND (id = ?)
+2026-11-03T01:10:41.129+08:00 DEBUG 8364 --- [myshop-system] [nio-8081-exec-5] c.f.s.i.p.mapper.SysUserMapper.update    : ==> Parameters: 2026-11-03T01:10:41.127015700(LocalDateTime), 3(Long)
+2026-11-03T01:10:41.146+08:00 DEBUG 8364 --- [myshop-system] [nio-8081-exec-5] c.f.s.i.p.mapper.SysUserMapper.update    : <==    Updates: 1
+2026-11-03T01:10:41.148+08:00 DEBUG 8364 --- [myshop-system] [nio-8081-exec-5] c.f.s.i.p.m.U.insert                     : ==>  Preparing: INSERT INTO sys_login_record ( user_id, ip, device_id, device_name, login_at ) VALUES ( ?, ?, ?, ?, ? )
+2026-11-03T01:10:41.148+08:00 DEBUG 8364 --- [myshop-system] [nio-8081-exec-5] c.f.s.i.p.m.U.insert                     : ==> Parameters: 3(Long), 0:0:0:0:0:0:0:1(String), (String), (String), 2026-11-03T01:10:41.147036900(LocalDateTime)
+2026-11-03T01:10:41.170+08:00 DEBUG 8364 --- [myshop-system] [nio-8081-exec-5] c.f.s.i.p.m.U.insert                     : <==    Updates: 1
+2026-11-03T01:10:41.171+08:00 DEBUG 8364 --- [myshop-system] [nio-8081-exec-5] c.f.s.i.p.m.SysRoleMapper.selectList     : ==>  Preparing: SELECT id,code,name,group_code,icon,description,sort,status,created_at,updated_at,deleted FROM sys_role WHERE deleted=0 AND (code = ?)
+2026-11-03T01:10:41.172+08:00 DEBUG 8364 --- [myshop-system] [nio-8081-exec-5] c.f.s.i.p.m.SysRoleMapper.selectList     : ==> Parameters: merchant(String)
+2026-11-03T01:10:41.174+08:00 DEBUG 8364 --- [myshop-system] [nio-8081-exec-5] c.f.s.i.p.m.SysRoleMapper.selectList     : <==      Total: 1
+2026-11-03T01:10:41.182+08:00 DEBUG 8364 --- [myshop-system] [nio-8081-exec-5] c.f.s.i.p.m.SysRoleMapper.selectList     : ==>  Preparing: SELECT id,code,name,group_code,icon,description,sort,status,created_at,updated_at,deleted FROM sys_role WHERE deleted=0 AND (code = ?)
+2026-11-03T01:10:41.182+08:00 DEBUG 8364 --- [myshop-system] [nio-8081-exec-5] c.f.s.i.p.m.SysRoleMapper.selectList     : ==> Parameters: merchant(String)
+2026-11-03T01:10:41.184+08:00 DEBUG 8364 --- [myshop-system] [nio-8081-exec-5] c.f.s.i.p.m.SysRoleMapper.selectList     : <==      Total: 1
+2026-11-03T01:10:50.230+08:00 DEBUG 8364 --- [myshop-system] [nio-8081-exec-6] c.f.s.i.p.m.SysUserMapper.selectList     : ==>  Preparing: SELECT id,username,password,nickname,email,phone,avatar,role_code,shop_id,company_id,courier_id,status,last_login_at,created_at,updated_at,deleted FROM sys_user WHERE deleted=0 AND (username = ?)
+2026-11-03T01:10:50.230+08:00 DEBUG 8364 --- [myshop-system] [nio-8081-exec-6] c.f.s.i.p.m.SysUserMapper.selectList     : ==> Parameters: buyer(String)
+2026-11-03T01:10:50.233+08:00 DEBUG 8364 --- [myshop-system] [nio-8081-exec-6] c.f.s.i.p.m.SysUserMapper.selectList     : <==      Total: 1
+2026-11-03T01:10:50.290+08:00 DEBUG 8364 --- [myshop-system] [nio-8081-exec-6] c.f.s.i.p.mapper.SysUserMapper.update    : ==>  Preparing: UPDATE sys_user SET last_login_at=? WHERE deleted=0 AND (id = ?)
+2026-11-03T01:10:50.291+08:00 DEBUG 8364 --- [myshop-system] [nio-8081-exec-6] c.f.s.i.p.mapper.SysUserMapper.update    : ==> Parameters: 2026-11-03T01:10:50.289217300(LocalDateTime), 2(Long)
+2026-11-03T01:10:50.306+08:00 DEBUG 8364 --- [myshop-system] [nio-8081-exec-6] c.f.s.i.p.mapper.SysUserMapper.update    : <==    Updates: 1
+2026-11-03T01:10:50.308+08:00 DEBUG 8364 --- [myshop-system] [nio-8081-exec-6] c.f.s.i.p.m.U.insert                     : ==>  Preparing: INSERT INTO sys_login_record ( user_id, ip, device_id, device_name, login_at ) VALUES ( ?, ?, ?, ?, ? )
+2026-11-03T01:10:50.308+08:00 DEBUG 8364 --- [myshop-system] [nio-8081-exec-6] c.f.s.i.p.m.U.insert                     : ==> Parameters: 2(Long), 0:0:0:0:0:0:0:1(String), (String), (String), 2026-11-03T01:10:50.307141600(LocalDateTime)
+2026-11-03T01:10:50.323+08:00 DEBUG 8364 --- [myshop-system] [nio-8081-exec-6] c.f.s.i.p.m.U.insert                     : <==    Updates: 1
+2026-11-03T01:10:50.325+08:00 DEBUG 8364 --- [myshop-system] [nio-8081-exec-6] c.f.s.i.p.m.SysRoleMapper.selectList     : ==>  Preparing: SELECT id,code,name,group_code,icon,description,sort,status,created_at,updated_at,deleted FROM sys_role WHERE deleted=0 AND (code = ?)
+2026-11-03T01:10:50.325+08:00 DEBUG 8364 --- [myshop-system] [nio-8081-exec-6] c.f.s.i.p.m.SysRoleMapper.selectList     : ==> Parameters: user(String)
+2026-11-03T01:10:50.327+08:00 DEBUG 8364 --- [myshop-system] [nio-8081-exec-6] c.f.s.i.p.m.SysRoleMapper.selectList     : <==      Total: 1
+2026-11-03T01:10:50.328+08:00 DEBUG 8364 --- [myshop-system] [nio-8081-exec-6] c.f.s.i.p.m.SysRoleMapper.selectList     : ==>  Preparing: SELECT id,code,name,group_code,icon,description,sort,status,created_at,updated_at,deleted FROM sys_role WHERE deleted=0 AND (code = ?)
+2026-11-03T01:10:50.330+08:00 DEBUG 8364 --- [myshop-system] [nio-8081-exec-6] c.f.s.i.p.m.SysRoleMapper.selectList     : ==> Parameters: user(String)
+2026-11-03T01:10:50.332+08:00 DEBUG 8364 --- [myshop-system] [nio-8081-exec-6] c.f.s.i.p.m.SysRoleMapper.selectList     : <==      Total: 1
+2026-11-03T01:10:54.090+08:00 DEBUG 8364 --- [myshop-system] [nio-8081-exec-7] c.f.s.i.p.m.SysUserMapper.selectList     : ==>  Preparing: SELECT id,username,password,nickname,email,phone,avatar,role_code,shop_id,company_id,courier_id,status,last_login_at,created_at,updated_at,deleted FROM sys_user WHERE deleted=0 AND (username = ?)
+2026-11-03T01:10:54.090+08:00 DEBUG 8364 --- [myshop-system] [nio-8081-exec-7] c.f.s.i.p.m.SysUserMapper.selectList     : ==> Parameters: courier(String)
+2026-11-03T01:10:54.092+08:00 DEBUG 8364 --- [myshop-system] [nio-8081-exec-7] c.f.s.i.p.m.SysUserMapper.selectList     : <==      Total: 1
+2026-11-03T01:10:54.145+08:00 DEBUG 8364 --- [myshop-system] [nio-8081-exec-7] c.f.s.i.p.mapper.SysUserMapper.update    : ==>  Preparing: UPDATE sys_user SET last_login_at=? WHERE deleted=0 AND (id = ?)
+2026-11-03T01:10:54.146+08:00 DEBUG 8364 --- [myshop-system] [nio-8081-exec-7] c.f.s.i.p.mapper.SysUserMapper.update    : ==> Parameters: 2026-11-03T01:10:54.145216300(LocalDateTime), 8(Long)
+2026-11-03T01:10:54.161+08:00 DEBUG 8364 --- [myshop-system] [nio-8081-exec-7] c.f.s.i.p.mapper.SysUserMapper.update    : <==    Updates: 1
+2026-11-03T01:10:54.163+08:00 DEBUG 8364 --- [myshop-system] [nio-8081-exec-7] c.f.s.i.p.m.U.insert                     : ==>  Preparing: INSERT INTO sys_login_record ( user_id, ip, device_id, device_name, login_at ) VALUES ( ?, ?, ?, ?, ? )
+2026-11-03T01:10:54.163+08:00 DEBUG 8364 --- [myshop-system] [nio-8081-exec-7] c.f.s.i.p.m.U.insert                     : ==> Parameters: 8(Long), 0:0:0:0:0:0:0:1(String), (String), (String), 2026-11-03T01:10:54.162487(LocalDateTime)
+2026-11-03T01:10:54.179+08:00 DEBUG 8364 --- [myshop-system] [nio-8081-exec-7] c.f.s.i.p.m.U.insert                     : <==    Updates: 1
+2026-11-03T01:10:54.181+08:00 DEBUG 8364 --- [myshop-system] [nio-8081-exec-7] c.f.s.i.p.m.SysRoleMapper.selectList     : ==>  Preparing: SELECT id,code,name,group_code,icon,description,sort,status,created_at,updated_at,deleted FROM sys_role WHERE deleted=0 AND (code = ?)
+2026-11-03T01:10:54.182+08:00 DEBUG 8364 --- [myshop-system] [nio-8081-exec-7] c.f.s.i.p.m.SysRoleMapper.selectList     : ==> Parameters: logistics-courier(String)
+2026-11-03T01:10:54.184+08:00 DEBUG 8364 --- [myshop-system] [nio-8081-exec-7] c.f.s.i.p.m.SysRoleMapper.selectList     : <==      Total: 1
+2026-11-03T01:10:54.186+08:00 DEBUG 8364 --- [myshop-system] [nio-8081-exec-7] c.f.s.i.p.m.SysRoleMapper.selectList     : ==>  Preparing: SELECT id,code,name,group_code,icon,description,sort,status,created_at,updated_at,deleted FROM sys_role WHERE deleted=0 AND (code = ?)
+2026-11-03T01:10:54.186+08:00 DEBUG 8364 --- [myshop-system] [nio-8081-exec-7] c.f.s.i.p.m.SysRoleMapper.selectList     : ==> Parameters: logistics-courier(String)
+2026-11-03T01:10:54.188+08:00 DEBUG 8364 --- [myshop-system] [nio-8081-exec-7] c.f.s.i.p.m.SysRoleMapper.selectList     : <==      Total: 1
+2026-11-03T01:10:57.844+08:00 DEBUG 8364 --- [myshop-system] [nio-8081-exec-8] c.f.s.i.p.m.SysUserMapper.selectList     : ==>  Preparing: SELECT id,username,password,nickname,email,phone,avatar,role_code,shop_id,company_id,courier_id,status,last_login_at,created_at,updated_at,deleted FROM sys_user WHERE deleted=0 AND (username = ?)
+2026-11-03T01:10:57.844+08:00 DEBUG 8364 --- [myshop-system] [nio-8081-exec-8] c.f.s.i.p.m.SysUserMapper.selectList     : ==> Parameters: courier(String)
+2026-11-03T01:10:57.846+08:00 DEBUG 8364 --- [myshop-system] [nio-8081-exec-8] c.f.s.i.p.m.SysUserMapper.selectList     : <==      Total: 1
+2026-11-03T01:10:57.900+08:00 DEBUG 8364 --- [myshop-system] [nio-8081-exec-8] c.f.s.i.p.mapper.SysUserMapper.update    : ==>  Preparing: UPDATE sys_user SET last_login_at=? WHERE deleted=0 AND (id = ?)
+2026-11-03T01:10:57.900+08:00 DEBUG 8364 --- [myshop-system] [nio-8081-exec-8] c.f.s.i.p.mapper.SysUserMapper.update    : ==> Parameters: 2026-11-03T01:10:57.899152100(LocalDateTime), 8(Long)
+2026-11-03T01:10:57.915+08:00 DEBUG 8364 --- [myshop-system] [nio-8081-exec-8] c.f.s.i.p.mapper.SysUserMapper.update    : <==    Updates: 1
+2026-11-03T01:10:57.916+08:00 DEBUG 8364 --- [myshop-system] [nio-8081-exec-8] c.f.s.i.p.m.U.insert                     : ==>  Preparing: INSERT INTO sys_login_record ( user_id, ip, device_id, device_name, login_at ) VALUES ( ?, ?, ?, ?, ? )
+2026-11-03T01:10:57.916+08:00 DEBUG 8364 --- [myshop-system] [nio-8081-exec-8] c.f.s.i.p.m.U.insert                     : ==> Parameters: 8(Long), 0:0:0:0:0:0:0:1(String), (String), (String), 2026-11-03T01:10:57.916239700(LocalDateTime)
+2026-11-03T01:10:57.932+08:00 DEBUG 8364 --- [myshop-system] [nio-8081-exec-8] c.f.s.i.p.m.U.insert                     : <==    Updates: 1
+2026-11-03T01:10:57.933+08:00 DEBUG 8364 --- [myshop-system] [nio-8081-exec-8] c.f.s.i.p.m.SysRoleMapper.selectList     : ==>  Preparing: SELECT id,code,name,group_code,icon,description,sort,status,created_at,updated_at,deleted FROM sys_role WHERE deleted=0 AND (code = ?)
+2026-11-03T01:10:57.934+08:00 DEBUG 8364 --- [myshop-system] [nio-8081-exec-8] c.f.s.i.p.m.SysRoleMapper.selectList     : ==> Parameters: logistics-courier(String)
+2026-11-03T01:10:57.936+08:00 DEBUG 8364 --- [myshop-system] [nio-8081-exec-8] c.f.s.i.p.m.SysRoleMapper.selectList     : <==      Total: 1
+2026-11-03T01:10:57.938+08:00 DEBUG 8364 --- [myshop-system] [nio-8081-exec-8] c.f.s.i.p.m.SysRoleMapper.selectList     : ==>  Preparing: SELECT id,code,name,group_code,icon,description,sort,status,created_at,updated_at,deleted FROM sys_role WHERE deleted=0 AND (code = ?)
+2026-11-03T01:10:57.938+08:00 DEBUG 8364 --- [myshop-system] [nio-8081-exec-8] c.f.s.i.p.m.SysRoleMapper.selectList     : ==> Parameters: logistics-courier(String)
+2026-11-03T01:10:57.940+08:00 DEBUG 8364 --- [myshop-system] [nio-8081-exec-8] c.f.s.i.p.m.SysRoleMapper.selectList     : <==      Total: 1
+2026-11-03T01:11:01.904+08:00 DEBUG 8364 --- [myshop-system] [nio-8081-exec-9] c.f.s.i.p.m.SysUserMapper.selectList     : ==>  Preparing: SELECT id,username,password,nickname,email,phone,avatar,role_code,shop_id,company_id,courier_id,status,last_login_at,created_at,updated_at,deleted FROM sys_user WHERE deleted=0 AND (username = ?)
+2026-11-03T01:11:01.904+08:00 DEBUG 8364 --- [myshop-system] [nio-8081-exec-9] c.f.s.i.p.m.SysUserMapper.selectList     : ==> Parameters: merchant(String)
+2026-11-03T01:11:01.907+08:00 DEBUG 8364 --- [myshop-system] [nio-8081-exec-9] c.f.s.i.p.m.SysUserMapper.selectList     : <==      Total: 1
+2026-11-03T01:11:01.961+08:00 DEBUG 8364 --- [myshop-system] [nio-8081-exec-9] c.f.s.i.p.mapper.SysUserMapper.update    : ==>  Preparing: UPDATE sys_user SET last_login_at=? WHERE deleted=0 AND (id = ?)
+2026-11-03T01:11:01.962+08:00 DEBUG 8364 --- [myshop-system] [nio-8081-exec-9] c.f.s.i.p.mapper.SysUserMapper.update    : ==> Parameters: 2026-11-03T01:11:01.960422(LocalDateTime), 3(Long)
+2026-11-03T01:11:01.977+08:00 DEBUG 8364 --- [myshop-system] [nio-8081-exec-9] c.f.s.i.p.mapper.SysUserMapper.update    : <==    Updates: 1
+2026-11-03T01:11:01.979+08:00 DEBUG 8364 --- [myshop-system] [nio-8081-exec-9] c.f.s.i.p.m.U.insert                     : ==>  Preparing: INSERT INTO sys_login_record ( user_id, ip, device_id, device_name, login_at ) VALUES ( ?, ?, ?, ?, ? )
+2026-11-03T01:11:01.979+08:00 DEBUG 8364 --- [myshop-system] [nio-8081-exec-9] c.f.s.i.p.m.U.insert                     : ==> Parameters: 3(Long), 0:0:0:0:0:0:0:1(String), (String), (String), 2026-11-03T01:11:01.978531900(LocalDateTime)
+2026-11-03T01:11:01.995+08:00 DEBUG 8364 --- [myshop-system] [nio-8081-exec-9] c.f.s.i.p.m.U.insert                     : <==    Updates: 1
+2026-11-03T01:11:01.996+08:00 DEBUG 8364 --- [myshop-system] [nio-8081-exec-9] c.f.s.i.p.m.SysRoleMapper.selectList     : ==>  Preparing: SELECT id,code,name,group_code,icon,description,sort,status,created_at,updated_at,deleted FROM sys_role WHERE deleted=0 AND (code = ?)
+2026-11-03T01:11:01.996+08:00 DEBUG 8364 --- [myshop-system] [nio-8081-exec-9] c.f.s.i.p.m.SysRoleMapper.selectList     : ==> Parameters: merchant(String)
+2026-11-03T01:11:01.999+08:00 DEBUG 8364 --- [myshop-system] [nio-8081-exec-9] c.f.s.i.p.m.SysRoleMapper.selectList     : <==      Total: 1
+2026-11-03T01:11:02.001+08:00 DEBUG 8364 --- [myshop-system] [nio-8081-exec-9] c.f.s.i.p.m.SysRoleMapper.selectList     : ==>  Preparing: SELECT id,code,name,group_code,icon,description,sort,status,created_at,updated_at,deleted FROM sys_role WHERE deleted=0 AND (code = ?)
+2026-11-03T01:11:02.001+08:00 DEBUG 8364 --- [myshop-system] [nio-8081-exec-9] c.f.s.i.p.m.SysRoleMapper.selectList     : ==> Parameters: merchant(String)
+2026-11-03T01:11:02.004+08:00 DEBUG 8364 --- [myshop-system] [nio-8081-exec-9] c.f.s.i.p.m.SysRoleMapper.selectList     : <==      Total: 1
+2026-11-03T01:11:09.407+08:00 DEBUG 8364 --- [myshop-system] [io-8081-exec-10] c.f.s.i.p.m.SysUserMapper.selectList     : ==>  Preparing: SELECT id,username,password,nickname,email,phone,avatar,role_code,shop_id,company_id,courier_id,status,last_login_at,created_at,updated_at,deleted FROM sys_user WHERE deleted=0 AND (username = ?)
+2026-11-03T01:11:09.407+08:00 DEBUG 8364 --- [myshop-system] [io-8081-exec-10] c.f.s.i.p.m.SysUserMapper.selectList     : ==> Parameters: merchant(String)
+2026-11-03T01:11:09.409+08:00 DEBUG 8364 --- [myshop-system] [io-8081-exec-10] c.f.s.i.p.m.SysUserMapper.selectList     : <==      Total: 1
+2026-11-03T01:11:09.466+08:00 DEBUG 8364 --- [myshop-system] [io-8081-exec-10] c.f.s.i.p.mapper.SysUserMapper.update    : ==>  Preparing: UPDATE sys_user SET last_login_at=? WHERE deleted=0 AND (id = ?)
+2026-11-03T01:11:09.466+08:00 DEBUG 8364 --- [myshop-system] [io-8081-exec-10] c.f.s.i.p.mapper.SysUserMapper.update    : ==> Parameters: 2026-11-03T01:11:09.463122800(LocalDateTime), 3(Long)
+2026-11-03T01:11:09.489+08:00 DEBUG 8364 --- [myshop-system] [io-8081-exec-10] c.f.s.i.p.mapper.SysUserMapper.update    : <==    Updates: 1
+2026-11-03T01:11:09.491+08:00 DEBUG 8364 --- [myshop-system] [io-8081-exec-10] c.f.s.i.p.m.U.insert                     : ==>  Preparing: INSERT INTO sys_login_record ( user_id, ip, device_id, device_name, login_at ) VALUES ( ?, ?, ?, ?, ? )
+2026-11-03T01:11:09.491+08:00 DEBUG 8364 --- [myshop-system] [io-8081-exec-10] c.f.s.i.p.m.U.insert                     : ==> Parameters: 3(Long), 0:0:0:0:0:0:0:1(String), (String), (String), 2026-11-03T01:11:09.490599400(LocalDateTime)
+2026-11-03T01:11:09.507+08:00 DEBUG 8364 --- [myshop-system] [io-8081-exec-10] c.f.s.i.p.m.U.insert                     : <==    Updates: 1
+2026-11-03T01:11:09.509+08:00 DEBUG 8364 --- [myshop-system] [io-8081-exec-10] c.f.s.i.p.m.SysRoleMapper.selectList     : ==>  Preparing: SELECT id,code,name,group_code,icon,description,sort,status,created_at,updated_at,deleted FROM sys_role WHERE deleted=0 AND (code = ?)
+2026-11-03T01:11:09.509+08:00 DEBUG 8364 --- [myshop-system] [io-8081-exec-10] c.f.s.i.p.m.SysRoleMapper.selectList     : ==> Parameters: merchant(String)
+2026-11-03T01:11:09.511+08:00 DEBUG 8364 --- [myshop-system] [io-8081-exec-10] c.f.s.i.p.m.SysRoleMapper.selectList     : <==      Total: 1
+2026-11-03T01:11:09.513+08:00 DEBUG 8364 --- [myshop-system] [io-8081-exec-10] c.f.s.i.p.m.SysRoleMapper.selectList     : ==>  Preparing: SELECT id,code,name,group_code,icon,description,sort,status,created_at,updated_at,deleted FROM sys_role WHERE deleted=0 AND (code = ?)
+2026-11-03T01:11:09.514+08:00 DEBUG 8364 --- [myshop-system] [io-8081-exec-10] c.f.s.i.p.m.SysRoleMapper.selectList     : ==> Parameters: merchant(String)
+2026-11-03T01:11:09.515+08:00 DEBUG 8364 --- [myshop-system] [io-8081-exec-10] c.f.s.i.p.m.SysRoleMapper.selectList     : <==      Total: 1
+2026-11-03T01:11:27.585+08:00 DEBUG 8364 --- [myshop-system] [nio-8081-exec-1] c.f.s.i.p.m.SysUserMapper.selectList     : ==>  Preparing: SELECT id,username,password,nickname,email,phone,avatar,role_code,shop_id,company_id,courier_id,status,last_login_at,created_at,updated_at,deleted FROM sys_user WHERE deleted=0 AND (username = ?)
+2026-11-03T01:11:27.585+08:00 DEBUG 8364 --- [myshop-system] [nio-8081-exec-1] c.f.s.i.p.m.SysUserMapper.selectList     : ==> Parameters: admin(String)
+2026-11-03T01:11:27.589+08:00 DEBUG 8364 --- [myshop-system] [nio-8081-exec-1] c.f.s.i.p.m.SysUserMapper.selectList     : <==      Total: 1
+2026-11-03T01:11:27.646+08:00 DEBUG 8364 --- [myshop-system] [nio-8081-exec-1] c.f.s.i.p.mapper.SysUserMapper.update    : ==>  Preparing: UPDATE sys_user SET last_login_at=? WHERE deleted=0 AND (id = ?)
+2026-11-03T01:11:27.646+08:00 DEBUG 8364 --- [myshop-system] [nio-8081-exec-1] c.f.s.i.p.mapper.SysUserMapper.update    : ==> Parameters: 2026-11-03T01:11:27.645186100(LocalDateTime), 11(Long)
+2026-11-03T01:11:27.662+08:00 DEBUG 8364 --- [myshop-system] [nio-8081-exec-1] c.f.s.i.p.mapper.SysUserMapper.update    : <==    Updates: 1
+2026-11-03T01:11:27.663+08:00 DEBUG 8364 --- [myshop-system] [nio-8081-exec-1] c.f.s.i.p.m.U.insert                     : ==>  Preparing: INSERT INTO sys_login_record ( user_id, ip, device_id, device_name, login_at ) VALUES ( ?, ?, ?, ?, ? )
+2026-11-03T01:11:27.663+08:00 DEBUG 8364 --- [myshop-system] [nio-8081-exec-1] c.f.s.i.p.m.U.insert                     : ==> Parameters: 11(Long), 0:0:0:0:0:0:0:1(String), (String), (String), 2026-11-03T01:11:27.663145800(LocalDateTime)
+2026-11-03T01:11:27.682+08:00 DEBUG 8364 --- [myshop-system] [nio-8081-exec-1] c.f.s.i.p.m.U.insert                     : <==    Updates: 1
+2026-11-03T01:11:27.683+08:00 DEBUG 8364 --- [myshop-system] [nio-8081-exec-1] c.f.s.i.p.m.SysRoleMapper.selectList     : ==>  Preparing: SELECT id,code,name,group_code,icon,description,sort,status,created_at,updated_at,deleted FROM sys_role WHERE deleted=0 AND (code = ?)
+2026-11-03T01:11:27.683+08:00 DEBUG 8364 --- [myshop-system] [nio-8081-exec-1] c.f.s.i.p.m.SysRoleMapper.selectList     : ==> Parameters: admin(String)
+2026-11-03T01:11:27.686+08:00 DEBUG 8364 --- [myshop-system] [nio-8081-exec-1] c.f.s.i.p.m.SysRoleMapper.selectList     : <==      Total: 1
+2026-11-03T01:11:27.687+08:00 DEBUG 8364 --- [myshop-system] [nio-8081-exec-1] c.f.s.i.p.m.SysRoleMapper.selectList     : ==>  Preparing: SELECT id,code,name,group_code,icon,description,sort,status,created_at,updated_at,deleted FROM sys_role WHERE deleted=0 AND (code = ?)
+2026-11-03T01:11:27.687+08:00 DEBUG 8364 --- [myshop-system] [nio-8081-exec-1] c.f.s.i.p.m.SysRoleMapper.selectList     : ==> Parameters: admin(String)
+2026-11-03T01:11:27.690+08:00 DEBUG 8364 --- [myshop-system] [nio-8081-exec-1] c.f.s.i.p.m.SysRoleMapper.selectList     : <==      Total: 1
+2026-11-03T01:11:39.720+08:00 DEBUG 8364 --- [myshop-system] [nio-8081-exec-2] c.f.s.i.p.m.SysUserMapper.selectList     : ==>  Preparing: SELECT id,username,password,nickname,email,phone,avatar,role_code,shop_id,company_id,courier_id,status,last_login_at,created_at,updated_at,deleted FROM sys_user WHERE deleted=0 AND (username = ?)
+2026-11-03T01:11:39.721+08:00 DEBUG 8364 --- [myshop-system] [nio-8081-exec-2] c.f.s.i.p.m.SysUserMapper.selectList     : ==> Parameters: buyer(String)
+2026-11-03T01:11:39.724+08:00 DEBUG 8364 --- [myshop-system] [nio-8081-exec-2] c.f.s.i.p.m.SysUserMapper.selectList     : <==      Total: 1
+2026-11-03T01:11:39.781+08:00 DEBUG 8364 --- [myshop-system] [nio-8081-exec-2] c.f.s.i.p.mapper.SysUserMapper.update    : ==>  Preparing: UPDATE sys_user SET last_login_at=? WHERE deleted=0 AND (id = ?)
+2026-11-03T01:11:39.782+08:00 DEBUG 8364 --- [myshop-system] [nio-8081-exec-2] c.f.s.i.p.mapper.SysUserMapper.update    : ==> Parameters: 2026-11-03T01:11:39.780016(LocalDateTime), 2(Long)
+2026-11-03T01:11:39.797+08:00 DEBUG 8364 --- [myshop-system] [nio-8081-exec-2] c.f.s.i.p.mapper.SysUserMapper.update    : <==    Updates: 1
+2026-11-03T01:11:39.797+08:00 DEBUG 8364 --- [myshop-system] [nio-8081-exec-2] c.f.s.i.p.m.U.insert                     : ==>  Preparing: INSERT INTO sys_login_record ( user_id, ip, device_id, device_name, login_at ) VALUES ( ?, ?, ?, ?, ? )
+2026-11-03T01:11:39.798+08:00 DEBUG 8364 --- [myshop-system] [nio-8081-exec-2] c.f.s.i.p.m.U.insert                     : ==> Parameters: 2(Long), 0:0:0:0:0:0:0:1(String), (String), (String), 2026-11-03T01:11:39.797564(LocalDateTime)
+2026-11-03T01:11:39.812+08:00 DEBUG 8364 --- [myshop-system] [nio-8081-exec-2] c.f.s.i.p.m.U.insert                     : <==    Updates: 1
+2026-11-03T01:11:39.814+08:00 DEBUG 8364 --- [myshop-system] [nio-8081-exec-2] c.f.s.i.p.m.SysRoleMapper.selectList     : ==>  Preparing: SELECT id,code,name,group_code,icon,description,sort,status,created_at,updated_at,deleted FROM sys_role WHERE deleted=0 AND (code = ?)
+2026-11-03T01:11:39.814+08:00 DEBUG 8364 --- [myshop-system] [nio-8081-exec-2] c.f.s.i.p.m.SysRoleMapper.selectList     : ==> Parameters: user(String)
+2026-11-03T01:11:39.816+08:00 DEBUG 8364 --- [myshop-system] [nio-8081-exec-2] c.f.s.i.p.m.SysRoleMapper.selectList     : <==      Total: 1
+2026-11-03T01:11:39.817+08:00 DEBUG 8364 --- [myshop-system] [nio-8081-exec-2] c.f.s.i.p.m.SysRoleMapper.selectList     : ==>  Preparing: SELECT id,code,name,group_code,icon,description,sort,status,created_at,updated_at,deleted FROM sys_role WHERE deleted=0 AND (code = ?)
+2026-11-03T01:11:39.817+08:00 DEBUG 8364 --- [myshop-system] [nio-8081-exec-2] c.f.s.i.p.m.SysRoleMapper.selectList     : ==> Parameters: user(String)
+2026-11-03T01:11:39.820+08:00 DEBUG 8364 --- [myshop-system] [nio-8081-exec-2] c.f.s.i.p.m.SysRoleMapper.selectList     : <==      Total: 1
+2026-11-03T01:11:54.512+08:00 DEBUG 8364 --- [myshop-system] [nio-8081-exec-3] c.f.s.i.p.m.SysUserMapper.selectList     : ==>  Preparing: SELECT id,username,password,nickname,email,phone,avatar,role_code,shop_id,company_id,courier_id,status,last_login_at,created_at,updated_at,deleted FROM sys_user WHERE deleted=0 AND (username = ?)
+2026-11-03T01:11:54.512+08:00 DEBUG 8364 --- [myshop-system] [nio-8081-exec-3] c.f.s.i.p.m.SysUserMapper.selectList     : ==> Parameters: buyer(String)
+2026-11-03T01:11:54.514+08:00 DEBUG 8364 --- [myshop-system] [nio-8081-exec-3] c.f.s.i.p.m.SysUserMapper.selectList     : <==      Total: 1
+2026-11-03T01:11:54.566+08:00 DEBUG 8364 --- [myshop-system] [nio-8081-exec-3] c.f.s.i.p.mapper.SysUserMapper.update    : ==>  Preparing: UPDATE sys_user SET last_login_at=? WHERE deleted=0 AND (id = ?)
+2026-11-03T01:11:54.566+08:00 DEBUG 8364 --- [myshop-system] [nio-8081-exec-3] c.f.s.i.p.mapper.SysUserMapper.update    : ==> Parameters: 2026-11-03T01:11:54.565929700(LocalDateTime), 2(Long)
+2026-11-03T01:11:54.582+08:00 DEBUG 8364 --- [myshop-system] [nio-8081-exec-3] c.f.s.i.p.mapper.SysUserMapper.update    : <==    Updates: 1
+2026-11-03T01:11:54.583+08:00 DEBUG 8364 --- [myshop-system] [nio-8081-exec-3] c.f.s.i.p.m.U.insert                     : ==>  Preparing: INSERT INTO sys_login_record ( user_id, ip, device_id, device_name, login_at ) VALUES ( ?, ?, ?, ?, ? )
+2026-11-03T01:11:54.584+08:00 DEBUG 8364 --- [myshop-system] [nio-8081-exec-3] c.f.s.i.p.m.U.insert                     : ==> Parameters: 2(Long), 0:0:0:0:0:0:0:1(String), (String), (String), 2026-11-03T01:11:54.583327800(LocalDateTime)
+2026-11-03T01:11:54.594+08:00 DEBUG 8364 --- [myshop-system] [nio-8081-exec-3] c.f.s.i.p.m.U.insert                     : <==    Updates: 1
+2026-11-03T01:11:54.599+08:00 DEBUG 8364 --- [myshop-system] [nio-8081-exec-3] c.f.s.i.p.m.SysRoleMapper.selectList     : ==>  Preparing: SELECT id,code,name,group_code,icon,description,sort,status,created_at,updated_at,deleted FROM sys_role WHERE deleted=0 AND (code = ?)
+2026-11-03T01:11:54.599+08:00 DEBUG 8364 --- [myshop-system] [nio-8081-exec-3] c.f.s.i.p.m.SysRoleMapper.selectList     : ==> Parameters: user(String)
+2026-11-03T01:11:54.601+08:00 DEBUG 8364 --- [myshop-system] [nio-8081-exec-3] c.f.s.i.p.m.SysRoleMapper.selectList     : <==      Total: 1
+2026-11-03T01:11:54.604+08:00 DEBUG 8364 --- [myshop-system] [nio-8081-exec-3] c.f.s.i.p.m.SysRoleMapper.selectList     : ==>  Preparing: SELECT id,code,name,group_code,icon,description,sort,status,created_at,updated_at,deleted FROM sys_role WHERE deleted=0 AND (code = ?)
+2026-11-03T01:11:54.605+08:00 DEBUG 8364 --- [myshop-system] [nio-8081-exec-3] c.f.s.i.p.m.SysRoleMapper.selectList     : ==> Parameters: user(String)
+2026-11-03T01:11:54.613+08:00 DEBUG 8364 --- [myshop-system] [nio-8081-exec-3] c.f.s.i.p.m.SysRoleMapper.selectList     : <==      Total: 1
+2026-11-03T01:12:39.783+08:00 DEBUG 8364 --- [myshop-system] [nio-8081-exec-4] c.f.s.i.p.m.SysUserMapper.selectList     : ==>  Preparing: SELECT id,username,password,nickname,email,phone,avatar,role_code,shop_id,company_id,courier_id,status,last_login_at,created_at,updated_at,deleted FROM sys_user WHERE deleted=0 AND (username = ?)
+2026-11-03T01:12:39.784+08:00 DEBUG 8364 --- [myshop-system] [nio-8081-exec-4] c.f.s.i.p.m.SysUserMapper.selectList     : ==> Parameters: buyer(String)
+2026-11-03T01:12:39.786+08:00 DEBUG 8364 --- [myshop-system] [nio-8081-exec-4] c.f.s.i.p.m.SysUserMapper.selectList     : <==      Total: 1
+2026-11-03T01:12:39.841+08:00 DEBUG 8364 --- [myshop-system] [nio-8081-exec-4] c.f.s.i.p.mapper.SysUserMapper.update    : ==>  Preparing: UPDATE sys_user SET last_login_at=? WHERE deleted=0 AND (id = ?)
+2026-11-03T01:12:39.841+08:00 DEBUG 8364 --- [myshop-system] [nio-8081-exec-4] c.f.s.i.p.mapper.SysUserMapper.update    : ==> Parameters: 2026-11-03T01:12:39.841102900(LocalDateTime), 2(Long)
+2026-11-03T01:12:39.857+08:00 DEBUG 8364 --- [myshop-system] [nio-8081-exec-4] c.f.s.i.p.mapper.SysUserMapper.update    : <==    Updates: 1
+2026-11-03T01:12:39.857+08:00 DEBUG 8364 --- [myshop-system] [nio-8081-exec-4] c.f.s.i.p.m.U.insert                     : ==>  Preparing: INSERT INTO sys_login_record ( user_id, ip, device_id, device_name, login_at ) VALUES ( ?, ?, ?, ?, ? )
+2026-11-03T01:12:39.858+08:00 DEBUG 8364 --- [myshop-system] [nio-8081-exec-4] c.f.s.i.p.m.U.insert                     : ==> Parameters: 2(Long), 0:0:0:0:0:0:0:1(String), (String), (String), 2026-11-03T01:12:39.857970900(LocalDateTime)
+2026-11-03T01:12:39.869+08:00 DEBUG 8364 --- [myshop-system] [nio-8081-exec-4] c.f.s.i.p.m.U.insert                     : <==    Updates: 1
+2026-11-03T01:12:39.870+08:00 DEBUG 8364 --- [myshop-system] [nio-8081-exec-4] c.f.s.i.p.m.SysRoleMapper.selectList     : ==>  Preparing: SELECT id,code,name,group_code,icon,description,sort,status,created_at,updated_at,deleted FROM sys_role WHERE deleted=0 AND (code = ?)
+2026-11-03T01:12:39.870+08:00 DEBUG 8364 --- [myshop-system] [nio-8081-exec-4] c.f.s.i.p.m.SysRoleMapper.selectList     : ==> Parameters: user(String)
+2026-11-03T01:12:39.871+08:00 DEBUG 8364 --- [myshop-system] [nio-8081-exec-4] c.f.s.i.p.m.SysRoleMapper.selectList     : <==      Total: 1
+2026-11-03T01:12:39.872+08:00 DEBUG 8364 --- [myshop-system] [nio-8081-exec-4] c.f.s.i.p.m.SysRoleMapper.selectList     : ==>  Preparing: SELECT id,code,name,group_code,icon,description,sort,status,created_at,updated_at,deleted FROM sys_role WHERE deleted=0 AND (code = ?)
+2026-11-03T01:12:39.873+08:00 DEBUG 8364 --- [myshop-system] [nio-8081-exec-4] c.f.s.i.p.m.SysRoleMapper.selectList     : ==> Parameters: user(String)
+2026-11-03T01:12:39.877+08:00 DEBUG 8364 --- [myshop-system] [nio-8081-exec-4] c.f.s.i.p.m.SysRoleMapper.selectList     : <==      Total: 1
+2026-11-03T01:12:46.648+08:00 DEBUG 8364 --- [myshop-system] [nio-8081-exec-5] c.f.s.i.p.m.SysUserMapper.selectList     : ==>  Preparing: SELECT id,username,password,nickname,email,phone,avatar,role_code,shop_id,company_id,courier_id,status,last_login_at,created_at,updated_at,deleted FROM sys_user WHERE deleted=0 AND (username = ?)
+2026-11-03T01:12:46.649+08:00 DEBUG 8364 --- [myshop-system] [nio-8081-exec-5] c.f.s.i.p.m.SysUserMapper.selectList     : ==> Parameters: merchant(String)
+2026-11-03T01:12:46.651+08:00 DEBUG 8364 --- [myshop-system] [nio-8081-exec-5] c.f.s.i.p.m.SysUserMapper.selectList     : <==      Total: 1
+2026-11-03T01:12:46.706+08:00 DEBUG 8364 --- [myshop-system] [nio-8081-exec-5] c.f.s.i.p.mapper.SysUserMapper.update    : ==>  Preparing: UPDATE sys_user SET last_login_at=? WHERE deleted=0 AND (id = ?)
+2026-11-03T01:12:46.706+08:00 DEBUG 8364 --- [myshop-system] [nio-8081-exec-5] c.f.s.i.p.mapper.SysUserMapper.update    : ==> Parameters: 2026-11-03T01:12:46.705486100(LocalDateTime), 3(Long)
+2026-11-03T01:12:46.727+08:00 DEBUG 8364 --- [myshop-system] [nio-8081-exec-5] c.f.s.i.p.mapper.SysUserMapper.update    : <==    Updates: 1
+2026-11-03T01:12:46.728+08:00 DEBUG 8364 --- [myshop-system] [nio-8081-exec-5] c.f.s.i.p.m.U.insert                     : ==>  Preparing: INSERT INTO sys_login_record ( user_id, ip, device_id, device_name, login_at ) VALUES ( ?, ?, ?, ?, ? )
+2026-11-03T01:12:46.728+08:00 DEBUG 8364 --- [myshop-system] [nio-8081-exec-5] c.f.s.i.p.m.U.insert                     : ==> Parameters: 3(Long), 0:0:0:0:0:0:0:1(String), (String), (String), 2026-11-03T01:12:46.727680900(LocalDateTime)
+2026-11-03T01:12:46.744+08:00 DEBUG 8364 --- [myshop-system] [nio-8081-exec-5] c.f.s.i.p.m.U.insert                     : <==    Updates: 1
+2026-11-03T01:12:46.745+08:00 DEBUG 8364 --- [myshop-system] [nio-8081-exec-5] c.f.s.i.p.m.SysRoleMapper.selectList     : ==>  Preparing: SELECT id,code,name,group_code,icon,description,sort,status,created_at,updated_at,deleted FROM sys_role WHERE deleted=0 AND (code = ?)
+2026-11-03T01:12:46.745+08:00 DEBUG 8364 --- [myshop-system] [nio-8081-exec-5] c.f.s.i.p.m.SysRoleMapper.selectList     : ==> Parameters: merchant(String)
+2026-11-03T01:12:46.747+08:00 DEBUG 8364 --- [myshop-system] [nio-8081-exec-5] c.f.s.i.p.m.SysRoleMapper.selectList     : <==      Total: 1
+2026-11-03T01:12:46.750+08:00 DEBUG 8364 --- [myshop-system] [nio-8081-exec-5] c.f.s.i.p.m.SysRoleMapper.selectList     : ==>  Preparing: SELECT id,code,name,group_code,icon,description,sort,status,created_at,updated_at,deleted FROM sys_role WHERE deleted=0 AND (code = ?)
+2026-11-03T01:12:46.750+08:00 DEBUG 8364 --- [myshop-system] [nio-8081-exec-5] c.f.s.i.p.m.SysRoleMapper.selectList     : ==> Parameters: merchant(String)
+2026-11-03T01:12:46.752+08:00 DEBUG 8364 --- [myshop-system] [nio-8081-exec-5] c.f.s.i.p.m.SysRoleMapper.selectList     : <==      Total: 1

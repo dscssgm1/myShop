@@ -21,6 +21,30 @@ services:
     volumes:
       - redis-data:/data
 
+  minio:
+    # Bitnami 镜像（bitnamicharts/* 现为订阅制空清单，匿名拉不到可运行镜像，故用 legacy 仓库）
+    # 内置启动脚本，无需 command；启动时自动创建 myshop 桶并放开匿名读
+    # 2025.4.22：MinIO 官方在 2025.5 后移除了内置 Web 控制台，选此版本保留 9001 控制台
+    image: bitnamilegacy/minio:2025.4.22
+    container_name: myshop-minio
+    environment:
+      MINIO_ROOT_USER: minioadmin
+      MINIO_ROOT_PASSWORD: minioadmin
+      MINIO_DEFAULT_BUCKETS: myshop:download
+    ports:
+      - "9000:9000"
+      - "9001:9001"
+    volumes:
+      - minio-data:/data
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://127.0.0.1:9000/minio/health/live"]
+      interval: 15s
+      timeout: 5s
+      retries: 5
+      start_period: 20s
+    restart: unless-stopped
+
 volumes:
   mysql-data:
   redis-data:
+  minio-data:

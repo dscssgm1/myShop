@@ -17,4 +17,7 @@ public interface PaymentRepository {
     boolean markPaid(String paymentNo, String tradeNo, LocalDateTime paidAt);
 
     boolean markClosed(String paymentNo);
+
+    /** 条件更新：支付成功 -> 已退款 */
+    boolean markRefunded(String paymentNo, LocalDateTime refundedAt, String reason);
 }

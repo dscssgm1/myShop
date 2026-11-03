@@ -6,6 +6,7 @@ import com.baomidou.mybatisplus.annotation.TableLogic;
 import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.Data;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 @Data
@@ -20,6 +21,9 @@ public class LogisticsCompany {
     private String contact;
     private String phone;
     private String color;
+
+    /** 分红账户余额 */
+    private BigDecimal balance;
 
     /** 1 已入驻 0 停用 */
     private Integer status;

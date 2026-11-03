@@ -24,6 +24,12 @@
             <artifactId>spring-cloud-starter-loadbalancer</artifactId>
         </dependency>
 
+        <!-- Redis：每次请求校验登录会话（登出 / 单点下线 / 属性变更立即生效） -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-data-redis-reactive</artifactId>
+        </dependency>
+
         <!-- Nacos 服务注册与配置中心 -->
         <dependency>
             <groupId>com.alibaba.cloud</groupId>

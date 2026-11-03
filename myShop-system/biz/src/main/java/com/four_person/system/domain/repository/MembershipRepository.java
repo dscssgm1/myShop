@@ -11,6 +11,12 @@ public interface MembershipRepository {
 
     List<MemberLevel> findAllLevels();
 
+    Optional<MemberLevel> findLevel(Long id);
+
+    void saveLevel(MemberLevel level);
+
+    void deleteLevel(Long id);
+
     Optional<PointsAccount> findAccount(Long userId);
 
     PointsAccount createAccount(Long userId);
@@ -24,4 +30,7 @@ public interface MembershipRepository {
     void saveLog(PointsLog log);
 
     List<PointsLog> findLogs(Long userId, int limit);
+
+    /** 按业务单号合计已发放的积分（售后扣回用） */
+    int sumEarnedByBizNo(Long userId, String bizNo);
 }

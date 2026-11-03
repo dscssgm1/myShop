@@ -1,0 +1,48 @@
+00:47:44.772 [main] INFO com.alibaba.nacos.plugin.auth.spi.client.ClientAuthPluginManager -- [ClientAuthPluginManager] Load ClientAuthService com.alibaba.nacos.client.auth.impl.NacosClientAuthServiceImpl success.
+00:47:44.772 [main] INFO com.alibaba.nacos.plugin.auth.spi.client.ClientAuthPluginManager -- [ClientAuthPluginManager] Load ClientAuthService com.alibaba.nacos.client.auth.ram.RamClientAuthServiceImpl success.
+00:47:45.773 [main] INFO com.alibaba.nacos.common.ability.AbstractAbilityControlManager -- Ready to get current node abilities...
+00:47:45.774 [main] INFO com.alibaba.nacos.common.ability.AbstractAbilityControlManager -- Ready to initialize current node abilities, support modes: [SDK_CLIENT]
+00:47:45.775 [main] INFO com.alibaba.nacos.common.ability.AbstractAbilityControlManager -- Initialize current abilities finish...
+00:47:45.776 [main] INFO com.alibaba.nacos.common.ability.discover.NacosAbilityManagerHolder -- [AbilityControlManager] Successfully initialize AbilityControlManager
+
+  .   ____          _            __ _ _
+ /\\ / ___'_ __ _ _(_)_ __  __ _ \ \ \ \
+( ( )\___ | '_ | '_| | '_ \/ _` | \ \ \ \
+ \\/  ___)| |_)| | | | | || (_| |  ) ) ) )
+  '  |____| .__|_| |_|_| |_\__, | / / / /
+ =========|_|==============|___/=/_/_/_/
+
+ :: Spring Boot ::                (v3.3.1)
+
+2026-11-03T00:47:46.280+08:00  INFO 90212 --- [myshop-merchant] [           main] c.f.merchant.MerchantApplication         : Starting MerchantApplication v1.0-SNAPSHOT using Java 21.0.10 with PID 90212 (E:\JavaProject\myShop\myShop\myShop-merchant\biz\target\myShop-merchant-biz-1.0-SNAPSHOT.jar started by Dawn in E:\JavaProject\myShop\myShop\myShop-merchant\biz)
+2026-11-03T00:47:46.280+08:00 DEBUG 90212 --- [myshop-merchant] [           main] c.f.merchant.MerchantApplication         : Running with Spring Boot v3.3.1, Spring v6.1.10
+2026-11-03T00:47:46.282+08:00  INFO 90212 --- [myshop-merchant] [           main] c.f.merchant.MerchantApplication         : No active profile set, falling back to 1 default profile: "default"
+2026-11-03T00:47:46.410+08:00  INFO 90212 --- [myshop-merchant] [           main] c.a.c.n.c.NacosConfigDataLoader          : [Nacos Config] Load config[dataId=myshop-merchant.yml, group=config] success
+2026-11-03T00:47:48.131+08:00  INFO 90212 --- [myshop-merchant] [           main] o.s.cloud.context.scope.GenericScope     : BeanFactory id=a6b47458-22b1-32ac-ad5b-a68e6da1cedb
+2026-11-03T00:47:48.204+08:00  WARN 90212 --- [myshop-merchant] [           main] trationDelegate$BeanPostProcessorChecker : Bean 'com.alibaba.cloud.nacos.NacosConfigAutoConfiguration' of type [com.alibaba.cloud.nacos.NacosConfigAutoConfiguration] is not eligible for getting processed by all BeanPostProcessors (for example: not eligible for auto-proxying). The currently created BeanPostProcessor [nacosAnnotationProcessor] is declared through a non-static factory method on that class; consider declaring it as static instead.
+2026-11-03T00:47:48.738+08:00  INFO 90212 --- [myshop-merchant] [           main] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat initialized with port 8086 (http)
+2026-11-03T00:47:48.758+08:00  INFO 90212 --- [myshop-merchant] [           main] o.apache.catalina.core.StandardService   : Starting service [Tomcat]
+2026-11-03T00:47:48.758+08:00  INFO 90212 --- [myshop-merchant] [           main] o.apache.catalina.core.StandardEngine    : Starting Servlet engine: [Apache Tomcat/10.1.25]
+2026-11-03T00:47:48.836+08:00  INFO 90212 --- [myshop-merchant] [           main] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring embedded WebApplicationContext
+2026-11-03T00:47:48.837+08:00  INFO 90212 --- [myshop-merchant] [           main] w.s.c.ServletWebServerApplicationContext : Root WebApplicationContext: initialization completed in 2420 ms
+ _ _   |_  _ _|_. ___ _ |    _ 
+| | |\/|_)(_| | |_\  |_)||_|_\ 
+     /               |         
+                        3.5.7 
+2026-11-03T00:47:51.338+08:00  INFO 90212 --- [myshop-merchant] [           main] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat started on port 8086 (http) with context path '/'
+2026-11-03T00:47:51.424+08:00  INFO 90212 --- [myshop-merchant] [           main] c.a.n.p.a.s.c.ClientAuthPluginManager    : [ClientAuthPluginManager] Load ClientAuthService com.alibaba.nacos.client.auth.impl.NacosClientAuthServiceImpl success.
+2026-11-03T00:47:51.424+08:00  INFO 90212 --- [myshop-merchant] [           main] c.a.n.p.a.s.c.ClientAuthPluginManager    : [ClientAuthPluginManager] Load ClientAuthService com.alibaba.nacos.client.auth.ram.RamClientAuthServiceImpl success.
+2026-11-03T00:47:51.519+08:00  INFO 90212 --- [myshop-merchant] [           main] c.a.c.n.registry.NacosServiceRegistry    : nacos registry, config myshop-merchant 192.168.174.1:8086 register finished
+2026-11-03T00:47:51.565+08:00  INFO 90212 --- [myshop-merchant] [           main] c.f.merchant.MerchantApplication         : Started MerchantApplication in 8.178 seconds (process running for 9.024)
+2026-11-03T00:47:51.626+08:00  INFO 90212 --- [myshop-merchant] [           main] c.a.c.n.refresh.NacosContextRefresher    : [Nacos Config] Listening config: dataId=myshop-merchant.yml, group=config
+2026-11-03T01:10:41.737+08:00  INFO 90212 --- [myshop-merchant] [nio-8086-exec-3] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring DispatcherServlet 'dispatcherServlet'
+2026-11-03T01:10:41.742+08:00  INFO 90212 --- [myshop-merchant] [nio-8086-exec-3] o.s.web.servlet.DispatcherServlet        : Initializing Servlet 'dispatcherServlet'
+2026-11-03T01:10:41.758+08:00  INFO 90212 --- [myshop-merchant] [nio-8086-exec-3] o.s.web.servlet.DispatcherServlet        : Completed initialization in 15 ms
+2026-11-03T01:10:41.952+08:00  INFO 90212 --- [myshop-merchant] [nio-8086-exec-3] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Starting...
+2026-11-03T01:10:41.986+08:00  INFO 90212 --- [myshop-merchant] [nio-8086-exec-3] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Start completed.
+2026-11-03T01:10:42.435+08:00 DEBUG 90212 --- [myshop-merchant] [nio-8086-exec-3] c.f.m.i.p.mapper.ShopMapper.selectById   : ==>  Preparing: SELECT id,name,icon,color,description,contact,phone,region,address,categories,sales,rating,status,created_at,updated_at,deleted FROM shop WHERE id=? AND deleted=0
+2026-11-03T01:10:42.464+08:00 DEBUG 90212 --- [myshop-merchant] [nio-8086-exec-3] c.f.m.i.p.mapper.ShopMapper.selectById   : ==> Parameters: 1(Long)
+2026-11-03T01:10:42.519+08:00 DEBUG 90212 --- [myshop-merchant] [nio-8086-exec-3] c.f.m.i.p.mapper.ShopMapper.selectById   : <==      Total: 1
+2026-11-03T01:17:46.625+08:00 DEBUG 90212 --- [myshop-merchant] [nio-8086-exec-5] c.f.m.i.p.mapper.ShopMapper.selectById   : ==>  Preparing: SELECT id,name,icon,color,description,contact,phone,region,address,categories,sales,rating,status,created_at,updated_at,deleted FROM shop WHERE id=? AND deleted=0
+2026-11-03T01:17:46.635+08:00 DEBUG 90212 --- [myshop-merchant] [nio-8086-exec-5] c.f.m.i.p.mapper.ShopMapper.selectById   : ==> Parameters: 1(Long)
+2026-11-03T01:17:46.651+08:00 DEBUG 90212 --- [myshop-merchant] [nio-8086-exec-5] c.f.m.i.p.mapper.ShopMapper.selectById   : <==      Total: 1

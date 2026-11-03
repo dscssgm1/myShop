@@ -33,7 +33,7 @@ public class InternalUserController {
     @PostMapping("/points/earn")
     public Result<Integer> earn(@RequestBody MemberDtos.EarnPointsRequest request) {
         return Result.success(membershipApplicationService.earn(
-                request.getUserId(), request.getAmount(), request.getRemark()));
+                request.getUserId(), request.getAmount(), request.getRemark(), request.getBizNo()));
     }
 
     @PostMapping("/points/spend")
@@ -41,5 +41,19 @@ public class InternalUserController {
         membershipApplicationService.spend(
                 request.getUserId(), request.getAmount().intValue(), request.getRemark());
         return Result.success();
+    }
+
+    /** 售后退款扣回该订单发放的积分，返回实际扣回数 */
+    @PostMapping("/points/refund-earn")
+    public Result<Integer> refundEarn(@RequestBody MemberDtos.EarnPointsRequest request) {
+        return Result.success(membershipApplicationService.refundEarn(
+                request.getUserId(), request.getBizNo(), request.getRemark()));
+    }
+
+    /** 评价等其他服务按条直发固定积分，bizNo 幂等 */
+    @PostMapping("/points/earn-flat")
+    public Result<Integer> earnFlat(@RequestBody MemberDtos.EarnFlatRequest request) {
+        return Result.success(membershipApplicationService.earnFlat(
+                request.getUserId(), request.getPoints(), request.getRemark(), request.getBizNo()));
     }
 }

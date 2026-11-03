@@ -1,14 +1,18 @@
 package com.four_person.discount.application;
 
 import com.four_person.common.exception.BusinessException;
+import com.four_person.common.exception.CommonErrorCode;
 import com.four_person.discount.api.dto.CouponTemplateRequest;
 import com.four_person.discount.api.dto.CouponTemplateVO;
 import com.four_person.discount.api.dto.UserCouponVO;
+import com.four_person.discount.application.port.ProductQueryPort;
+import com.four_person.discount.application.port.ShopQueryPort;
 import com.four_person.discount.domain.event.CouponClaimedEvent;
 import com.four_person.discount.domain.event.CouponReleasedEvent;
 import com.four_person.discount.domain.event.CouponUsedEvent;
 import com.four_person.discount.domain.model.CouponTemplate;
 import com.four_person.discount.domain.model.Money;
+import com.four_person.discount.domain.model.ProductSnapshot;
 import com.four_person.discount.domain.model.Scope;
 import com.four_person.discount.domain.model.UserCoupon;
 import com.four_person.discount.domain.repository.CouponTemplateRepository;
@@ -36,8 +40,11 @@ public class CouponApplicationService {
 
     private final CouponTemplateRepository templateRepository;
     private final UserCouponRepository userCouponRepository;
+    private final ShopQueryPort shopQueryPort;
+    private final ProductQueryPort productQueryPort;
     private final ApplicationEventPublisher eventPublisher;
 
+    /** 领券中心：平台券 + 商家券全部可领 */
     public List<CouponTemplateVO> listTemplates(Long userId) {
         LocalDateTime now = LocalDateTime.now();
         List<CouponTemplate> templates = templateRepository.findActive(now);
@@ -50,20 +57,82 @@ public class CouponApplicationService {
                 .toList();
     }
 
-    public CouponTemplateVO createTemplate(CouponTemplateRequest request) {
-        ScopeType scopeType;
-        try {
-            scopeType = StringUtils.hasText(request.getScopeType())
-                    ? ScopeType.valueOf(request.getScopeType().trim().toUpperCase()) : ScopeType.ALL;
-        } catch (IllegalArgumentException ex) {
-            throw new BusinessException(DiscountErrorCode.INVALID_RULE, "不支持的适用范围");
-        }
+    /** 商家侧自己发放的券（含已结束） */
+    public List<CouponTemplateVO> listByShop(Long shopId) {
+        return templateRepository.findByShop(shopId).stream()
+                .map(template -> toTemplateVO(template, false))
+                .toList();
+    }
+
+    /**
+     * 发放优惠券模板。ownerShopId 为 null 表示平台券（全品类/分类/商品均可）；
+     * 商家券范围限本店商品，费用由商家承担。
+     */
+    public CouponTemplateVO createTemplate(Long ownerShopId, CouponTemplateRequest request) {
+        long owner = ownerShopId == null ? 0 : ownerShopId;
+        ScopeType scopeType = parseScopeType(request.getScopeType(), owner);
         Set<Long> scopeIds = request.getScopeIds() == null ? Set.of() : Set.copyOf(request.getScopeIds());
-        CouponTemplate template = new CouponTemplate(null, request.getTitle(),
+        if (owner > 0 && scopeType == ScopeType.PRODUCT) {
+            scopeIds = requireOwnedProducts(ownerShopId, scopeIds);
+        }
+        CouponTemplate template = new CouponTemplate(null, owner, request.getTitle(),
                 Money.of(request.getThresholdAmount()), Money.of(request.getDiscountAmount()),
                 new Scope(scopeType, scopeIds), request.getTotalStock(), 0, request.getPerUserLimit(),
                 request.getValidStart(), request.getValidEnd(), request.getStatus());
         return toTemplateVO(templateRepository.save(template), false);
+    }
+
+    public void endTemplate(Long id) {
+        CouponTemplate existing = load(id);
+        if (existing.isMerchantCoupon()) {
+            throw new BusinessException(CommonErrorCode.FORBIDDEN, "商家券请在商家端维护");
+        }
+        templateRepository.save(existing.ended());
+    }
+
+    public void endTemplateForShop(Long shopId, Long id) {
+        CouponTemplate existing = load(id);
+        if (!existing.isMerchantCoupon() || !existing.getShopId().equals(shopId)) {
+            throw new BusinessException(CommonErrorCode.FORBIDDEN, "无权操作其他店铺的优惠券");
+        }
+        templateRepository.save(existing.ended());
+    }
+
+    private CouponTemplate load(Long id) {
+        return templateRepository.findById(id)
+                .orElseThrow(() -> new BusinessException(DiscountErrorCode.COUPON_NOT_FOUND));
+    }
+
+    private ScopeType parseScopeType(String raw, long owner) {
+        ScopeType scopeType;
+        try {
+            scopeType = StringUtils.hasText(raw)
+                    ? ScopeType.valueOf(raw.trim().toUpperCase()) : ScopeType.ALL;
+        } catch (IllegalArgumentException ex) {
+            throw new BusinessException(DiscountErrorCode.INVALID_RULE, "不支持的适用范围");
+        }
+        if (owner > 0 && scopeType != ScopeType.SHOP && scopeType != ScopeType.PRODUCT) {
+            return ScopeType.SHOP;
+        }
+        if (owner == 0 && scopeType == ScopeType.SHOP) {
+            throw new BusinessException(DiscountErrorCode.INVALID_RULE, "平台券不能使用店铺范围");
+        }
+        return scopeType;
+    }
+
+    /** 商家圈定指定商品时校验商品归属 */
+    private Set<Long> requireOwnedProducts(Long shopId, Set<Long> productIds) {
+        if (productIds.isEmpty()) {
+            throw new BusinessException(DiscountErrorCode.INVALID_RULE, "指定商品范围不能为空");
+        }
+        List<Long> owned = productQueryPort.batch(List.copyOf(productIds)).stream()
+                .filter(product -> shopId.equals(product.shopId()))
+                .map(ProductSnapshot::id)
+                .toList();
+        if (owned.size() != productIds.size()) {
+            throw new BusinessException(DiscountErrorCode.INVALID_RULE, "券适用商品必须属于当前店铺");
+        }
+        return productIds;
     }
 
     @Transactional(rollbackFor = Exception.class)
@@ -141,6 +210,8 @@ public class CouponApplicationService {
     private CouponTemplateVO toTemplateVO(CouponTemplate template, boolean claimed) {
         CouponTemplateVO vo = new CouponTemplateVO();
         vo.setId(template.getId());
+        vo.setShopId(template.getShopId());
+        vo.setShopName(template.isMerchantCoupon() ? shopQueryPort.shopName(template.getShopId()) : null);
         vo.setTitle(template.getTitle());
         vo.setThresholdAmount(template.getThresholdAmount().amount());
         vo.setDiscountAmount(template.getDiscountAmount().amount());
@@ -174,6 +245,8 @@ public class CouponApplicationService {
             vo.setDiscountAmount(template.getDiscountAmount().amount());
             vo.setScopeType(template.getScope().type().name());
             vo.setScopeText(scopeText(template.getScope().type()));
+            vo.setShopId(template.getShopId());
+            vo.setShopName(template.isMerchantCoupon() ? shopQueryPort.shopName(template.getShopId()) : null);
         }
         return vo;
     }
@@ -182,7 +255,8 @@ public class CouponApplicationService {
         return switch (type) {
             case CATEGORY -> "指定分类";
             case PRODUCT -> "指定商品";
-            default -> "全品类";
+            case SHOP -> "本店商品";
+            case ALL -> "全品类";
         };
     }
 }

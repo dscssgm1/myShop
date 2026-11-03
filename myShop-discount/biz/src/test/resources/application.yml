@@ -1,0 +1,22 @@
+# 黑盒测试专用配置：真实 MySQL、禁用 Nacos、Feign 指向占位地址（端口层全部 MockBean）
+spring:
+  datasource:
+    url: jdbc:mysql://127.0.0.1:13307/myshop?useUnicode=true&characterEncoding=utf8&serverTimezone=Asia/Shanghai&useSSL=false&allowPublicKeyRetrieval=true
+    username: root
+    password: root
+    driver-class-name: com.mysql.cj.jdbc.Driver
+  cloud:
+    nacos:
+      config:
+        enabled: false
+      discovery:
+        enabled: false
+    discovery:
+      enabled: false
+
+myshop:
+  clients:
+    product-url: http://127.0.0.1:1
+    merchant-url: http://127.0.0.1:1
+    order-url: http://127.0.0.1:1
+    discount-url: http://127.0.0.1:1

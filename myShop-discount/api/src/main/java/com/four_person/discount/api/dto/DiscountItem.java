@@ -15,6 +15,9 @@ public class DiscountItem {
 
     private Long categoryId;
 
+    /** 商品所属店铺，商家活动/商家券按店铺圈定范围 */
+    private Long shopId;
+
     @NotNull(message = "商品价格不能为空")
     @DecimalMin(value = "0.00", message = "商品价格不能为负数")
     private BigDecimal price;

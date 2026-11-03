@@ -39,8 +39,21 @@ public final class PlatformDtos {
         private String status;
         private String reason;
         private String payload;
+        private Long stage1By;
+        private LocalDateTime stage1At;
         private LocalDateTime auditedAt;
         private LocalDateTime createdAt;
+    }
+
+    @Data
+    public static class LogisticsApplyRequest {
+        @NotBlank(message = "公司名称不能为空")
+        private String name;
+        @NotBlank(message = "公司编码不能为空")
+        private String code;
+        private String contact;
+        private String phone;
+        private String description;
     }
 
     @Data
@@ -108,5 +121,73 @@ public final class PlatformDtos {
         private String module;
         private String message;
         private LocalDateTime createdAt;
+    }
+
+    @Data
+    public static class ShopVO {
+        private Long id;
+        private String name;
+        private String icon;
+        private String description;
+        private String contact;
+        private String phone;
+        private String region;
+        private String address;
+        private String categories;
+        private Integer sales;
+        private java.math.BigDecimal rating;
+        private Integer status;
+        /** 最近一次启用/禁用原因 */
+        private String statusReason;
+        private LocalDateTime createdAt;
+
+        /** 经营许可证号 */
+        private String licenseNo;
+        /** 经营许可证照片 URL */
+        private String licenseImage;
+        /** 法定代表人 */
+        private String legalPerson;
+        /** 注册地址 */
+        private String registeredAddress;
+        /** 经营范围 */
+        private String businessScope;
+        /** 营业期限 */
+        private String businessTerm;
+    }
+
+    /** 平台：商家入驻申请 */
+    @Data
+    public static class ShopApplyVO {
+        private Long id;
+        private Long userId;
+        private String username;
+        private String nickname;
+        private String email;
+        private String shopName;
+        private List<String> categories;
+        private String contact;
+        private String phone;
+        private String region;
+        private String address;
+        private String description;
+        /** PENDING / APPROVED / REJECTED */
+        private String status;
+        private String reason;
+        private Long shopId;
+        private LocalDateTime auditedAt;
+        private LocalDateTime createdAt;
+
+        private String licenseNo;
+        private String licenseImage;
+        private String legalPerson;
+        private String registeredAddress;
+        private String businessScope;
+        private String businessTerm;
+    }
+
+    /** 平台：审核意见（驳回时必填） */
+    @Data
+    public static class ReviewRequest {
+        private String reason;
     }
 }

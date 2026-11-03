@@ -15,4 +15,9 @@ public record CouponOffer(UserCoupon coupon, CouponTemplate template) {
     public Money discountFor(List<OrderLine> lines) {
         return template.discountFor(lines);
     }
+
+    /** 平台券优惠由平台全额承担，商家券由商家全额承担 */
+    public Money platformBearOf(Money discount) {
+        return template.isMerchantCoupon() ? Money.zero() : discount;
+    }
 }

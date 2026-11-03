@@ -22,8 +22,11 @@ public class PointsLog {
     /** 变动后的余额 */
     private Integer balance;
 
-    /** EARN / SPEND / REFUND 等 */
+    /** EARN / SPEND / DEDUCT 等 */
     private String type;
+
+    /** 关联业务单号（如订单号），用于按单扣回 */
+    private String bizNo;
 
     private String remark;
 

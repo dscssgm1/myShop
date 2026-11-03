@@ -11,6 +11,12 @@ public class CouponTemplateVO {
 
     private Long id;
 
+    /** 0 平台券；>0 商家券 */
+    private Long shopId;
+
+    /** 商家券时发放店铺名称 */
+    private String shopName;
+
     private String title;
 
     private BigDecimal thresholdAmount;

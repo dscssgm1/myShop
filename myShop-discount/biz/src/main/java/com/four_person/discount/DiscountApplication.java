@@ -8,7 +8,8 @@ import org.springframework.cloud.openfeign.EnableFeignClients;
 /**
  * 折扣服务启动类。
  */
-@EnableFeignClients(basePackages = {"com.four_person.product.api", "com.four_person.order.api"})
+@EnableFeignClients(basePackages = {"com.four_person.product.api", "com.four_person.order.api",
+        "com.four_person.merchant.api"})
 @MapperScan("com.four_person.discount.infrastructure.persistence.mapper")
 @SpringBootApplication(scanBasePackages = {"com.four_person.discount", "com.four_person.common"})
 public class DiscountApplication {

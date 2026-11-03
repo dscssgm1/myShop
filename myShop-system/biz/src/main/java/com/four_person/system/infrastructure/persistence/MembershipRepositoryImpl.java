@@ -31,6 +31,25 @@ public class MembershipRepositoryImpl implements MembershipRepository {
     }
 
     @Override
+    public Optional<MemberLevel> findLevel(Long id) {
+        return Optional.ofNullable(levelMapper.selectById(id));
+    }
+
+    @Override
+    public void saveLevel(MemberLevel level) {
+        if (level.getId() == null) {
+            levelMapper.insert(level);
+        } else {
+            levelMapper.updateById(level);
+        }
+    }
+
+    @Override
+    public void deleteLevel(Long id) {
+        levelMapper.deleteById(id);
+    }
+
+    @Override
     public Optional<PointsAccount> findAccount(Long userId) {
         return Optional.ofNullable(accountMapper.selectOne(
                 Wrappers.<PointsAccount>lambdaQuery().eq(PointsAccount::getUserId, userId)));
@@ -54,6 +73,15 @@ public class MembershipRepositoryImpl implements MembershipRepository {
     @Override
     public boolean deductPoints(Long userId, int points) {
         return accountMapper.deductPoints(userId, points) > 0;
+    }
+
+    @Override
+    public int sumEarnedByBizNo(Long userId, String bizNo) {
+        List<PointsLog> logs = logMapper.selectList(Wrappers.<PointsLog>lambdaQuery()
+                .eq(PointsLog::getUserId, userId)
+                .eq(PointsLog::getBizNo, bizNo)
+                .eq(PointsLog::getType, "EARN"));
+        return logs.stream().mapToInt(log -> log.getChangeAmount() == null ? 0 : log.getChangeAmount()).sum();
     }
 
     @Override

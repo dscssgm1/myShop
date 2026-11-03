@@ -45,6 +45,25 @@ public class PromotionRepositoryImpl implements PromotionRepository {
     }
 
     @Override
+    public List<Promotion> findByIds(List<Long> ids) {
+        if (ids == null || ids.isEmpty()) {
+            return List.of();
+        }
+        return promotionMapper.selectList(Wrappers.<PromotionPO>lambdaQuery()
+                        .in(PromotionPO::getId, ids)
+                        .orderByAsc(PromotionPO::getId))
+                .stream().map(this::toDomain).toList();
+    }
+
+    @Override
+    public List<Promotion> findByShop(Long shopId) {
+        return promotionMapper.selectList(Wrappers.<PromotionPO>lambdaQuery()
+                        .eq(PromotionPO::getShopId, shopId)
+                        .orderByDesc(PromotionPO::getId))
+                .stream().map(this::toDomain).toList();
+    }
+
+    @Override
     public Optional<Promotion> findById(Long id) {
         return Optional.ofNullable(promotionMapper.selectById(id)).map(this::toDomain);
     }
@@ -69,14 +88,18 @@ public class PromotionRepositoryImpl implements PromotionRepository {
                 po.getDiscountRate(),
                 po.getMaxDiscount() == null ? null : Money.of(po.getMaxDiscount()));
         Scope scope = new Scope(parseScope(po.getScopeType()), parseIds(po.getScopeIds()));
-        return new Promotion(po.getId(), po.getTitle(), po.getType(), rule, scope,
-                Boolean.TRUE.equals(po.getCouponStackable()), po.getStartTime(), po.getEndTime(),
+        return new Promotion(po.getId(), po.getShopId() == null ? 0 : po.getShopId(),
+                po.getTitle(), po.getType(), rule, scope,
+                Boolean.TRUE.equals(po.getCouponStackable()),
+                Boolean.TRUE.equals(po.getEnrollRequired()), po.getPlatformBearRate(),
+                po.getStartTime(), po.getEndTime(),
                 po.getStatus(), po.getDescription(), po.getColor());
     }
 
     private PromotionPO toPO(Promotion promotion) {
         PromotionPO po = new PromotionPO();
         po.setId(promotion.getId());
+        po.setShopId(promotion.getShopId());
         po.setTitle(promotion.getTitle());
         po.setType(promotion.getType());
         po.setRuleType(promotion.getRule().type().name());
@@ -89,6 +112,9 @@ public class PromotionRepositoryImpl implements PromotionRepository {
         po.setScopeType(promotion.getScope().type().name());
         po.setScopeIds(promotion.getScope().idsText());
         po.setCouponStackable(promotion.isCouponStackable());
+        po.setEnrollRequired(promotion.isEnrollRequired());
+        po.setPlatformBearRate(promotion.getPlatformBearRate().signum() > 0
+                ? promotion.getPlatformBearRate() : null);
         po.setStartTime(promotion.getStartTime());
         po.setEndTime(promotion.getEndTime());
         po.setStatus(promotion.getStatus());

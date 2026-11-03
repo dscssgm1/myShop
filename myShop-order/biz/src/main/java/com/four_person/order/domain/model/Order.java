@@ -29,6 +29,15 @@ public class Order {
     /** 见 {@link OrderStatus} */
     private String status;
 
+    /** NORMAL 普通订单 / RECOVERY 售后补款订单 */
+    private String bizType;
+
+    /** 补款订单对应的原订单号 */
+    private String sourceOrderNo;
+
+    /** 补款订单对应的售后单 */
+    private Long afterSaleId;
+
     /** 所属店铺：一店一单 */
     private Long shopId;
 
@@ -39,6 +48,12 @@ public class Order {
     private BigDecimal promotionDiscount;
 
     private BigDecimal couponDiscount;
+
+    /** 优惠中商家承担的部分（活动比例 + 券归属分摊） */
+    private BigDecimal merchantBearAmount;
+
+    /** 优惠中平台承担（补贴）的部分 */
+    private BigDecimal platformBearAmount;
 
     private BigDecimal freightAmount;
 
@@ -64,9 +79,14 @@ public class Order {
 
     private LocalDateTime shipTime;
 
+    /** 物流正向运单签收时间，作为自动确认收货的起算点 */
+    private LocalDateTime signedTime;
+
     private LocalDateTime completeTime;
 
     private LocalDateTime cancelTime;
+
+    private LocalDateTime refundTime;
 
     private LocalDateTime createdAt;
 
@@ -101,6 +121,44 @@ public class Order {
         ensureStatus(OrderStatus.UNPAID, "只有待付款订单可以取消");
         this.status = OrderStatus.CANCELLED.name();
         this.cancelTime = cancelledAt;
+    }
+
+    /** 商家发货前，买家取消已支付订单并退款 */
+    public void refundBeforeShip(LocalDateTime refundedAt) {
+        ensureStatus(OrderStatus.PAID, "商家已发货，请通过售后处理");
+        this.status = OrderStatus.REFUNDED.name();
+        this.refundTime = refundedAt;
+        this.cancelTime = refundedAt;
+    }
+
+    /** 发起售后：订单进入售后中，售后结束后可恢复原状态 */
+    public void requestAfterSale() {
+        if (!OrderStatus.SHIPPED.name().equals(status) && !OrderStatus.COMPLETED.name().equals(status)) {
+            throw new BusinessException(OrderErrorCode.ORDER_STATUS_INVALID, "订单发货后才能申请售后");
+        }
+        this.status = OrderStatus.AFTER_SALE.name();
+    }
+
+    public void markRefunded(LocalDateTime refundedAt) {
+        ensureStatus(OrderStatus.AFTER_SALE, "只有售后中的订单可以退款");
+        this.status = OrderStatus.REFUNDED.name();
+        this.refundTime = refundedAt;
+    }
+
+    /** 售后被商家/平台拒绝后恢复订单原状态 */
+    public void restoreStatus(String originalStatus) {
+        if (!OrderStatus.AFTER_SALE.name().equals(status)) {
+            return;
+        }
+        if (!OrderStatus.SHIPPED.name().equals(originalStatus)
+                && !OrderStatus.COMPLETED.name().equals(originalStatus)) {
+            throw new BusinessException(OrderErrorCode.ORDER_STATUS_INVALID, "订单原状态异常");
+        }
+        this.status = originalStatus;
+    }
+
+    public boolean isRecovery() {
+        return "RECOVERY".equals(bizType);
     }
 
     public void ensureStatus(OrderStatus expected, String message) {

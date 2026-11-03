@@ -30,6 +30,8 @@
         <module>myShop-logistics</module>
         <module>myShop-message</module>
         <module>myShop-platform</module>
+        <module>myShop-review</module>
+        <module>myShop-file</module>
     </modules>
 
     <properties>
@@ -39,6 +41,7 @@
         <spring-cloud-alibaba.version>2023.0.3.2</spring-cloud-alibaba.version>
         <mybatis-plus.version>3.5.7</mybatis-plus.version>
         <jjwt.version>0.12.6</jjwt.version>
+        <minio.version>8.5.7</minio.version>
     </properties>
 
     <dependencyManagement>
@@ -153,6 +156,11 @@
             </dependency>
             <dependency>
                 <groupId>com.four_person</groupId>
+                <artifactId>myShop-review-api</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.four_person</groupId>
                 <artifactId>myShop-platform-biz</artifactId>
                 <version>${project.version}</version>
             </dependency>
@@ -162,6 +170,13 @@
                 <groupId>com.baomidou</groupId>
                 <artifactId>mybatis-plus-spring-boot3-starter</artifactId>
                 <version>${mybatis-plus.version}</version>
+            </dependency>
+
+            <!-- MinIO 对象存储 -->
+            <dependency>
+                <groupId>io.minio</groupId>
+                <artifactId>minio</artifactId>
+                <version>${minio.version}</version>
             </dependency>
 
             <!-- JWT -->

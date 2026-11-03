@@ -21,6 +21,22 @@
         </dependency>
         <dependency>
             <groupId>com.four_person</groupId>
+            <artifactId>myShop-product-api</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.four_person</groupId>
+            <artifactId>myShop-order-api</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.cloud</groupId>
+            <artifactId>spring-cloud-starter-openfeign</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.cloud</groupId>
+            <artifactId>spring-cloud-starter-loadbalancer</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.four_person</groupId>
             <artifactId>myShop-system-api</artifactId>
         </dependency>
 

@@ -26,5 +26,9 @@ public class PaymentVO {
 
     private LocalDateTime paidAt;
 
+    private LocalDateTime refundedAt;
+
+    private String refundReason;
+
     private LocalDateTime createdAt;
 }

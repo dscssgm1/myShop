@@ -37,6 +37,14 @@ public class CouponTemplateRepositoryImpl implements CouponTemplateRepository {
     }
 
     @Override
+    public List<CouponTemplate> findByShop(Long shopId) {
+        return templateMapper.selectList(Wrappers.<CouponTemplatePO>lambdaQuery()
+                        .eq(CouponTemplatePO::getShopId, shopId)
+                        .orderByDesc(CouponTemplatePO::getId))
+                .stream().map(this::toDomain).toList();
+    }
+
+    @Override
     public Optional<CouponTemplate> findById(Long id) {
         return Optional.ofNullable(templateMapper.selectById(id)).map(this::toDomain);
     }
@@ -67,7 +75,7 @@ public class CouponTemplateRepositoryImpl implements CouponTemplateRepository {
 
     private CouponTemplate toDomain(CouponTemplatePO po) {
         Scope scope = new Scope(parseScope(po.getScopeType()), parseIds(po.getScopeIds()));
-        return new CouponTemplate(po.getId(), po.getTitle(),
+        return new CouponTemplate(po.getId(), po.getShopId() == null ? 0 : po.getShopId(), po.getTitle(),
                 Money.of(po.getThresholdAmount()), Money.of(po.getDiscountAmount()), scope,
                 po.getTotalStock() == null ? 0 : po.getTotalStock(),
                 po.getClaimedCount() == null ? 0 : po.getClaimedCount(),
@@ -78,6 +86,7 @@ public class CouponTemplateRepositoryImpl implements CouponTemplateRepository {
     private CouponTemplatePO toPO(CouponTemplate template) {
         CouponTemplatePO po = new CouponTemplatePO();
         po.setId(template.getId());
+        po.setShopId(template.getShopId());
         po.setTitle(template.getTitle());
         po.setThresholdAmount(template.getThresholdAmount().amount());
         po.setDiscountAmount(template.getDiscountAmount().amount());

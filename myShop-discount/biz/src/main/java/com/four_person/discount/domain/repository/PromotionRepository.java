@@ -12,6 +12,11 @@ public interface PromotionRepository {
 
     List<Promotion> findAll();
 
+    List<Promotion> findByIds(List<Long> ids);
+
+    /** 指定店铺的全部活动（含已结束），商家自建活动列表用 */
+    List<Promotion> findByShop(Long shopId);
+
     Optional<Promotion> findById(Long id);
 
     Promotion save(Promotion promotion);

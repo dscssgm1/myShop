@@ -18,6 +18,9 @@ public class Shipment {
     public static final String DELIVERING = "DELIVERING";
     public static final String SIGNED = "SIGNED";
 
+    public static final String TYPE_NORMAL = "NORMAL";
+    public static final String TYPE_RETURN = "RETURN";
+
     @TableId(type = IdType.AUTO)
     private Long id;
 
@@ -35,6 +38,11 @@ public class Shipment {
     private String receiverRegion;
     private String itemsText;
     private String status;
+    /** NORMAL 正向发货 / RETURN 售后退货 */
+    private String type;
+    private String afterSaleNo;
+    private String pickupCode;
+    private LocalDateTime appointmentTime;
     private Long courierId;
     private String courierName;
 

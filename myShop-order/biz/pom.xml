@@ -25,11 +25,31 @@
         </dependency>
         <dependency>
             <groupId>com.four_person</groupId>
+            <artifactId>myShop-message-api</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.four_person</groupId>
             <artifactId>myShop-product-api</artifactId>
         </dependency>
         <dependency>
             <groupId>com.four_person</groupId>
             <artifactId>myShop-discount-api</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.four_person</groupId>
+            <artifactId>myShop-payment-api</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.four_person</groupId>
+            <artifactId>myShop-logistics-api</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.four_person</groupId>
+            <artifactId>myShop-merchant-api</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.four_person</groupId>
+            <artifactId>myShop-system-api</artifactId>
         </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>

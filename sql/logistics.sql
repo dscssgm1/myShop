@@ -1,16 +1,17 @@
 -- 物流服务：物流公司、快递员、运单、轨迹
 
 CREATE TABLE IF NOT EXISTS logistics_company (
-    id         BIGINT       NOT NULL AUTO_INCREMENT,
-    name       VARCHAR(100) NOT NULL,
-    code       VARCHAR(16)  NOT NULL DEFAULT '' COMMENT '运单号前缀',
-    contact    VARCHAR(50)  NOT NULL DEFAULT '',
-    phone      VARCHAR(20)  NOT NULL DEFAULT '',
-    color      VARCHAR(32)  NOT NULL DEFAULT '#666',
-    status     TINYINT      NOT NULL DEFAULT 0 COMMENT '1 已入驻 0 停用',
-    created_at DATETIME     NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    updated_at DATETIME     NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    deleted    TINYINT      NOT NULL DEFAULT 0,
+    id         BIGINT        NOT NULL AUTO_INCREMENT,
+    name       VARCHAR(100)  NOT NULL,
+    code       VARCHAR(16)   NOT NULL DEFAULT '' COMMENT '运单号前缀',
+    contact    VARCHAR(50)   NOT NULL DEFAULT '',
+    phone      VARCHAR(20)   NOT NULL DEFAULT '',
+    color      VARCHAR(32)   NOT NULL DEFAULT '#666',
+    balance    DECIMAL(12, 2) NOT NULL DEFAULT 0.00 COMMENT '分红账户余额',
+    status     TINYINT       NOT NULL DEFAULT 0 COMMENT '1 已入驻 0 停用',
+    created_at DATETIME      NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at DATETIME      NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    deleted    TINYINT       NOT NULL DEFAULT 0,
     PRIMARY KEY (id),
     UNIQUE KEY uk_code (code)
 ) ENGINE = InnoDB DEFAULT CHARSET = utf8mb4 COMMENT = '物流公司';
@@ -45,6 +46,10 @@ CREATE TABLE IF NOT EXISTS shipment (
     receiver_region  VARCHAR(50)  NOT NULL DEFAULT '',
     items_text       VARCHAR(500) NOT NULL DEFAULT '',
     status           VARCHAR(16)  NOT NULL DEFAULT 'WAITING_PICKUP' COMMENT 'WAITING_PICKUP/PICKED/IN_TRANSIT/DELIVERING/SIGNED',
+    type             VARCHAR(16)  NOT NULL DEFAULT 'NORMAL' COMMENT 'NORMAL 正向发货 / RETURN 售后退货',
+    after_sale_no    VARCHAR(32)  NOT NULL DEFAULT '',
+    pickup_code      VARCHAR(6)   NOT NULL DEFAULT '' COMMENT '售后退货取件码',
+    appointment_time DATETIME     NULL COMMENT '用户预约上门取件时间',
     courier_id       BIGINT       NULL,
     courier_name     VARCHAR(50)  NOT NULL DEFAULT '',
     created_at       DATETIME     NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -53,6 +58,7 @@ CREATE TABLE IF NOT EXISTS shipment (
     PRIMARY KEY (id),
     UNIQUE KEY uk_tracking_no (tracking_no),
     KEY idx_order (order_no),
+    KEY idx_after_sale (after_sale_no),
     KEY idx_company_status (company_id, status)
 ) ENGINE = InnoDB DEFAULT CHARSET = utf8mb4 COMMENT = '运单';
 
@@ -64,6 +70,27 @@ CREATE TABLE IF NOT EXISTS shipment_trace (
     PRIMARY KEY (id),
     KEY idx_shipment (shipment_id)
 ) ENGINE = InnoDB DEFAULT CHARSET = utf8mb4 COMMENT = '物流轨迹';
+
+-- 分红流水（账务记录不设 deleted，不做物理删除）
+CREATE TABLE IF NOT EXISTS dividend_record (
+    id              BIGINT        NOT NULL AUTO_INCREMENT,
+    tracking_no     VARCHAR(32)   NULL COMMENT '运单号（调账记录为 NULL）',
+    type            VARCHAR(16)   NOT NULL DEFAULT 'DIVIDEND' COMMENT 'DIVIDEND 签收分红 / ADJUST 平台调账',
+    order_no        VARCHAR(32)   NOT NULL DEFAULT '',
+    shop_id         BIGINT        NOT NULL DEFAULT 0,
+    shop_name       VARCHAR(100)  NOT NULL DEFAULT '',
+    company_id      BIGINT        NOT NULL,
+    company_name    VARCHAR(100)  NOT NULL DEFAULT '',
+    freight_amount  DECIMAL(10, 2) NOT NULL DEFAULT 0.00 COMMENT '订单运费',
+    platform_ratio  DECIMAL(5, 2) NOT NULL DEFAULT 0.00 COMMENT '平台分成比例%（记账时快照）',
+    platform_amount DECIMAL(10, 2) NOT NULL DEFAULT 0.00 COMMENT '平台分成金额',
+    company_amount  DECIMAL(10, 2) NOT NULL DEFAULT 0.00 COMMENT '物流公司分成金额（调账可为负）',
+    reason          VARCHAR(255)  NOT NULL DEFAULT '' COMMENT '调账原因',
+    created_at      DATETIME      NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    PRIMARY KEY (id),
+    UNIQUE KEY uk_tracking_no (tracking_no),
+    KEY idx_company (company_id, created_at)
+) ENGINE = InnoDB DEFAULT CHARSET = utf8mb4 COMMENT = '物流分红流水';
 
 INSERT IGNORE INTO logistics_company (id, name, code, contact, phone, color, status) VALUES
 (1, '顺丰速运', 'SF', '王经理', '13900001001', '#c7000b', 1),

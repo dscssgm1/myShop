@@ -3,7 +3,7 @@
 CREATE TABLE IF NOT EXISTS shop (
     id          BIGINT        NOT NULL AUTO_INCREMENT,
     name        VARCHAR(100)  NOT NULL,
-    icon        VARCHAR(16)   NOT NULL DEFAULT '',
+    icon        VARCHAR(500)  NOT NULL DEFAULT '' COMMENT '店铺标识：图片 URL（旧数据为 emoji，作回退展示）',
     color       VARCHAR(255)  NOT NULL DEFAULT '',
     description VARCHAR(500)  NOT NULL DEFAULT '',
     contact     VARCHAR(50)   NOT NULL DEFAULT '',
@@ -11,8 +11,16 @@ CREATE TABLE IF NOT EXISTS shop (
     region      VARCHAR(50)   NOT NULL DEFAULT '',
     address     VARCHAR(255)  NOT NULL DEFAULT '',
     categories  VARCHAR(500)  NOT NULL DEFAULT '[]' COMMENT '经营类目 JSON 数组',
+    license_no  VARCHAR(64)   NOT NULL DEFAULT '' COMMENT '经营许可证号',
+    license_image VARCHAR(500) NOT NULL DEFAULT '' COMMENT '经营许可证照片 URL',
+    legal_person VARCHAR(50)  NOT NULL DEFAULT '' COMMENT '法定代表人',
+    registered_address VARCHAR(200) NOT NULL DEFAULT '' COMMENT '注册地址',
+    business_scope VARCHAR(200) NOT NULL DEFAULT '' COMMENT '经营范围',
+    business_term VARCHAR(100) NOT NULL DEFAULT '' COMMENT '营业期限，如 2024-03-15 至 2034-03-14',
     sales       INT           NOT NULL DEFAULT 0,
+    rating      DECIMAL(3, 2) NULL COMMENT '店铺评分：所有商品所有评价的均值',
     status      TINYINT       NOT NULL DEFAULT 1 COMMENT '1 启用 0 禁用',
+    status_reason VARCHAR(255) NOT NULL DEFAULT '' COMMENT '最近一次启用/禁用原因',
     created_at  DATETIME      NOT NULL DEFAULT CURRENT_TIMESTAMP,
     updated_at  DATETIME      NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     deleted     TINYINT       NOT NULL DEFAULT 0,
@@ -42,9 +50,20 @@ CREATE TABLE IF NOT EXISTS shop_apply (
     categories  VARCHAR(500) NOT NULL DEFAULT '[]',
     contact     VARCHAR(50)  NOT NULL DEFAULT '',
     phone       VARCHAR(20)  NOT NULL DEFAULT '',
+    region      VARCHAR(50)  NOT NULL DEFAULT '' COMMENT '所在区域，决定揽收快递员',
+    address     VARCHAR(255) NOT NULL DEFAULT '' COMMENT '店铺经营/揽收地址',
     description VARCHAR(500) NOT NULL DEFAULT '',
+    license_no  VARCHAR(64)  NOT NULL DEFAULT '' COMMENT '经营许可证号',
+    license_image VARCHAR(500) NOT NULL DEFAULT '' COMMENT '经营许可证照片 URL',
+    legal_person VARCHAR(50) NOT NULL DEFAULT '' COMMENT '法定代表人',
+    registered_address VARCHAR(200) NOT NULL DEFAULT '' COMMENT '注册地址',
+    business_scope VARCHAR(200) NOT NULL DEFAULT '' COMMENT '经营范围',
+    business_term VARCHAR(100) NOT NULL DEFAULT '' COMMENT '营业期限',
     status      VARCHAR(16)  NOT NULL DEFAULT 'PENDING' COMMENT 'PENDING/APPROVED/REJECTED',
-    reason      VARCHAR(255) NOT NULL DEFAULT '',
+    reason      VARCHAR(255) NOT NULL DEFAULT '' COMMENT '审核意见',
+    shop_id     BIGINT       NULL COMMENT '审核通过后生成的店铺 ID',
+    audited_by  BIGINT       NULL,
+    audited_at  DATETIME     NULL,
     created_at  DATETIME     NOT NULL DEFAULT CURRENT_TIMESTAMP,
     updated_at  DATETIME     NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     deleted     TINYINT      NOT NULL DEFAULT 0,
@@ -53,13 +72,13 @@ CREATE TABLE IF NOT EXISTS shop_apply (
     KEY idx_status (status)
 ) ENGINE = InnoDB DEFAULT CHARSET = utf8mb4 COMMENT = '入驻申请';
 
-INSERT IGNORE INTO shop (id, name, icon, color, description, contact, phone, region, address, categories, sales, status) VALUES
-(1, '数码旗舰店', '📱', 'linear-gradient(135deg,#667eea,#764ba2)', '专注数码好物，正品保障', '张经理', '13800000001', '北京市·海淀区', '北京市海淀区中关村大街 1 号数码大厦', '["手机数码","家用电器"]', 128900, 1),
-(2, '家电优选', '📺', 'linear-gradient(135deg,#4facfe,#00f2fe)', '品质家电，送货入户', '李经理', '13800000002', '北京市·朝阳区', '北京市朝阳区望京 SOHO T2 家电仓', '["家用电器"]', 86300, 1),
-(3, '潮流服饰馆', '👔', 'linear-gradient(135deg,#fa709a,#fee140)', '潮流穿搭，品质之选', '王经理', '13800000003', '北京市·朝阳区', '北京市朝阳区三里屯太古里仓储中心', '["服饰鞋包"]', 54200, 1),
-(4, '鲜丰水果', '🍎', 'linear-gradient(135deg,#ff9a9e,#fecfef)', '产地直发，新鲜到家', '赵经理', '13800000004', '上海市·浦东新区', '上海市浦东新区张江路 88 号冷链仓', '["食品生鲜"]', 31700, 1),
-(5, '书虫书店', '📚', 'linear-gradient(135deg,#a18cd1,#fbc2eb)', '正版好书，阅读相伴', '钱经理', '13800000005', '北京市·海淀区', '北京市海淀区学院路 30 号书库', '["图书文具"]', 15600, 1),
-(6, '美妍美妆', '💄', 'linear-gradient(135deg,#fbc2eb,#a6c1ee)', '正品美妆，美丽无忧', '孙经理', '13800000006', '北京市·朝阳区', '北京市朝阳区国贸商城 B1 仓', '["美妆个护"]', 23400, 1);
+INSERT IGNORE INTO shop (id, name, icon, color, description, contact, phone, region, address, categories, license_no, license_image, legal_person, registered_address, business_scope, business_term, sales, status) VALUES
+(1, '数码旗舰店', '📱', 'linear-gradient(135deg,#667eea,#764ba2)', '专注数码好物，正品保障', '张经理', '13800000001', '北京市·海淀区', '北京市海淀区中关村大街 1 号数码大厦', '["手机数码","家用电器"]', '91110108MA01N5YX2T', '', '张建国', '北京市海淀区中关村大街 27 号', '手机数码产品销售与维修；家用电器销售', '2021-06-18 至 2041-06-17', 128900, 1),
+(2, '家电优选', '📺', 'linear-gradient(135deg,#4facfe,#00f2fe)', '品质家电，送货入户', '李经理', '13800000002', '北京市·朝阳区', '北京市朝阳区望京 SOHO T2 家电仓', '["家用电器"]', '91110105MA02P3QK8H', '', '李国强', '北京市朝阳区望京街 10 号', '家用电器销售与安装；售后服务', '2020-03-02 至 2040-03-01', 86300, 1),
+(3, '潮流服饰馆', '👔', 'linear-gradient(135deg,#fa709a,#fee140)', '潮流穿搭，品质之选', '王经理', '13800000003', '北京市·朝阳区', '北京市朝阳区三里屯太古里仓储中心', '["服饰鞋包"]', '91110105MA03W7RD4B', '', '王志远', '北京市朝阳区三里屯路 19 号', '服装服饰、鞋帽、箱包零售', '2019-09-12 至 2039-09-11', 54200, 1),
+(4, '鲜丰水果', '🍎', 'linear-gradient(135deg,#ff9a9e,#fecfef)', '产地直发，新鲜到家', '赵经理', '13800000004', '上海市·浦东新区', '上海市浦东新区张江路 88 号冷链仓', '["食品生鲜"]', '91310115MA04K8TN9C', '', '赵永刚', '上海市浦东新区张江路 66 号', '食品销售；新鲜水果零售；食用农产品初加工', '2022-01-20 至 2042-01-19', 31700, 1),
+(5, '书虫书店', '📚', 'linear-gradient(135deg,#a18cd1,#fbc2eb)', '正版好书，阅读相伴', '钱经理', '13800000005', '北京市·海淀区', '北京市海淀区学院路 30 号书库', '["图书文具"]', '91110108MA05J2VP3D', '', '钱学文', '北京市海淀区学院路 15 号', '出版物零售；文具用品销售', '2018-05-08 至 2038-05-07', 15600, 1),
+(6, '美妍美妆', '💄', 'linear-gradient(135deg,#fbc2eb,#a6c1ee)', '正品美妆，美丽无忧', '孙经理', '13800000006', '北京市·朝阳区', '北京市朝阳区国贸商城 B1 仓', '["美妆个护"]', '91110105MA06T9QW7E', '', '孙丽华', '北京市朝阳区建国路 87 号', '化妆品零售；日用百货销售', '2023-02-14 至 2043-02-13', 23400, 1);
 
 INSERT IGNORE INTO shop_staff (id, shop_id, name, phone, role_code, status) VALUES
 (1, 1, '店铺业务员', '13800001101', 'merchant-sales', 1),

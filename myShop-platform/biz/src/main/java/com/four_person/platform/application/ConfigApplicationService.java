@@ -55,6 +55,15 @@ public class ConfigApplicationService {
         return list(group);
     }
 
+    /** 删除配置项（如配置中心中可增删的服务保障 key） */
+    @Transactional
+    public void deleteItem(String group, String key) {
+        AccessGuard.requireGroup("PLATFORM");
+        configMapper.delete(Wrappers.<ConfigItem>lambdaQuery()
+                .eq(ConfigItem::getConfigGroup, group)
+                .eq(ConfigItem::getConfigKey, key));
+    }
+
     private PlatformDtos.ConfigItemVO toVO(ConfigItem item) {
         PlatformDtos.ConfigItemVO vo = new PlatformDtos.ConfigItemVO();
         vo.setId(item.getId());

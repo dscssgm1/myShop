@@ -1,0 +1,19 @@
+server:
+  port: ${SERVER_PORT:8090}
+
+spring:
+  application:
+    name: myshop-review
+  config:
+    import:
+      - optional:nacos:myshop-review.yml
+  cloud:
+    nacos:
+      server-addr: ${NACOS_SERVER_ADDR:127.0.0.1:8848}
+      discovery:
+        group: config
+        namespace: ${NACOS_NAMESPACE:myShop}
+      config:
+        group: config
+        namespace: ${NACOS_NAMESPACE:myShop}
+        file-extension: yml

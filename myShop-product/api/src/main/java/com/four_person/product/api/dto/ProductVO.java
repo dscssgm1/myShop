@@ -32,8 +32,6 @@ public class ProductVO {
 
     private BigDecimal price;
 
-    private BigDecimal originPrice;
-
     private BigDecimal discountPrice;
 
     private Integer stock;
@@ -46,9 +44,21 @@ public class ProductVO {
 
     private String color;
 
+    /** 主图 URL */
+    private String coverImage;
+
+    /** 图集 URL 列表 */
+    private List<String> images;
+
     private List<String> tags;
 
+    /** 服务保障 key 列表（名称/图标由前端经配置中心解析） */
+    private List<String> serviceKeys;
+
     private String description;
+
+    /** 商品详情（富文本 HTML） */
+    private String detail;
 
     /** 规格定义 */
     private List<SpecGroupVO> specs;
@@ -59,6 +69,12 @@ public class ProductVO {
     private Integer status;
 
     private String auditStatus;
+
+    /** 最近一次审核驳回原因（驳回后商家据此修改重新提交） */
+    private String auditReason;
+
+    /** 上架中商品的待审核修改（Map 结构同 ProductRequest；空代表无待审核修改） */
+    private Map<String, Object> pendingData;
 
     private String offReason;
 
@@ -73,7 +89,6 @@ public class ProductVO {
         private Long id;
         private Map<String, String> specs;
         private BigDecimal price;
-        private BigDecimal originPrice;
         private Integer stock;
         private Integer sales;
     }

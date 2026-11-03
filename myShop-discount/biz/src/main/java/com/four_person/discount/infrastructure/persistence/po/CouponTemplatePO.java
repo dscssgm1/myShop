@@ -16,6 +16,9 @@ public class CouponTemplatePO {
     @TableId(type = IdType.AUTO)
     private Long id;
 
+    /** 0 平台券；>0 商家券 */
+    private Long shopId;
+
     private String title;
 
     private BigDecimal thresholdAmount;

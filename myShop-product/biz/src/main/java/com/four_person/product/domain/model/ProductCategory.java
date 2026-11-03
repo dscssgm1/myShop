@@ -6,6 +6,7 @@ import com.baomidou.mybatisplus.annotation.TableLogic;
 import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.Data;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 @Data
@@ -28,6 +29,9 @@ public class ProductCategory {
     private String color;
 
     private Integer sort;
+
+    /** 平台佣金费率（%）；小类为空时继承大类，大类为空表示不抽佣 */
+    private BigDecimal commissionRate;
 
     private LocalDateTime createdAt;
 

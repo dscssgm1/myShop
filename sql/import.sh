@@ -16,7 +16,7 @@ docker exec -i "${CONTAINER}" mysql -uroot -p"${ROOT_PASSWORD}" --default-charac
     -e "DROP DATABASE IF EXISTS ${DATABASE};
         CREATE DATABASE ${DATABASE} DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;"
 
-for file in system merchant product order payment discount logistics message platform; do
+for file in system merchant product order payment discount logistics message platform review region; do
     echo "==> 导入 ${file}.sql"
     docker exec -i "${CONTAINER}" mysql -uroot -p"${ROOT_PASSWORD}" --default-character-set=utf8mb4 \
         "${DATABASE}" < "${SCRIPT_DIR}/${file}.sql"

@@ -1,0 +1,35 @@
+server:
+  port: ${SERVER_PORT:8091}
+
+spring:
+  application:
+    name: myshop-file
+  config:
+    import:
+      - optional:nacos:myshop-file.yml
+  servlet:
+    multipart:
+      max-file-size: 5MB
+      max-request-size: 20MB
+  cloud:
+    nacos:
+      server-addr: ${NACOS_SERVER_ADDR:127.0.0.1:8848}
+      discovery:
+        group: config
+        namespace: ${NACOS_NAMESPACE:myShop}
+      config:
+        group: config
+        namespace: ${NACOS_NAMESPACE:myShop}
+        file-extension: yml
+
+myshop:
+  minio:
+    endpoint: ${MINIO_ENDPOINT:http://127.0.0.1:9000}
+    public-url: ${MINIO_PUBLIC_URL:http://127.0.0.1:9000}
+    access-key: ${MINIO_ACCESS_KEY:minioadmin}
+    secret-key: ${MINIO_SECRET_KEY:minioadmin}
+    bucket: ${MINIO_BUCKET:myshop}
+
+logging:
+  level:
+    com.four_person: info

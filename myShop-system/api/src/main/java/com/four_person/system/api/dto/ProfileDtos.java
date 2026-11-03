@@ -71,4 +71,64 @@ public final class ProfileDtos {
         private String holder;
         private LocalDateTime createdAt;
     }
+
+    // ==================== 账号安全 ====================
+
+    @Data
+    public static class SecurityOverviewVO {
+
+        /** 脱敏邮箱：123****@qq.com */
+        private String maskedEmail;
+        private Boolean currentDeviceTrusted;
+        private String currentDeviceId;
+        private String currentDeviceName;
+        private java.util.List<LoginRecordVO> recentLogins;
+        private java.util.List<TrustedDeviceVO> trustedDevices;
+    }
+
+    @Data
+    public static class LoginRecordVO {
+
+        private Long id;
+        private String ip;
+        private String deviceName;
+        private LocalDateTime loginAt;
+    }
+
+    @Data
+    public static class TrustedDeviceVO {
+
+        private Long id;
+        private String deviceName;
+        private LocalDateTime trustedAt;
+        /** 是否当前设备 */
+        private Boolean current;
+    }
+
+    @Data
+    public static class VerifyIdentityRequest {
+
+        @NotBlank(message = "验证码不能为空")
+        private String code;
+    }
+
+    @Data
+    public static class VerifyIdentityResponse {
+
+        private String verifyToken;
+        /** 有效期（秒） */
+        private long expiresIn;
+    }
+
+    @Data
+    public static class TrustDeviceRequest {
+
+        @NotBlank(message = "设备标识不能为空")
+        private String deviceId;
+
+        private String deviceName;
+
+        @NotBlank(message = "缺少身份验证凭证")
+        private String verifyToken;
+    }
 }
