@@ -5,6 +5,7 @@ import com.four_person.discount.domain.model.CouponOffer;
 import com.four_person.discount.domain.model.CouponTemplate;
 import com.four_person.discount.domain.model.DiscountRule;
 import com.four_person.discount.domain.model.DiscountSelection;
+import com.four_person.discount.domain.model.LineBreakdown;
 import com.four_person.discount.domain.model.Money;
 import com.four_person.discount.domain.model.OrderLine;
 import com.four_person.discount.domain.model.Promotion;
@@ -36,7 +37,7 @@ class DiscountPricingServiceTest {
         DiscountSelection result = service.calculate(
                 List.of(line(1L, 1L, 1L, "1000.00", 1)),
                 List.of(promotion(1L, fullReduction("300.00", 300, "50.00"), Scope.all(), true, null)),
-                List.of(), null, now);
+                List.of(), null, null, now);
 
         assertThat(result.promotionDiscount().amount()).isEqualByComparingTo("150.00");
         assertThat(result.payAmount().amount()).isEqualByComparingTo("850.00");
@@ -48,7 +49,7 @@ class DiscountPricingServiceTest {
         DiscountSelection result = service.calculate(
                 List.of(line(1L, 1L, 1L, "250.00", 1)),
                 List.of(promotion(1L, fullReduction("200.00", 0, "30.00"), Scope.all(), true, null)),
-                List.of(), null, now);
+                List.of(), null, null, now);
 
         assertThat(result.promotionDiscount().amount()).isEqualByComparingTo("30.00");
         assertThat(result.payAmount().amount()).isEqualByComparingTo("220.00");
@@ -61,7 +62,7 @@ class DiscountPricingServiceTest {
         DiscountSelection result = service.calculate(
                 List.of(line(1L, 1L, 1L, "1000.00", 1)),
                 List.of(promotion(1L, rule, Scope.all(), true, null)),
-                List.of(), null, now);
+                List.of(), null, null, now);
 
         assertThat(result.promotionDiscount().amount()).isEqualByComparingTo("300.00");
         assertThat(result.payAmount().amount()).isEqualByComparingTo("700.00");
@@ -73,7 +74,7 @@ class DiscountPricingServiceTest {
         DiscountSelection result = service.calculate(
                 List.of(line(1L, 1L, 1L, "500.00", 1), line(2L, 4L, 2L, "500.00", 1)),
                 List.of(promotion(1L, fullReduction("400.00", 0, "100.00"), scope, true, null)),
-                List.of(), null, now);
+                List.of(), null, null, now);
 
         assertThat(result.originalAmount().amount()).isEqualByComparingTo("1000.00");
         assertThat(result.promotionDiscount().amount()).isEqualByComparingTo("100.00");
@@ -94,7 +95,7 @@ class DiscountPricingServiceTest {
         DiscountSelection result = service.calculate(
                 List.of(line(1L, 1L, 100L, "500.00", 1), line(2L, 2L, 200L, "300.00", 1)),
                 List.of(shopOne, shopOneBetter, shopTwo),
-                List.of(), null, now);
+                List.of(), null, null, now);
 
         // 店铺 100 取更优的 80，店铺 200 取 40，互不冲突可并存
         assertThat(result.promotionDiscount().amount()).isEqualByComparingTo("120.00");
@@ -111,7 +112,7 @@ class DiscountPricingServiceTest {
         // 同一店铺的商品同时命中两个活动 → 冲突，保留商家活动（150 > 100）
         DiscountSelection merchantWins = service.calculate(
                 List.of(line(1L, 1L, 100L, "500.00", 1)),
-                List.of(platform, merchant), List.of(), null, now);
+                List.of(platform, merchant), List.of(), null, null, now);
         assertThat(merchantWins.promotions()).extracting(Promotion::getId).containsExactly(2L);
         assertThat(merchantWins.promotionDiscount().amount()).isEqualByComparingTo("150.00");
 
@@ -120,7 +121,7 @@ class DiscountPricingServiceTest {
                 fullReduction("0.00", 0, "30.00"), Scope.shop());
         DiscountSelection platformWins = service.calculate(
                 List.of(line(1L, 1L, 100L, "500.00", 1)),
-                List.of(platform, smallMerchant), List.of(), null, now);
+                List.of(platform, smallMerchant), List.of(), null, null, now);
         assertThat(platformWins.promotions()).extracting(Promotion::getId).containsExactly(1L);
     }
 
@@ -132,7 +133,7 @@ class DiscountPricingServiceTest {
         // 店铺 200 的商品不受店铺 100 活动影响
         DiscountSelection result = service.calculate(
                 List.of(line(1L, 1L, 200L, "500.00", 1)),
-                List.of(shopOnePromo), List.of(), null, now);
+                List.of(shopOnePromo), List.of(), null, null, now);
 
         assertThat(result.promotionDiscount().amount()).isEqualByComparingTo("0.00");
         assertThat(result.promotions()).isEmpty();
@@ -145,7 +146,7 @@ class DiscountPricingServiceTest {
         DiscountSelection result = service.calculate(
                 List.of(line(1L, 1L, 1L, "1000.00", 1)),
                 List.of(promotion(1L, fullReduction("500.00", 0, "100.00"), Scope.all(), true, null)),
-                List.of(offer(10L, 1L, "300.00", "50.00")), null, now);
+                List.of(offer(10L, 1L, "300.00", "50.00")), null, null, now);
 
         assertThat(result.promotionDiscount().amount()).isEqualByComparingTo("100.00");
         assertThat(result.couponDiscount().amount()).isEqualByComparingTo("50.00");
@@ -164,7 +165,7 @@ class DiscountPricingServiceTest {
                         offer(11L, 1L, "0.00", "20.00"),
                         offer(12L, 1L, "0.00", "10.00"),
                         offer(13L, 1L, "0.00", "5.00")),
-                null, now);
+                null, null, now);
 
         // 上限 3 张：30 + 20 + 10 = 60，第 4 张被舍弃
         assertThat(result.couponDiscount().amount()).isEqualByComparingTo("60.00");
@@ -177,7 +178,7 @@ class DiscountPricingServiceTest {
         DiscountSelection result = service.calculate(
                 List.of(line(1L, 1L, 1L, "1000.00", 1)),
                 List.of(promotion(1L, fullReduction("500.00", 0, "100.00"), Scope.all(), false, null)),
-                List.of(offer(10L, 1L, "300.00", "150.00")), null, now);
+                List.of(offer(10L, 1L, "300.00", "150.00")), null, null, now);
 
         // 活动不让叠券，券更优 → 只用券
         assertThat(result.promotionDiscount().amount()).isEqualByComparingTo("0.00");
@@ -191,7 +192,7 @@ class DiscountPricingServiceTest {
         DiscountSelection result = service.calculate(
                 List.of(line(1L, 1L, 1L, "1000.00", 1)),
                 List.of(promotion(1L, fullReduction("500.00", 0, "100.00"), Scope.all(), false, null)),
-                List.of(offer(10L, 1L, "300.00", "40.00")), null, now);
+                List.of(offer(10L, 1L, "300.00", "40.00")), null, null, now);
 
         assertThat(result.promotionDiscount().amount()).isEqualByComparingTo("100.00");
         assertThat(result.couponDiscount().amount()).isEqualByComparingTo("0.00");
@@ -204,7 +205,7 @@ class DiscountPricingServiceTest {
     void shouldIgnoreCouponBelowThreshold() {
         DiscountSelection result = service.calculate(
                 List.of(line(1L, 1L, 1L, "100.00", 1)),
-                List.of(), List.of(offer(10L, 1L, "300.00", "40.00")), null, now);
+                List.of(), List.of(offer(10L, 1L, "300.00", "40.00")), null, null, now);
 
         assertThat(result.totalDiscount().amount()).isEqualByComparingTo("0.00");
         assertThat(result.payAmount().amount()).isEqualByComparingTo("100.00");
@@ -216,7 +217,7 @@ class DiscountPricingServiceTest {
                 List.of(line(1L, 1L, 1L, "1000.00", 1)),
                 List.of(),
                 List.of(offer(10L, 1L, "0.00", "30.00"), offer(11L, 1L, "0.00", "20.00")),
-                List.of(11L), now);
+                List.of(11L), null, now);
 
         // 只用用户指定的 11 号券，不自动补选
         assertThat(result.coupons()).extracting(offer -> offer.coupon().getId()).containsExactly(11L);
@@ -226,7 +227,7 @@ class DiscountPricingServiceTest {
     @Test
     void shouldRejectUnavailableSelectedCoupon() {
         assertThatThrownBy(() -> service.calculate(
-                List.of(line(1L, 1L, 1L, "100.00", 1)), List.of(), List.of(), List.of(99L), now))
+                List.of(line(1L, 1L, 1L, "100.00", 1)), List.of(), List.of(), List.of(99L), null, now))
                 .isInstanceOf(BusinessException.class)
                 .extracting(ex -> ((BusinessException) ex).getCode())
                 .isEqualTo(DiscountErrorCode.COUPON_NOT_AVAILABLE.getCode());
@@ -238,7 +239,7 @@ class DiscountPricingServiceTest {
                 List.of(line(1L, 1L, 1L, "100.00", 1)),
                 List.of(),
                 List.of(offer(10L, 1L, "300.00", "40.00")),
-                List.of(10L), now))
+                List.of(10L), null, now))
                 .isInstanceOf(BusinessException.class)
                 .extracting(ex -> ((BusinessException) ex).getCode())
                 .isEqualTo(DiscountErrorCode.COUPON_NOT_AVAILABLE.getCode());
@@ -249,7 +250,7 @@ class DiscountPricingServiceTest {
         DiscountSelection result = service.calculate(
                 List.of(line(1L, 1L, 1L, "100.00", 1)),
                 List.of(promotion(1L, fullReduction("50.00", 0, "80.00"), Scope.all(), true, null)),
-                List.of(offer(10L, 1L, "0.00", "50.00")), null, now);
+                List.of(offer(10L, 1L, "0.00", "50.00")), null, null, now);
 
         assertThat(result.payAmount().amount()).isEqualByComparingTo("0.00");
         assertThat(result.totalDiscount().amount()).isEqualByComparingTo("100.00");
@@ -264,7 +265,7 @@ class DiscountPricingServiceTest {
                 List.of(line(1L, 1L, 1L, "1000.00", 1)),
                 List.of(promotion(1L, fullReduction("500.00", 0, "100.00"), Scope.all(), true,
                         new BigDecimal("50"))),
-                List.of(offer(10L, 1L, "0.00", "40.00")), null, now);
+                List.of(offer(10L, 1L, "0.00", "40.00")), null, null, now);
 
         assertThat(result.totalDiscount().amount()).isEqualByComparingTo("140.00");
         assertThat(result.platformBearAmount().amount()).isEqualByComparingTo("90.00");
@@ -276,7 +277,7 @@ class DiscountPricingServiceTest {
         DiscountSelection result = service.calculate(
                 List.of(line(1L, 1L, 100L, "1000.00", 1)),
                 List.of(merchantPromotion(11L, 100L, fullReduction("0.00", 0, "100.00"), Scope.shop())),
-                List.of(merchantOffer(10L, 100L, "0.00", "40.00")), null, now);
+                List.of(merchantOffer(10L, 100L, "0.00", "40.00")), null, null, now);
 
         assertThat(result.totalDiscount().amount()).isEqualByComparingTo("140.00");
         assertThat(result.platformBearAmount().amount()).isEqualByComparingTo("0.00");
@@ -289,7 +290,7 @@ class DiscountPricingServiceTest {
     void emptyCartReturnsAllZeroEvenWithOffers() {
         DiscountSelection result = service.calculate(List.of(),
                 List.of(promotion(1L, fullReduction("0.00", 0, "50.00"), Scope.all(), true, null)),
-                List.of(offer(10L, 1L, "0.00", "50.00")), null, now);
+                List.of(offer(10L, 1L, "0.00", "50.00")), null, null, now);
 
         assertThat(result.originalAmount().amount()).isEqualByComparingTo("0.00");
         assertThat(result.payAmount().amount()).isEqualByComparingTo("0.00");
@@ -303,13 +304,13 @@ class DiscountPricingServiceTest {
         DiscountSelection atThreshold = service.calculate(
                 List.of(line(1L, 1L, 1L, "200.00", 1)),
                 List.of(promotion(1L, fullReduction("200.00", 0, "30.00"), Scope.all(), true, null)),
-                List.of(), null, now);
+                List.of(), null, null, now);
         assertThat(atThreshold.promotionDiscount().amount()).isEqualByComparingTo("30.00");
 
         DiscountSelection oneCentBelow = service.calculate(
                 List.of(line(1L, 1L, 1L, "199.99", 1)),
                 List.of(promotion(1L, fullReduction("200.00", 0, "30.00"), Scope.all(), true, null)),
-                List.of(), null, now);
+                List.of(), null, null, now);
         assertThat(oneCentBelow.promotionDiscount().amount()).isEqualByComparingTo("0.00");
         assertThat(oneCentBelow.promotions()).isEmpty();
     }
@@ -319,7 +320,7 @@ class DiscountPricingServiceTest {
         DiscountSelection result = service.calculate(
                 List.of(line(1L, 1L, 1L, "100.00", 1)),
                 List.of(promotion(1L, fullReduction("50.00", 0, "200.00"), Scope.all(), true, null)),
-                List.of(offer(10L, 1L, "0.00", "50.00")), null, now);
+                List.of(offer(10L, 1L, "0.00", "50.00")), null, null, now);
 
         assertThat(result.promotionDiscount().amount()).isEqualByComparingTo("100.00");
         assertThat(result.payAmount().amount()).isEqualByComparingTo("0.00");
@@ -332,13 +333,13 @@ class DiscountPricingServiceTest {
     void perEveryLadderBoundaries() {
         Promotion promo = promotion(1L, fullReduction("0.00", 100, "50.00"), Scope.all(), true, null);
         assertThat(service.calculate(List.of(line(1L, 1L, 1L, "199.00", 1)),
-                List.of(promo), List.of(), null, now).promotionDiscount().amount())
+                List.of(promo), List.of(), null, null, now).promotionDiscount().amount())
                 .isEqualByComparingTo("50.00");
         assertThat(service.calculate(List.of(line(1L, 1L, 1L, "200.00", 1)),
-                List.of(promo), List.of(), null, now).promotionDiscount().amount())
+                List.of(promo), List.of(), null, null, now).promotionDiscount().amount())
                 .isEqualByComparingTo("100.00");
         assertThat(service.calculate(List.of(line(1L, 1L, 1L, "299.99", 1)),
-                List.of(promo), List.of(), null, now).promotionDiscount().amount())
+                List.of(promo), List.of(), null, null, now).promotionDiscount().amount())
                 .isEqualByComparingTo("100.00");
     }
 
@@ -349,14 +350,14 @@ class DiscountPricingServiceTest {
         Promotion bigger = promotion(2L, fullReduction("0.00", 0, "120.00"), Scope.all(), true, null);
         Promotion best = promotion(1L, fullReduction("0.00", 0, "150.00"), Scope.all(), true, null);
         DiscountSelection result = service.calculate(
-                List.of(line(1L, 1L, 1L, "1000.00", 1)), List.of(bigger, best), List.of(), null, now);
+                List.of(line(1L, 1L, 1L, "1000.00", 1)), List.of(bigger, best), List.of(), null, null, now);
         assertThat(result.promotions()).extracting(Promotion::getId).containsExactly(1L);
 
         // 优惠相同时取 id 更小者，保证结果稳定
         Promotion tieA = promotion(5L, fullReduction("0.00", 0, "100.00"), Scope.all(), true, null);
         Promotion tieB = promotion(4L, fullReduction("0.00", 0, "100.00"), Scope.all(), true, null);
         DiscountSelection tie = service.calculate(
-                List.of(line(1L, 1L, 1L, "1000.00", 1)), List.of(tieA, tieB), List.of(), null, now);
+                List.of(line(1L, 1L, 1L, "1000.00", 1)), List.of(tieA, tieB), List.of(), null, null, now);
         assertThat(tie.promotions()).extracting(Promotion::getId).containsExactly(4L);
     }
 
@@ -374,7 +375,7 @@ class DiscountPricingServiceTest {
 
         DiscountSelection result = service.calculate(
                 List.of(line(1L, 1L, 1L, "1000.00", 1)),
-                List.of(endedStatus, notStarted, expired), List.of(), null, now);
+                List.of(endedStatus, notStarted, expired), List.of(), null, null, now);
         assertThat(result.promotionDiscount().amount()).isEqualByComparingTo("0.00");
         assertThat(result.promotions()).isEmpty();
     }
@@ -387,7 +388,7 @@ class DiscountPricingServiceTest {
         Promotion shopB = merchantPromotion(12L, 200L, fullReduction("0.00", 0, "30.00"), Scope.shop());
         DiscountSelection result = service.calculate(
                 List.of(line(1L, 1L, 100L, "500.00", 1), line(2L, 2L, 200L, "500.00", 1)),
-                List.of(platform, shopA, shopB), List.of(), null, now);
+                List.of(platform, shopA, shopB), List.of(), null, null, now);
         assertThat(result.promotions()).extracting(Promotion::getId).containsExactly(1L);
         assertThat(result.promotionDiscount().amount()).isEqualByComparingTo("100.00");
     }
@@ -398,7 +399,7 @@ class DiscountPricingServiceTest {
         Promotion merchant = merchantPromotion(2L, 100L, fullReduction("0.00", 0, "100.00"), Scope.shop());
         DiscountSelection result = service.calculate(
                 List.of(line(1L, 1L, 100L, "500.00", 1)),
-                List.of(platform, merchant), List.of(), null, now);
+                List.of(platform, merchant), List.of(), null, null, now);
         assertThat(result.promotions()).extracting(Promotion::getId).containsExactly(1L);
     }
 
@@ -410,7 +411,7 @@ class DiscountPricingServiceTest {
         Promotion shopA = merchantPromotion(11L, 100L, fullReduction("0.00", 0, "30.00"), Scope.shop());
         DiscountSelection result = service.calculate(
                 List.of(line(1L, 1L, 100L, "500.00", 1), line(2L, 2L, 200L, "500.00", 1)),
-                List.of(platform, shopA), List.of(), null, now);
+                List.of(platform, shopA), List.of(), null, null, now);
         assertThat(result.promotions()).extracting(Promotion::getId).containsExactlyInAnyOrder(1L, 11L);
         assertThat(result.promotionDiscount().amount()).isEqualByComparingTo("50.00");
         assertThat(result.promotionHits()).hasSameSizeAs(result.promotions());
@@ -423,7 +424,7 @@ class DiscountPricingServiceTest {
         DiscountSelection result = service.calculate(
                 List.of(line(1L, 1L, 1L, "100.00", 1)),
                 List.of(promotion(1L, fullReduction("0.00", 0, "60.00"), Scope.all(), true, null)),
-                List.of(offer(10L, 1L, "0.00", "50.00")), null, now);
+                List.of(offer(10L, 1L, "0.00", "50.00")), null, null, now);
 
         // 券面 50 > 预算 40 → 截断为 40，合计优惠恰为商品总额
         assertThat(result.couponDiscount().amount()).isEqualByComparingTo("40.00");
@@ -438,7 +439,7 @@ class DiscountPricingServiceTest {
                 List.of(),
                 List.of(offer(10L, 1L, "0.00", "80.00"),
                         offer(11L, 1L, "0.00", "50.00"),
-                        offer(12L, 1L, "0.00", "40.00")), null, now);
+                        offer(12L, 1L, "0.00", "40.00")), null, null, now);
 
         // 80 + 20（截断）后预算归零，第三张被舍弃
         assertThat(result.coupons()).extracting(offer -> offer.coupon().getId())
@@ -454,7 +455,7 @@ class DiscountPricingServiceTest {
                 List.of(line(1L, 1L, 1L, "1000.00", 1)),
                 List.of(),
                 List.of(offer(10L, 1L, "0.00", "30.00")),
-                List.of(10L, 10L, 10L), now);
+                List.of(10L, 10L, 10L), null, now);
         assertThat(result.coupons()).hasSize(1);
         assertThat(result.couponDiscount().amount()).isEqualByComparingTo("30.00");
     }
@@ -466,7 +467,7 @@ class DiscountPricingServiceTest {
                 List.of(),
                 List.of(offer(10L, 1L, "0.00", "30.00"), offer(11L, 1L, "0.00", "30.00"),
                         offer(12L, 1L, "0.00", "30.00"), offer(13L, 1L, "0.00", "30.00")),
-                List.of(10L, 11L, 12L, 13L), now))
+                List.of(10L, 11L, 12L, 13L), null, now))
                 .isInstanceOf(BusinessException.class)
                 .hasMessageContaining("单笔订单最多叠加 3 张优惠券");
     }
@@ -482,11 +483,11 @@ class DiscountPricingServiceTest {
                 scopedTemplate);
 
         DiscountSelection auto = service.calculate(
-                List.of(line(1L, 8L, 1L, "1000.00", 1)), List.of(), List.of(scoped), null, now);
+                List.of(line(1L, 8L, 1L, "1000.00", 1)), List.of(), List.of(scoped), null, null, now);
         assertThat(auto.coupons()).isEmpty();
 
         assertThatThrownBy(() -> service.calculate(
-                List.of(line(1L, 8L, 1L, "1000.00", 1)), List.of(), List.of(scoped), List.of(10L), now))
+                List.of(line(1L, 8L, 1L, "1000.00", 1)), List.of(), List.of(scoped), List.of(10L), null, now))
                 .isInstanceOf(BusinessException.class)
                 .extracting(ex -> ((BusinessException) ex).getCode())
                 .isEqualTo(DiscountErrorCode.COUPON_NOT_AVAILABLE.getCode());
@@ -502,11 +503,11 @@ class DiscountPricingServiceTest {
                 template);
 
         DiscountSelection auto = service.calculate(
-                List.of(line(1L, 1L, 1L, "1000.00", 1)), List.of(), List.of(expiredOffer), null, now);
+                List.of(line(1L, 1L, 1L, "1000.00", 1)), List.of(), List.of(expiredOffer), null, null, now);
         assertThat(auto.coupons()).isEmpty();
 
         assertThatThrownBy(() -> service.calculate(
-                List.of(line(1L, 1L, 1L, "1000.00", 1)), List.of(), List.of(expiredOffer), List.of(10L), now))
+                List.of(line(1L, 1L, 1L, "1000.00", 1)), List.of(), List.of(expiredOffer), List.of(10L), null, now))
                 .isInstanceOf(BusinessException.class);
     }
 
@@ -520,7 +521,7 @@ class DiscountPricingServiceTest {
                 endedTemplate);
 
         DiscountSelection result = service.calculate(
-                List.of(line(1L, 1L, 1L, "1000.00", 1)), List.of(), List.of(offer), null, now);
+                List.of(line(1L, 1L, 1L, "1000.00", 1)), List.of(), List.of(offer), null, null, now);
         assertThat(result.coupons()).isEmpty();
     }
 
@@ -536,7 +537,7 @@ class DiscountPricingServiceTest {
 
         DiscountSelection below = service.calculate(
                 List.of(line(1L, 7L, 1L, "100.00", 1), line(2L, 8L, 1L, "900.00", 1)),
-                List.of(), List.of(offer), null, now);
+                List.of(), List.of(offer), null, null, now);
         assertThat(below.coupons()).isEmpty();
         assertThat(below.couponDiscount().amount()).isEqualByComparingTo("0.00");
     }
@@ -548,7 +549,7 @@ class DiscountPricingServiceTest {
                 new Scope(ScopeType.CATEGORY, Set.of(7L)), true, null);
         DiscountSelection result = service.calculate(
                 List.of(line(1L, 7L, 1L, "100.00", 1), line(2L, 8L, 1L, "900.00", 1)),
-                List.of(promo), List.of(), null, now);
+                List.of(promo), List.of(), null, null, now);
         assertThat(result.promotionDiscount().amount()).isEqualByComparingTo("0.00");
         assertThat(result.promotions()).isEmpty();
     }
@@ -558,7 +559,7 @@ class DiscountPricingServiceTest {
         DiscountSelection result = service.calculate(
                 List.of(line(1L, 1L, 1L, "100.00", 1)),
                 List.of(),
-                List.of(offer(10L, 1L, "0.00", "150.00")), null, now);
+                List.of(offer(10L, 1L, "0.00", "150.00")), null, null, now);
         assertThat(result.couponDiscount().amount()).isEqualByComparingTo("100.00");
         assertThat(result.payAmount().amount()).isEqualByComparingTo("0.00");
     }
@@ -571,7 +572,7 @@ class DiscountPricingServiceTest {
         Promotion promo = promotion(1L, fullReduction("0.00", 0, "60.00"), Scope.all(), false, null);
         DiscountSelection result = service.calculate(
                 List.of(line(1L, 1L, 1L, "1000.00", 1)),
-                List.of(promo), List.of(offer(10L, 1L, "0.00", "60.00")), null, now);
+                List.of(promo), List.of(offer(10L, 1L, "0.00", "60.00")), null, null, now);
         assertThat(result.promotionDiscount().amount()).isEqualByComparingTo("60.00");
         assertThat(result.coupons()).isEmpty();
         assertThat(result.promotionCouponStackable()).isFalse();
@@ -583,7 +584,7 @@ class DiscountPricingServiceTest {
         // 券门槛 1500 > 小计 1000 → 无可用券，活动方案保留
         DiscountSelection result = service.calculate(
                 List.of(line(1L, 1L, 1L, "1000.00", 1)),
-                List.of(promo), List.of(offer(10L, 1L, "1500.00", "60.00")), null, now);
+                List.of(promo), List.of(offer(10L, 1L, "1500.00", "60.00")), null, null, now);
         assertThat(result.promotionDiscount().amount()).isEqualByComparingTo("60.00");
         assertThat(result.coupons()).isEmpty();
         assertThat(result.promotionCouponStackable()).isFalse();
@@ -594,7 +595,7 @@ class DiscountPricingServiceTest {
         DiscountSelection result = service.calculate(
                 List.of(line(1L, 1L, 1L, "1000.00", 1)),
                 List.of(promotion(1L, fullReduction("2000.00", 0, "50.00"), Scope.all(), false, null)),
-                List.of(offer(10L, 1L, "0.00", "30.00")), null, now);
+                List.of(offer(10L, 1L, "0.00", "30.00")), null, null, now);
         // 活动门槛不满足 = 无生效活动 → 券不受「不可叠加」限制
         assertThat(result.couponDiscount().amount()).isEqualByComparingTo("30.00");
         assertThat(result.promotionCouponStackable()).isTrue();
@@ -613,7 +614,7 @@ class DiscountPricingServiceTest {
 
         DiscountSelection result = service.calculate(
                 List.of(line(1L, 1L, 100L, "500.00", 1), line(2L, 2L, 200L, "500.00", 1)),
-                List.of(platform, merchant), List.of(offer(10L, 1L, "0.00", "30.00")), null, now);
+                List.of(platform, merchant), List.of(offer(10L, 1L, "0.00", "30.00")), null, null, now);
         // 活动合计 70 优于券 30 → 保活动弃券
         assertThat(result.promotionDiscount().amount()).isEqualByComparingTo("70.00");
         assertThat(result.couponDiscount().amount()).isEqualByComparingTo("0.00");
@@ -628,7 +629,7 @@ class DiscountPricingServiceTest {
         DiscountSelection couponWins = service.calculate(
                 List.of(line(1L, 1L, 1L, "1000.00", 1)),
                 List.of(promotion(1L, fullReduction("0.00", 0, "100.00"), Scope.all(), true, null)),
-                List.of(offerWith(10L, 1L, "0.00", "150.00", false, true)), null, now);
+                List.of(offerWith(10L, 1L, "0.00", "150.00", false, true)), null, null, now);
         assertThat(couponWins.promotions()).isEmpty();
         assertThat(couponWins.couponDiscount().amount()).isEqualByComparingTo("150.00");
         // 活动被静默舍弃 → 提示未叠加
@@ -638,7 +639,7 @@ class DiscountPricingServiceTest {
         DiscountSelection promoWins = service.calculate(
                 List.of(line(1L, 1L, 1L, "1000.00", 1)),
                 List.of(promotion(1L, fullReduction("0.00", 0, "100.00"), Scope.all(), true, null)),
-                List.of(offerWith(10L, 1L, "0.00", "40.00", false, true)), null, now);
+                List.of(offerWith(10L, 1L, "0.00", "40.00", false, true)), null, null, now);
         assertThat(promoWins.promotions()).extracting(Promotion::getId).containsExactly(1L);
         assertThat(promoWins.coupons()).isEmpty();
         assertThat(promoWins.promotionDiscount().amount()).isEqualByComparingTo("100.00");
@@ -650,7 +651,7 @@ class DiscountPricingServiceTest {
                 List.of(line(1L, 1L, 1L, "1000.00", 1)),
                 List.of(promotion(1L, fullReduction("0.00", 0, "100.00"), Scope.all(), true, null)),
                 List.of(offerWith(10L, 1L, "0.00", "40.00", false, true)),
-                List.of(10L), now))
+                List.of(10L), null, now))
                 .isInstanceOf(BusinessException.class)
                 .hasMessageContaining("不可与促销活动叠加使用");
     }
@@ -661,7 +662,7 @@ class DiscountPricingServiceTest {
                 List.of(line(1L, 1L, 1L, "1000.00", 1)),
                 List.of(promotion(1L, fullReduction("0.00", 0, "100.00"), Scope.all(), false, null)),
                 List.of(offer(10L, 1L, "0.00", "40.00")),
-                List.of(10L), now))
+                List.of(10L), null, now))
                 .isInstanceOf(BusinessException.class)
                 .hasMessageContaining("当前促销活动不可与优惠券叠加使用");
     }
@@ -675,7 +676,7 @@ class DiscountPricingServiceTest {
                 List.of(offerWith(10L, 1L, "0.00", "60.00", true, false),
                         offer(11L, 2L, "0.00", "30.00"),
                         offer(12L, 3L, "0.00", "20.00")),
-                null, now);
+                null, null, now);
         assertThat(result.coupons()).extracting(offer -> offer.coupon().getId()).containsExactly(10L);
         assertThat(result.couponDiscount().amount()).isEqualByComparingTo("60.00");
     }
@@ -687,7 +688,7 @@ class DiscountPricingServiceTest {
                 List.of(line(1L, 1L, 1L, "1000.00", 1)),
                 List.of(),
                 List.of(offerWith(10L, 1L, "0.00", "60.00", true, false)),
-                List.of(10L), now);
+                List.of(10L), null, now);
         assertThat(result.coupons()).extracting(offer -> offer.coupon().getId()).containsExactly(10L);
         assertThat(result.couponDiscount().amount()).isEqualByComparingTo("60.00");
     }
@@ -699,7 +700,7 @@ class DiscountPricingServiceTest {
                 List.of(),
                 List.of(offerWith(10L, 1L, "0.00", "60.00", true, false),
                         offer(11L, 2L, "0.00", "30.00")),
-                List.of(10L, 11L), now))
+                List.of(10L, 11L), null, now))
                 .isInstanceOf(BusinessException.class)
                 .hasMessageContaining("不可与其他优惠券叠加使用");
     }
@@ -711,7 +712,7 @@ class DiscountPricingServiceTest {
                 List.of(line(1L, 1L, 1L, "1000.00", 1)),
                 List.of(),
                 List.of(offer(10L, 1L, "0.00", "30.00"), offer(11L, 2L, "0.00", "20.00")),
-                null, now);
+                null, null, now);
         assertThat(result.couponDiscount().amount()).isEqualByComparingTo("50.00");
         assertThat(result.coupons()).hasSize(2);
     }
@@ -724,7 +725,7 @@ class DiscountPricingServiceTest {
                 List.of(line(1L, 1L, 1L, "100.00", 1)),
                 List.of(promotion(1L, fullReduction("0.00", 0, "33.33"), Scope.all(), false,
                         new BigDecimal("50"))),
-                List.of(), null, now);
+                List.of(), null, null, now);
         assertThat(result.platformBearAmount().amount()).isEqualByComparingTo("16.67");
         assertThat(result.merchantBearAmount().amount()).isEqualByComparingTo("16.66");
         assertThat(result.platformBearAmount().add(result.merchantBearAmount()).amount())
@@ -738,7 +739,7 @@ class DiscountPricingServiceTest {
                 List.of(line(1L, 1L, 1L, "100.00", 1)),
                 List.of(promotion(1L, fullReduction("0.00", 0, "60.00"), Scope.all(), true,
                         new BigDecimal("50"))),
-                List.of(offer(10L, 1L, "0.00", "50.00")), null, now);
+                List.of(offer(10L, 1L, "0.00", "50.00")), null, null, now);
         assertThat(result.totalDiscount().amount()).isEqualByComparingTo("100.00");
         assertThat(result.platformBearAmount().amount()).isEqualByComparingTo("70.00");
         assertThat(result.merchantBearAmount().amount()).isEqualByComparingTo("30.00");
@@ -751,7 +752,7 @@ class DiscountPricingServiceTest {
                 List.of(line(1L, 1L, 1L, "100.00", 1)),
                 List.of(promotion(1L, fullReduction("0.00", 0, "60.00"), Scope.all(), true,
                         new BigDecimal("100"))),
-                List.of(offer(10L, 1L, "0.00", "40.00")), null, now);
+                List.of(offer(10L, 1L, "0.00", "40.00")), null, null, now);
         assertThat(result.platformBearAmount().add(result.merchantBearAmount()).amount())
                 .isEqualByComparingTo(result.totalDiscount().amount());
         assertThat(result.platformBearAmount().amount()).isEqualByComparingTo("100.00");
@@ -763,12 +764,132 @@ class DiscountPricingServiceTest {
         DiscountSelection result = service.calculate(
                 List.of(line(1L, 1L, 1L, "1000.00", 1)),
                 List.of(),
-                List.of(offer(10L, 1L, "0.00", "30.00"), offer(11L, 1L, "0.00", "50.00")), null, now);
+                List.of(offer(10L, 1L, "0.00", "30.00"), offer(11L, 1L, "0.00", "50.00")), null, null, now);
         assertThat(result.primaryCoupon()).map(offer -> offer.coupon().getId()).contains(11L);
         // 输出按券 id 升序，记账顺序稳定
         assertThat(result.coupons()).extracting(offer -> offer.coupon().getId()).containsExactly(10L, 11L);
         assertThat(result.couponHits()).extracting(hit -> hit.amount().intValue())
                 .containsExactly(30, 50);
+    }
+
+    // ==================== 用户指定活动（结算页多选） ====================
+
+    @Test
+    void requestedPromotionOverridesAutoBest() {
+        Promotion big = promotion(1L, fullReduction("0.00", 0, "100.00"), Scope.all(), true, null);
+        Promotion small = promotion(2L, fullReduction("0.00", 0, "40.00"), Scope.all(), true, null);
+
+        // 默认自动取最优（100）；用户明确选 40 → 精确生效
+        DiscountSelection auto = service.calculate(
+                List.of(line(1L, 1L, 1L, "500.00", 1)), List.of(big, small), List.of(), null, null, now);
+        assertThat(auto.promotions()).extracting(Promotion::getId).containsExactly(1L);
+
+        DiscountSelection requested = service.calculate(
+                List.of(line(1L, 1L, 1L, "500.00", 1)), List.of(big, small), List.of(),
+                null, List.of(2L), now);
+        assertThat(requested.promotions()).extracting(Promotion::getId).containsExactly(2L);
+        assertThat(requested.promotionDiscount().amount()).isEqualByComparingTo("40.00");
+        assertThat(requested.payAmount().amount()).isEqualByComparingTo("460.00");
+    }
+
+    @Test
+    void requestedEmptyPromotionListDisablesPromotions() {
+        Promotion platform = promotion(1L, fullReduction("0.00", 0, "100.00"), Scope.all(), true, null);
+
+        // 用户选择不用活动：活动不生效，券照常自动叠加
+        DiscountSelection result = service.calculate(
+                List.of(line(1L, 1L, 1L, "500.00", 1)), List.of(platform),
+                List.of(offer(10L, 1L, "0.00", "30.00")), null, List.of(), now);
+        assertThat(result.promotions()).isEmpty();
+        assertThat(result.promotionDiscount().amount()).isEqualByComparingTo("0.00");
+        assertThat(result.couponDiscount().amount()).isEqualByComparingTo("30.00");
+        assertThat(result.payAmount().amount()).isEqualByComparingTo("470.00");
+    }
+
+    @Test
+    void requestedPromotionNotApplicableThrows() {
+        Promotion platform = promotion(1L, fullReduction("0.00", 0, "100.00"), Scope.all(), true, null);
+        assertThatThrownBy(() -> service.calculate(
+                List.of(line(1L, 1L, 1L, "500.00", 1)), List.of(platform), List.of(),
+                null, List.of(99L), now))
+                .isInstanceOf(BusinessException.class)
+                .hasMessageContaining("对本单不可用");
+
+        // 门槛未达的活动同样视为对本单不可用
+        Promotion belowThreshold = promotion(2L, fullReduction("800.00", 0, "100.00"), Scope.all(), true, null);
+        assertThatThrownBy(() -> service.calculate(
+                List.of(line(1L, 1L, 1L, "500.00", 1)), List.of(belowThreshold), List.of(),
+                null, List.of(2L), now))
+                .isInstanceOf(BusinessException.class)
+                .hasMessageContaining("对本单不可用");
+    }
+
+    @Test
+    void requestedMultiplePromotionsKeepBestPerSide() {
+        // 用户同侧勾选多个活动：平台侧取最优一个、商家侧每店取最优一个（不允许叠两个平台活动）
+        Promotion platformBig = promotion(1L, fullReduction("0.00", 0, "100.00"), Scope.all(), true, null);
+        Promotion platformSmall = promotion(2L, fullReduction("0.00", 0, "40.00"), Scope.all(), true, null);
+        Promotion shopSmall = merchantPromotion(11L, 100L, fullReduction("0.00", 0, "60.00"), Scope.shop());
+        Promotion shopBig = merchantPromotion(12L, 100L, fullReduction("0.00", 0, "80.00"), Scope.shop());
+
+        // 平台 100 与店铺 80 命中同一行 → 冲突，保留优惠更大的平台侧
+        DiscountSelection result = service.calculate(
+                List.of(line(1L, 1L, 100L, "500.00", 1)),
+                List.of(platformBig, platformSmall, shopSmall, shopBig), List.of(),
+                null, List.of(1L, 2L, 11L, 12L), now);
+        assertThat(result.promotions()).extracting(Promotion::getId).containsExactly(1L);
+        assertThat(result.promotionDiscount().amount()).isEqualByComparingTo("100.00");
+    }
+
+    @Test
+    void requestedConflictKeepsBiggerSide() {
+        Promotion platform = promotion(1L, fullReduction("0.00", 0, "50.00"), Scope.all(), true, null);
+        Promotion merchant = merchantPromotion(11L, 100L, fullReduction("0.00", 0, "120.00"), Scope.shop());
+
+        DiscountSelection result = service.calculate(
+                List.of(line(1L, 1L, 100L, "500.00", 1)), List.of(platform, merchant), List.of(),
+                null, List.of(1L, 11L), now);
+        assertThat(result.promotions()).extracting(Promotion::getId).containsExactly(11L);
+        assertThat(result.promotionDiscount().amount()).isEqualByComparingTo("120.00");
+    }
+
+    // ==================== 行级拆解（结算页逐商品展示） ====================
+
+    @Test
+    void breakDownAllocatesToMatchingLinesAndSumsExactly() {
+        // 行 A：类目 1 ¥200；行 B：类目 2 ¥300
+        List<OrderLine> lines = List.of(
+                line(1L, 1L, 1L, "200.00", 1), line(2L, 2L, 1L, "300.00", 1));
+        // 平台活动只作用于类目 1（减 50）；平台券 30 全品类
+        Promotion categoryPromo = promotion(1L, fullReduction("100.00", 0, "50.00"),
+                new Scope(ScopeType.CATEGORY, Set.of(1L)), true, null);
+        DiscountSelection selection = service.calculate(lines, List.of(categoryPromo),
+                List.of(offer(10L, 1L, "0.00", "30.00")), null, null, now);
+        assertThat(selection.promotionDiscount().amount()).isEqualByComparingTo("50.00");
+        assertThat(selection.couponDiscount().amount()).isEqualByComparingTo("30.00");
+
+        List<LineBreakdown> rows = service.breakDown(lines, selection);
+        assertThat(rows).hasSize(2);
+        // 活动只落在命中的类目 1 行
+        assertThat(rows.get(0).promotionDiscount()).isEqualByComparingTo("50.00");
+        assertThat(rows.get(1).promotionDiscount()).isEqualByComparingTo("0.00");
+        // 券按各行剩余余额（150:300）分摊 → 10 / 20
+        assertThat(rows.get(0).couponDiscount()).isEqualByComparingTo("10.00");
+        assertThat(rows.get(1).couponDiscount()).isEqualByComparingTo("20.00");
+        assertThat(rows.get(0).finalSubtotal()).isEqualByComparingTo("140.00");
+        assertThat(rows.get(1).finalSubtotal()).isEqualByComparingTo("280.00");
+        // 行级合计与活动/券总额严格相等
+        assertThat(rows.stream().map(LineBreakdown::promotionDiscount)
+                .reduce(BigDecimal.ZERO, BigDecimal::add))
+                .isEqualByComparingTo(selection.promotionDiscount().amount());
+        assertThat(rows.stream().map(LineBreakdown::couponDiscount)
+                .reduce(BigDecimal.ZERO, BigDecimal::add))
+                .isEqualByComparingTo(selection.couponDiscount().amount());
+        // 命中明细带名称与行级金额
+        assertThat(rows.get(0).promotions()).singleElement()
+                .satisfies(hit -> assertThat(hit.amount()).isEqualByComparingTo("50.00"));
+        assertThat(rows.get(0).coupons()).singleElement()
+                .satisfies(hit -> assertThat(hit.amount()).isEqualByComparingTo("10.00"));
     }
 
     // ==================== 构造辅助 ====================

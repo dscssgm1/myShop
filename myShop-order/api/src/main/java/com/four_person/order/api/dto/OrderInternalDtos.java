@@ -28,18 +28,4 @@ public final class OrderInternalDtos {
         @NotBlank(message = "运单号不能为空")
         private String trackingNo;
     }
-
-    /** 积分商城兑换下单：免支付订单，积分全额抵扣 */
-    @Data
-    public static class RedeemOrderRequest {
-        @NotNull(message = "用户不能为空")
-        private Long userId;
-        @NotNull(message = "商品不能为空")
-        private Long productId;
-        private String receiverName;
-        private String receiverPhone;
-        private String receiverAddress;
-        /** 消耗积分（仅入通知文案） */
-        private Integer pointsUsed;
-    }
 }

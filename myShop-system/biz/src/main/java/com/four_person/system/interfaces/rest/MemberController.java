@@ -41,26 +41,26 @@ public class MemberController {
 
     @GetMapping("/levels")
     public Result<List<MemberDtos.MemberLevelVO>> levels() {
-        AccessGuard.requireGroup("PLATFORM");
+        AccessGuard.requirePerm("admin:config:member");
         return Result.success(membershipApplicationService.levels());
     }
 
     @PostMapping("/levels")
     public Result<MemberDtos.MemberLevelVO> createLevel(@Valid @RequestBody MemberDtos.MemberLevelRequest request) {
-        AccessGuard.requireGroup("PLATFORM");
+        AccessGuard.requirePerm("admin:config:member");
         return Result.success("会员等级已新增", membershipApplicationService.createLevel(request));
     }
 
     @PutMapping("/levels/{id}")
     public Result<MemberDtos.MemberLevelVO> updateLevel(@PathVariable Long id,
                                                         @Valid @RequestBody MemberDtos.MemberLevelRequest request) {
-        AccessGuard.requireGroup("PLATFORM");
+        AccessGuard.requirePerm("admin:config:member");
         return Result.success("会员等级已更新", membershipApplicationService.updateLevel(id, request));
     }
 
     @DeleteMapping("/levels/{id}")
     public Result<Void> deleteLevel(@PathVariable Long id) {
-        AccessGuard.requireGroup("PLATFORM");
+        AccessGuard.requirePerm("admin:config:member");
         membershipApplicationService.deleteLevel(id);
         return Result.success("会员等级已删除", null);
     }

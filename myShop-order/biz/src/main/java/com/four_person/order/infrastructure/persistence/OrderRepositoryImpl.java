@@ -65,6 +65,13 @@ public class OrderRepositoryImpl implements OrderRepository {
     }
 
     @Override
+    public List<Order> findByGroupNo(String groupNo) {
+        return orderMapper.selectList(Wrappers.<Order>lambdaQuery()
+                .eq(Order::getGroupNo, groupNo)
+                .orderByAsc(Order::getId));
+    }
+
+    @Override
     public List<OrderItem> findItems(String orderNo) {
         return orderItemMapper.selectList(Wrappers.<OrderItem>lambdaQuery()
                 .eq(OrderItem::getOrderNo, orderNo)
@@ -118,6 +125,11 @@ public class OrderRepositoryImpl implements OrderRepository {
     @Override
     public boolean markPaid(String orderNo, LocalDateTime time) {
         return orderMapper.markPaid(orderNo, time) > 0;
+    }
+
+    @Override
+    public int markGroupChildrenPaid(String groupNo, LocalDateTime time) {
+        return orderMapper.markGroupChildrenPaid(groupNo, time);
     }
 
     @Override

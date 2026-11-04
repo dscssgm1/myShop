@@ -24,6 +24,8 @@ public class CouponTemplate {
     private final int totalStock;
     private final int claimedCount;
     private final int perUserLimit;
+    /** 积分兑换价：null/0 = 普通免费领取券；>0 = 仅在积分商城用积分兑换 */
+    private final Integer pointsPrice;
     /** 是否可与促销活动同用（null 视为可） */
     private final boolean couponStackable;
     /** 是否可与其他优惠券叠加（false 时一单只能单独使用本券） */
@@ -32,8 +34,17 @@ public class CouponTemplate {
     private final LocalDateTime validEnd;
     private final String status;
 
+    /** 兼容构造器：普通免费领取券（无积分价） */
     public CouponTemplate(Long id, Long shopId, String title, Money thresholdAmount, Money discountAmount, Scope scope,
                           int totalStock, int claimedCount, int perUserLimit,
+                          Boolean couponStackable, Boolean stackable,
+                          LocalDateTime validStart, LocalDateTime validEnd, String status) {
+        this(id, shopId, title, thresholdAmount, discountAmount, scope, totalStock, claimedCount, perUserLimit,
+                null, couponStackable, stackable, validStart, validEnd, status);
+    }
+
+    public CouponTemplate(Long id, Long shopId, String title, Money thresholdAmount, Money discountAmount, Scope scope,
+                          int totalStock, int claimedCount, int perUserLimit, Integer pointsPrice,
                           Boolean couponStackable, Boolean stackable,
                           LocalDateTime validStart, LocalDateTime validEnd, String status) {
         if (title == null || title.isBlank()) {
@@ -48,11 +59,14 @@ public class CouponTemplate {
         if (perUserLimit < 1) {
             throw new BusinessException(DiscountErrorCode.INVALID_RULE, "每人限领数量必须大于 0");
         }
+        if (pointsPrice != null && pointsPrice < 0) {
+            throw new BusinessException(DiscountErrorCode.INVALID_RULE, "积分价不能为负数");
+        }
         long owner = shopId == null ? 0 : shopId;
         Scope effectiveScope = scope == null ? Scope.all() : scope;
         if (owner > 0 && effectiveScope.type() != com.four_person.discount.enums.ScopeType.SHOP
-                && effectiveScope.type() != com.four_person.discount.enums.ScopeType.PRODUCT) {
-            throw new BusinessException(DiscountErrorCode.INVALID_RULE, "商家优惠券范围只能是本店商品");
+                && effectiveScope.type() != com.four_person.discount.enums.ScopeType.CATEGORY) {
+            throw new BusinessException(DiscountErrorCode.INVALID_RULE, "商家优惠券范围只能是本店商品或指定分类");
         }
         if (validStart != null && validEnd != null && validStart.isAfter(validEnd)) {
             throw new BusinessException(DiscountErrorCode.INVALID_RULE, "有效期开始时间不能晚于结束时间");
@@ -66,6 +80,7 @@ public class CouponTemplate {
         this.totalStock = totalStock;
         this.claimedCount = claimedCount;
         this.perUserLimit = perUserLimit;
+        this.pointsPrice = pointsPrice;
         this.couponStackable = couponStackable == null || couponStackable;
         this.stackable = stackable == null || stackable;
         this.validStart = validStart;
@@ -107,17 +122,20 @@ public class CouponTemplate {
 
     public CouponTemplate withId(Long newId) {
         return new CouponTemplate(newId, shopId, title, thresholdAmount, discountAmount, scope,
-                totalStock, claimedCount, perUserLimit, couponStackable, stackable, validStart, validEnd, status);
+                totalStock, claimedCount, perUserLimit, pointsPrice,
+                couponStackable, stackable, validStart, validEnd, status);
     }
 
     public CouponTemplate withClaimedCount(int count) {
         return new CouponTemplate(id, shopId, title, thresholdAmount, discountAmount, scope,
-                totalStock, count, perUserLimit, couponStackable, stackable, validStart, validEnd, status);
+                totalStock, count, perUserLimit, pointsPrice,
+                couponStackable, stackable, validStart, validEnd, status);
     }
 
     public CouponTemplate ended() {
         return new CouponTemplate(id, shopId, title, thresholdAmount, discountAmount, scope,
-                totalStock, claimedCount, perUserLimit, couponStackable, stackable, validStart, validEnd, STATUS_ENDED);
+                totalStock, claimedCount, perUserLimit, pointsPrice,
+                couponStackable, stackable, validStart, validEnd, STATUS_ENDED);
     }
 
     public Long getId() {
@@ -162,6 +180,15 @@ public class CouponTemplate {
 
     public int getPerUserLimit() {
         return perUserLimit;
+    }
+
+    public Integer getPointsPrice() {
+        return pointsPrice;
+    }
+
+    /** 是否积分兑换券：仅在积分商城花积分兑换，不进免费领券中心 */
+    public boolean isPointsExclusive() {
+        return pointsPrice != null && pointsPrice > 0;
     }
 
     public boolean isCouponStackable() {

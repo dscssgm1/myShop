@@ -24,9 +24,10 @@ public class CouponTemplateRequest {
     @DecimalMin(value = "0.01", message = "优惠金额必须大于 0")
     private BigDecimal discountAmount;
 
-    /** ALL / CATEGORY / PRODUCT */
+    /** ALL（平台券：全品类）/ CATEGORY（指定分类）；商家券 SHOP（本店全部商品）/ CATEGORY */
     private String scopeType;
 
+    /** CATEGORY 时为分类 ID 列表 */
     private List<Long> scopeIds;
 
     @NotNull(message = "发放总量不能为空")
@@ -36,6 +37,10 @@ public class CouponTemplateRequest {
     @NotNull(message = "每人限领数量不能为空")
     @Min(value = 1, message = "每人限领数量必须大于 0")
     private Integer perUserLimit;
+
+    /** 积分兑换价：NULL/0 = 普通免费领取券；>0 = 仅在积分商城用积分兑换 */
+    @Min(value = 0, message = "积分价不能为负数")
+    private Integer pointsPrice;
 
     /** 是否可与促销活动同用（缺省视为可） */
     private Boolean couponStackable;

@@ -34,14 +34,14 @@ public class ProductController {
 
     @GetMapping
     public Result<PageResult<ProductVO>> page(ProductQuery query) {
-        // 上架/审核状态筛选属于管理端能力，带这些参数时必须为商家或平台身份
+        // 上架/审核状态筛选属于管理端能力，带这些参数时须有商品管理菜单权限
         if (query.getStatus() != null || StringUtils.hasText(query.getAuditStatus())
                 || Boolean.TRUE.equals(query.getPendingEdit())) {
-            AccessGuard.requireGroup("MERCHANT", "PLATFORM");
+            AccessGuard.requirePerm("merchant:products", "admin:products");
         }
         // 商家管理端：包含未上架/未审核商品，商家只能查本店
         if (Boolean.TRUE.equals(query.getIncludeAll())) {
-            AccessGuard.requireGroup("MERCHANT", "PLATFORM");
+            AccessGuard.requirePerm("merchant:products", "admin:products");
             if ("MERCHANT".equals(UserContext.getGroup())) {
                 query.setShopId(UserContext.requireShopId());
             }
@@ -57,7 +57,7 @@ public class ProductController {
     /** 平台侧角标：待审核商品数（新发布待审 + 修改待审核），菜单「商品审核」红点用 */
     @GetMapping("/pending-audit-count")
     public Result<Long> pendingAuditCount() {
-        AccessGuard.requireGroup("PLATFORM");
+        AccessGuard.requirePerm("admin:audit");
         return Result.success(productApplicationService.countPendingAudit());
     }
 
@@ -78,20 +78,20 @@ public class ProductController {
     /** 商家：发布商品（提交审核） */
     @PostMapping
     public Result<ProductVO> create(@Valid @RequestBody ProductRequest request) {
-        AccessGuard.requireGroup("MERCHANT", "PLATFORM");
+        AccessGuard.requirePerm("merchant:products:create", "admin:products:create");
         return Result.success("商品已提交，等待审核", productApplicationService.create(request));
     }
 
     /** 商家/平台：修改商品 */
     @PutMapping("/{id}")
     public Result<ProductVO> update(@PathVariable Long id, @Valid @RequestBody ProductRequest request) {
-        AccessGuard.requireGroup("MERCHANT", "PLATFORM");
+        AccessGuard.requirePerm("merchant:products:edit", "admin:products:edit");
         return Result.success("商品已更新", productApplicationService.update(id, request));
     }
 
     @DeleteMapping("/{id}")
     public Result<Void> delete(@PathVariable Long id) {
-        AccessGuard.requireGroup("MERCHANT", "PLATFORM");
+        AccessGuard.requirePerm("merchant:products:delete", "admin:products:delete");
         productApplicationService.delete(id);
         return Result.success();
     }
@@ -99,7 +99,7 @@ public class ProductController {
     /** 补货 */
     @PutMapping("/{id}/stock")
     public Result<Void> restock(@PathVariable Long id, @Valid @RequestBody StockUpdateRequest request) {
-        AccessGuard.requireGroup("MERCHANT", "PLATFORM");
+        AccessGuard.requirePerm("merchant:products:edit", "admin:products:edit");
         productApplicationService.restock(id, request.getQuantity());
         return Result.success();
     }
@@ -107,14 +107,14 @@ public class ProductController {
     /** 修改售价（直接生效，无需审核） */
     @PutMapping("/{id}/price")
     public Result<ProductVO> setPrice(@PathVariable Long id, @RequestParam BigDecimal price) {
-        AccessGuard.requireGroup("MERCHANT", "PLATFORM");
+        AccessGuard.requirePerm("merchant:products:price", "admin:products:edit");
         return Result.success("售价已更新", productApplicationService.setPrice(id, price));
     }
 
     /** 上架 */
     @PutMapping("/{id}/on-sale")
     public Result<Void> onSale(@PathVariable Long id) {
-        AccessGuard.requireGroup("MERCHANT", "PLATFORM");
+        AccessGuard.requirePerm("merchant:products:status", "admin:products:status");
         productApplicationService.onSale(id);
         return Result.success("已上架", null);
     }
@@ -122,7 +122,7 @@ public class ProductController {
     /** 下架（需说明原因） */
     @PutMapping("/{id}/off-sale")
     public Result<Void> offSale(@PathVariable Long id, @RequestParam(required = false) String reason) {
-        AccessGuard.requireGroup("MERCHANT", "PLATFORM");
+        AccessGuard.requirePerm("merchant:products:status", "admin:products:status");
         productApplicationService.offSale(id, reason);
         return Result.success("已下架", null);
     }
@@ -132,7 +132,7 @@ public class ProductController {
     public Result<Void> audit(@PathVariable Long id,
                               @RequestParam boolean approved,
                               @RequestParam(required = false) String reason) {
-        AccessGuard.requireGroup("PLATFORM");
+        AccessGuard.requirePerm("admin:audit:product");
         productApplicationService.audit(id, approved, reason);
         return Result.success(approved ? "审核已通过，商品已上架" : "已驳回", null);
     }

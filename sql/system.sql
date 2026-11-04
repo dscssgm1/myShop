@@ -197,6 +197,18 @@ CREATE TABLE IF NOT EXISTS sys_trusted_device (
     UNIQUE KEY uk_user_device (user_id, device_id)
 ) ENGINE = InnoDB DEFAULT CHARSET = utf8mb4 COMMENT = '信任设备';
 
+CREATE TABLE IF NOT EXISTS sys_role_menu (
+    id         BIGINT       NOT NULL AUTO_INCREMENT,
+    role_code  VARCHAR(32)  NOT NULL COMMENT '角色编码（sys_role.code）',
+    perm_key   VARCHAR(100) NOT NULL COMMENT '权限码（前端 perm/tree.js 定义）',
+    created_at DATETIME     NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    PRIMARY KEY (id),
+    UNIQUE KEY uk_role_key (role_code, perm_key),
+    KEY idx_role (role_code)
+) ENGINE = InnoDB DEFAULT CHARSET = utf8mb4 COMMENT = '角色菜单/按钮权限';
+
+-- 角色权限种子：内置角色按现状全量对齐（完整清单见 sql/upgrade-20261104-rbac.sql）
+
 -- ---------------------------------------------------------------- 种子数据
 
 INSERT IGNORE INTO sys_role (id, code, name, group_code, icon, description, sort) VALUES

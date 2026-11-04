@@ -27,6 +27,9 @@ public class OrderVO {
     /** 补款订单对应的原订单号 */
     private String sourceOrderNo;
 
+    /** 跨店合单订单组号；非空表示合单子订单，取消/支付按组处理 */
+    private String groupNo;
+
     private BigDecimal originalAmount;
 
     private BigDecimal promotionDiscount;
@@ -38,6 +41,12 @@ public class OrderVO {
 
     /** 优惠中平台承担（补贴）的部分 */
     private BigDecimal platformBearAmount;
+
+    /** 本单抵现消耗的积分 */
+    private Integer pointsUsed;
+
+    /** 本单积分抵现金额（平台承担） */
+    private BigDecimal pointsDeduction;
 
     private BigDecimal freightAmount;
 

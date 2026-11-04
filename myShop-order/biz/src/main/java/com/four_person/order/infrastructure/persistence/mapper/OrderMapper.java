@@ -20,6 +20,13 @@ public interface OrderMapper extends BaseMapper<Order> {
 
     @Update("""
             UPDATE order_info
+               SET status = 'PAID', pay_time = #{time}
+             WHERE group_no = #{groupNo} AND status = 'UNPAID' AND deleted = 0
+            """)
+    int markGroupChildrenPaid(@Param("groupNo") String groupNo, @Param("time") LocalDateTime time);
+
+    @Update("""
+            UPDATE order_info
                SET status = 'SHIPPED', ship_time = #{time}
              WHERE order_no = #{orderNo} AND status = 'PAID' AND deleted = 0
             """)

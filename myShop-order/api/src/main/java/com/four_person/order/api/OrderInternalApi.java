@@ -1,6 +1,7 @@
 package com.four_person.order.api;
 
 import com.four_person.common.api.Result;
+import com.four_person.order.api.dto.OrderGroupInternalDTO;
 import com.four_person.order.api.dto.OrderInternalDTO;
 import com.four_person.order.api.dto.OrderInternalDtos;
 import com.four_person.order.api.dto.PaidRequest;
@@ -27,6 +28,16 @@ public interface OrderInternalApi {
     @PostMapping("/internal/orders/{orderNo}/paid")
     Result<Void> paid(@PathVariable("orderNo") String orderNo, @RequestBody PaidRequest request);
 
+    // ==================== 支付服务：订单组合单支付 ====================
+
+    /** 查询订单组（父订单）信息，用于创建合单支付单 */
+    @GetMapping("/internal/order-groups/{groupNo}")
+    Result<OrderGroupInternalDTO> getOrderGroup(@PathVariable("groupNo") String groupNo);
+
+    /** 合单支付成功回调：组内全部待付款子订单置为已支付，订单组置为已支付 */
+    @PostMapping("/internal/order-groups/{groupNo}/paid")
+    Result<Void> groupPaid(@PathVariable("groupNo") String groupNo, @RequestBody PaidRequest request);
+
     @GetMapping("/internal/users/{userId}/unpaid-recovery")
     Result<Boolean> hasUnpaidRecovery(@PathVariable("userId") Long userId);
 
@@ -47,8 +58,4 @@ public interface OrderInternalApi {
     /** 售后退货运单签收：通知买家商家已收到退货 */
     @PostMapping("/internal/orders/return-shipment-signed")
     Result<Void> returnShipmentSigned(@RequestBody OrderInternalDtos.ReturnSignedRequest request);
-
-    /** 积分商城兑换下单：生成免支付订单，返回订单号 */
-    @PostMapping("/internal/orders/redeem")
-    Result<String> redeemOrder(@RequestBody OrderInternalDtos.RedeemOrderRequest request);
 }

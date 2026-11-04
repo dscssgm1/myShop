@@ -13,6 +13,8 @@ import org.springframework.stereotype.Repository;
 import org.springframework.util.StringUtils;
 
 import java.time.LocalDateTime;
+import java.util.Collection;
+import java.util.List;
 import java.util.Optional;
 
 @Repository
@@ -97,5 +99,23 @@ public class UserRepositoryImpl implements UserRepository {
     @Override
     public long countByRole(String roleCode) {
         return mapper.selectCount(Wrappers.<SysUser>lambdaQuery().eq(SysUser::getRoleCode, roleCode));
+    }
+
+    @Override
+    public void delete(Long id) {
+        mapper.deleteById(id);
+    }
+
+    @Override
+    public List<SysUser> findByRoleCode(String roleCode) {
+        return mapper.selectList(Wrappers.<SysUser>lambdaQuery().eq(SysUser::getRoleCode, roleCode));
+    }
+
+    @Override
+    public List<SysUser> findByRoleCodes(Collection<String> roleCodes) {
+        if (roleCodes == null || roleCodes.isEmpty()) {
+            return List.of();
+        }
+        return mapper.selectList(Wrappers.<SysUser>lambdaQuery().in(SysUser::getRoleCode, roleCodes));
     }
 }

@@ -21,6 +21,8 @@ public enum OrderErrorCode implements ErrorCode {
     REFUND_FAILED(40030, "退款失败，请稍后重试或联系客服"),
     RETURN_SHIPMENT_FAILED(40031, "生成退货运单失败，请稍后重试"),
     SHIPMENT_FAILED(40032, "创建物流运单失败，请稍后重试"),
+    ORDER_GROUP_NOT_FOUND(40411, "订单组不存在"),
+    ORDER_GROUP_STATUS_INVALID(40033, "订单组当前状态不允许该操作"),
     ORDER_FORBIDDEN(40301, "无权操作该订单"),
     AFTER_SALE_FORBIDDEN(40303, "无权操作该售后单");
 

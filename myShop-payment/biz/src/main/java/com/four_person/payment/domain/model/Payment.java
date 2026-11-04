@@ -23,9 +23,15 @@ public class Payment {
 
     private String orderNo;
 
+    /** 跨店合单订单组号；非空表示合单支付单（一次付清整组），退款按子单分摊金额部分退款 */
+    private String groupNo;
+
     private Long userId;
 
     private BigDecimal amount;
+
+    /** 已累计退款金额（合单部分退款用；>= amount 时支付单整体 REFUNDED） */
+    private BigDecimal refundedAmount;
 
     /** ALIPAY / WECHAT / CARD */
     private String channel;
@@ -54,6 +60,12 @@ public class Payment {
 
     public boolean isPending() {
         return PaymentStatus.PENDING.name().equals(status);
+    }
+
+    /** 是否还有可退余额（合单部分退款后状态仍是 SUCCESS） */
+    public boolean hasRefundableBalance() {
+        BigDecimal refunded = refundedAmount == null ? BigDecimal.ZERO : refundedAmount;
+        return amount != null && amount.subtract(refunded).signum() > 0;
     }
 
     public void markPaid(LocalDateTime paidAt, String tradeNo) {

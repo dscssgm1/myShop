@@ -1,6 +1,7 @@
 package com.four_person.order.interfaces.rest;
 
 import com.four_person.common.api.Result;
+import com.four_person.order.api.dto.OrderGroupInternalDTO;
 import com.four_person.order.api.dto.OrderInternalDTO;
 import com.four_person.order.api.dto.OrderInternalDtos;
 import com.four_person.order.api.dto.PaidRequest;
@@ -40,6 +41,21 @@ public class InternalOrderController {
         return Result.success();
     }
 
+    // ==================== 订单组合单支付 ====================
+
+    /** 查询订单组信息（支付服务创建合单支付单时校验） */
+    @GetMapping("/order-groups/{groupNo}")
+    public Result<OrderGroupInternalDTO> getGroup(@PathVariable String groupNo) {
+        return Result.success(orderApplicationService.getGroupInternal(groupNo));
+    }
+
+    /** 合单支付成功回调：组内待付款子订单整组置为已支付 */
+    @PostMapping("/order-groups/{groupNo}/paid")
+    public Result<Void> groupPaid(@PathVariable String groupNo, @Valid @RequestBody PaidRequest request) {
+        orderApplicationService.markPaidGroup(groupNo, request);
+        return Result.success();
+    }
+
     @GetMapping("/users/{userId}/purchased-products")
     public Result<List<Long>> purchasedProducts(@PathVariable Long userId) {
         return Result.success(orderApplicationService.purchasedProductIds(userId));
@@ -53,14 +69,6 @@ public class InternalOrderController {
     @GetMapping("/users/{userId}/unpaid-recovery")
     public Result<Boolean> hasUnpaidRecovery(@PathVariable Long userId) {
         return Result.success(orderApplicationService.hasUnpaidRecovery(userId));
-    }
-
-    // ==================== 积分商城兑换 ====================
-
-    /** 积分商城兑换下单：生成免支付订单（system 服务已先扣积分），返回订单号 */
-    @PostMapping("/orders/redeem")
-    public Result<String> redeem(@Valid @RequestBody OrderInternalDtos.RedeemOrderRequest request) {
-        return Result.success(orderApplicationService.createRedeemOrder(request));
     }
 
     // ==================== 物流签收回调 ====================

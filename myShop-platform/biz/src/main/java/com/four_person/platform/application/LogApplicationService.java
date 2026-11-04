@@ -51,7 +51,7 @@ public class LogApplicationService {
     }
 
     public PageResult<PlatformDtos.OperationLogVO> pageOperation(int page, int size) {
-        AccessGuard.requireGroup("PLATFORM");
+        AccessGuard.requirePerm("admin:logs");
         Page<LogOperation> result = operationMapper.selectPage(new Page<>(pageNo(page), pageSize(size)),
                 Wrappers.<LogOperation>lambdaQuery().orderByDesc(LogOperation::getId));
         return PageResult.of(result.getRecords().stream().map(log -> {
@@ -67,7 +67,7 @@ public class LogApplicationService {
     }
 
     public PageResult<PlatformDtos.LoginLogVO> pageLogin(int page, int size) {
-        AccessGuard.requireGroup("PLATFORM");
+        AccessGuard.requirePerm("admin:logs");
         Page<LogLogin> result = loginMapper.selectPage(new Page<>(pageNo(page), pageSize(size)),
                 Wrappers.<LogLogin>lambdaQuery().orderByDesc(LogLogin::getId));
         return PageResult.of(result.getRecords().stream().map(log -> {
@@ -83,7 +83,7 @@ public class LogApplicationService {
     }
 
     public PageResult<PlatformDtos.SystemLogVO> pageSystem(int page, int size) {
-        AccessGuard.requireGroup("PLATFORM");
+        AccessGuard.requirePerm("admin:logs");
         Page<LogSystem> result = systemMapper.selectPage(new Page<>(pageNo(page), pageSize(size)),
                 Wrappers.<LogSystem>lambdaQuery().orderByDesc(LogSystem::getId));
         return PageResult.of(result.getRecords().stream().map(log -> {

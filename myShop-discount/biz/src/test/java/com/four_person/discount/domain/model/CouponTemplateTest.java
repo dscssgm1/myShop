@@ -53,13 +53,16 @@ class CouponTemplateTest {
 
     @Test
     void shouldRestrictMerchantCouponScope() {
+        // 商家券只能圈本店：全平台 / 指定商品都不允许
         assertThatThrownBy(() -> template(5L, "10", "5", Scope.all(), 10, 0, 1, null, null, null))
                 .isInstanceOf(BusinessException.class)
                 .hasMessageContaining("商家优惠券范围只能是本店商品");
-        assertThatThrownBy(() -> template(5L, "10", "5", new Scope(ScopeType.CATEGORY, Set.of(7L)),
+        assertThatThrownBy(() -> template(5L, "10", "5", new Scope(ScopeType.PRODUCT, Set.of(9L)),
                 10, 0, 1, null, null, null)).isInstanceOf(BusinessException.class);
-        // SHOP / PRODUCT 合法
+        // SHOP / CATEGORY（本店指定分类）合法
         assertThat(template(5L, "10", "5", Scope.shop(), 10, 0, 1, null, null, null).isMerchantCoupon()).isTrue();
+        assertThat(template(5L, "10", "5", new Scope(ScopeType.CATEGORY, Set.of(7L)),
+                10, 0, 1, null, null, null).isMerchantCoupon()).isTrue();
     }
 
     @Test

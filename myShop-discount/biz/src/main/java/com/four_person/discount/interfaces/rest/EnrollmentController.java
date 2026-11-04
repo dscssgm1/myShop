@@ -34,14 +34,14 @@ public class EnrollmentController {
     /** 商家可报名的平台活动 */
     @GetMapping("/available")
     public Result<List<PromotionVO>> available() {
-        AccessGuard.requireGroup("MERCHANT");
+        AccessGuard.requirePerm("merchant:enrollment");
         return Result.success(enrollmentApplicationService.available(UserContext.requireShopId()));
     }
 
     /** 商家批量报名商品 */
     @PostMapping
     public Result<Integer> apply(@Valid @RequestBody EnrollmentApplyRequest request) {
-        AccessGuard.requireGroup("MERCHANT");
+        AccessGuard.requirePerm("merchant:enrollment:apply");
         return Result.success(enrollmentApplicationService.apply(
                 UserContext.requireShopId(), request.getPromotionId(), request.getProductIds()));
     }
@@ -49,7 +49,7 @@ public class EnrollmentController {
     /** 商家自己的报名记录 */
     @GetMapping("/mine")
     public Result<List<EnrollmentVO>> mine() {
-        AccessGuard.requireGroup("MERCHANT");
+        AccessGuard.requirePerm("merchant:enrollment");
         return Result.success(enrollmentApplicationService.mine(UserContext.requireShopId()));
     }
 
@@ -60,20 +60,20 @@ public class EnrollmentController {
                                                  @RequestParam(required = false) String status,
                                                  @RequestParam(defaultValue = "1") int page,
                                                  @RequestParam(defaultValue = "10") int size) {
-        AccessGuard.requireGroup("PLATFORM");
+        AccessGuard.requirePerm("admin:promotions:enrollment");
         return Result.success(enrollmentApplicationService.page(promotionId, shopId, status, page, size));
     }
 
     @PostMapping("/{id}/approve")
     public Result<Void> approve(@PathVariable Long id) {
-        AccessGuard.requireGroup("PLATFORM");
+        AccessGuard.requirePerm("admin:promotions:enrollment");
         enrollmentApplicationService.approve(id);
         return Result.success();
     }
 
     @PostMapping("/{id}/reject")
     public Result<Void> reject(@PathVariable Long id, @RequestBody(required = false) EnrollmentReviewRequest request) {
-        AccessGuard.requireGroup("PLATFORM");
+        AccessGuard.requirePerm("admin:promotions:enrollment");
         enrollmentApplicationService.reject(id, request == null ? null : request.getReason());
         return Result.success();
     }

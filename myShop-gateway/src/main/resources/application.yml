@@ -117,6 +117,8 @@ myshop:
       - /api/specs
       - /api/shops
       - /api/promotions
+      # 商品卡最低到手价：匿名可看活动价，登录用户自动叠加可用券
+      - /api/discounts/product-prices
       - /api/recommendations
       - /api/reviews
       # 积分商城商品浏览（兑换需登录）

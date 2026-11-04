@@ -40,21 +40,21 @@ public class CategoryController {
     /** 平台：新增分类 */
     @PostMapping
     public Result<CategoryVO> create(@Valid @RequestBody CategoryRequest request) {
-        AccessGuard.requireGroup("PLATFORM");
+        AccessGuard.requirePerm("admin:categories:create");
         return Result.success("分类已新增", categoryApplicationService.create(request));
     }
 
     /** 平台：修改分类 */
     @PutMapping("/{id}")
     public Result<CategoryVO> update(@PathVariable Long id, @Valid @RequestBody CategoryRequest request) {
-        AccessGuard.requireGroup("PLATFORM");
+        AccessGuard.requirePerm("admin:categories:update");
         return Result.success("分类已更新", categoryApplicationService.update(id, request));
     }
 
     /** 平台：删除分类 */
     @DeleteMapping("/{id}")
     public Result<Void> delete(@PathVariable Long id) {
-        AccessGuard.requireGroup("PLATFORM");
+        AccessGuard.requirePerm("admin:categories:delete");
         categoryApplicationService.delete(id);
         return Result.success("分类已删除", null);
     }

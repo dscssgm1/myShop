@@ -63,7 +63,7 @@ public class ReviewController {
     @GetMapping("/merchant")
     public Result<PageResult<ReviewDtos.ReviewVO>> merchantPage(@RequestParam(defaultValue = "1") int page,
                                                                 @RequestParam(defaultValue = "10") int size) {
-        AccessGuard.requireGroup("MERCHANT");
+        AccessGuard.requirePerm("merchant:reviews");
         return Result.success(reviewApplicationService.pageByShop(
                 UserContext.requireShopId(), page, size));
     }
@@ -72,7 +72,7 @@ public class ReviewController {
     @PostMapping("/{id}/report")
     public Result<Void> report(@PathVariable Long id,
                                @Valid @RequestBody ReviewDtos.ReportRequest request) {
-        AccessGuard.requireGroup("MERCHANT");
+        AccessGuard.requirePerm("merchant:reviews:report");
         reviewApplicationService.report(UserContext.requireShopId(), UserContext.getUserId(),
                 id, request.getReason());
         return Result.success("举报已提交，等待平台审核", null);
@@ -82,7 +82,7 @@ public class ReviewController {
     @PutMapping("/{id}/reply")
     public Result<Void> reply(@PathVariable Long id,
                               @Valid @RequestBody ReviewDtos.ReplyRequest request) {
-        AccessGuard.requireGroup("MERCHANT");
+        AccessGuard.requirePerm("merchant:reviews:reply");
         reviewApplicationService.reply(UserContext.requireShopId(), id, request.getReply().trim());
         return Result.success("回复已发布", null);
     }
@@ -92,14 +92,14 @@ public class ReviewController {
     public Result<PageResult<ReviewDtos.ReviewVO>> adminPage(@RequestParam(required = false) String status,
                                                              @RequestParam(defaultValue = "1") int page,
                                                              @RequestParam(defaultValue = "10") int size) {
-        AccessGuard.requireGroup("PLATFORM");
+        AccessGuard.requirePerm("admin:audit:review");
         return Result.success(reviewApplicationService.adminPage(status, page, size));
     }
 
     /** 平台：评价审核统计 */
     @GetMapping("/admin/stats")
     public Result<ReviewDtos.AdminStatsVO> adminStats() {
-        AccessGuard.requireGroup("PLATFORM");
+        AccessGuard.requirePerm("admin:audit:review");
         return Result.success(reviewApplicationService.adminStats());
     }
 
@@ -107,7 +107,7 @@ public class ReviewController {
     @PutMapping("/admin/{id}")
     public Result<Void> moderate(@PathVariable Long id,
                                  @Valid @RequestBody ReviewDtos.ModerateRequest request) {
-        AccessGuard.requireGroup("PLATFORM");
+        AccessGuard.requirePerm("admin:audit:review");
         reviewApplicationService.moderate(UserContext.getUserId(), id,
                 request.getAction(), request.getReason());
         return Result.success("审核完成", null);

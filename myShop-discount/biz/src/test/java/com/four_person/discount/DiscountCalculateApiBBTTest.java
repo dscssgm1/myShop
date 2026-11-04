@@ -308,6 +308,97 @@ class DiscountCalculateApiBBTTest extends DiscountApiBBTSupport {
         assertThat(vo.get("payAmount").doubleValue()).isEqualTo(89.99);
     }
 
+    // ==================== 结算页活动选择 ====================
+
+    @Test
+    void promotionOptionsExposeApplicableChoicesAndChosenFlag() throws Exception {
+        long best = createActivity("BBT-可选满90减20", "FULL_REDUCTION", 90, 20, "ALL", null, 0, true);
+        long worse = createActivity("BBT-可选满90减10", "FULL_REDUCTION", 90, 10, "ALL", null, 0, true);
+        // 门槛不满足的活动不进入选项
+        createActivity("BBT-可选满200减50", "FULL_REDUCTION", 200, 50, "ALL", null, 0, true);
+
+        JsonNode vo = calculate(customer(USER_1), items99_99(), null);
+        // 自动模式：勾选最省组合（20），选项里 chosen 只有它
+        assertThat(vo.get("appliedPromotionIds")).hasSize(1);
+        assertThat(vo.get("appliedPromotionIds").get(0).asLong()).isEqualTo(best);
+
+        JsonNode options = vo.get("promotionOptions");
+        assertThat(options).hasSize(2);
+        Map<Long, JsonNode> byId = new java.util.HashMap<>();
+        options.forEach(node -> byId.put(node.get("promotionId").asLong(), node));
+        assertThat(byId.get(best).get("discount").doubleValue()).isEqualTo(20);
+        assertThat(byId.get(best).get("chosen").asBoolean()).isTrue();
+        assertThat(byId.get(best).get("ruleText").asText()).contains("满 90 减 20");
+        assertThat(byId.get(best).get("shopId").asLong()).isZero();
+        assertThat(byId.get(worse).get("discount").doubleValue()).isEqualTo(10);
+        assertThat(byId.get(worse).get("chosen").asBoolean()).isFalse();
+    }
+
+    @Test
+    void requestedPromotionSelectionTakesEffect() throws Exception {
+        createActivity("BBT-指定活动20", "FULL_REDUCTION", 90, 20, "ALL", null, 0, true);
+        long smaller = createActivity("BBT-指定活动10", "FULL_REDUCTION", 90, 10, "ALL", null, 0, true);
+
+        JsonNode vo = okData(post(URI + "/calculate", body("promotionIds", List.of(smaller),
+                "items", items99_99()), customer(USER_1)));
+        assertThat(vo.get("promotionDiscount").doubleValue()).isEqualTo(10);
+        assertThat(vo.get("payAmount").doubleValue()).isEqualTo(89.99);
+        assertThat(vo.get("appliedPromotionIds")).hasSize(1);
+        assertThat(vo.get("appliedPromotionIds").get(0).asLong()).isEqualTo(smaller);
+        vo.get("promotionOptions").forEach(node ->
+                assertThat(node.get("chosen").asBoolean())
+                        .isEqualTo(node.get("promotionId").asLong() == smaller));
+    }
+
+    @Test
+    void emptyRequestedPromotionsDisablePromotions() throws Exception {
+        createActivity("BBT-不用活动", "FULL_REDUCTION", 90, 20, "ALL", null, 0, true);
+
+        // 明确传空数组 = 本单不参与活动（null 才是自动最优）
+        JsonNode vo = okData(post(URI + "/calculate", body("promotionIds", List.of(),
+                "items", items99_99()), customer(USER_1)));
+        assertThat(vo.get("promotionDiscount").doubleValue()).isZero();
+        assertThat(vo.get("appliedPromotionIds")).isEmpty();
+        assertThat(vo.get("payAmount").doubleValue()).isEqualTo(99.99);
+    }
+
+    @Test
+    void requestedPromotionNotApplicableRejected() throws Exception {
+        JsonNode root = expectCode(post(URI + "/calculate", body("promotionIds", List.of(999999L),
+                "items", items99_99()), customer(USER_1)), 40021);
+        assertThat(root.get("message").asText()).contains("所选促销活动对本单不可用");
+    }
+
+    @Test
+    void itemDiscountsBreakDownEachLine() throws Exception {
+        createActivity("BBT-逐行拆解20", "FULL_REDUCTION", 90, 20, "ALL", null, 0, true);
+        long coupon = claimOf(USER_1, platformCoupon("BBT-逐行券10", 80, 10));
+
+        JsonNode vo = calculate(customer(USER_1), items99_99(), List.of(coupon));
+        JsonNode rows = vo.get("itemDiscounts");
+        assertThat(rows).hasSize(2);
+        // A1 33.33：活动按小计比例 6.67，券按剩余余额 3.33 → 23.33
+        JsonNode a1 = rows.get(0);
+        assertThat(a1.get("productId").asLong()).isEqualTo(PRODUCT_A1);
+        assertThat(a1.get("originalSubtotal").doubleValue()).isEqualTo(33.33);
+        assertThat(a1.get("promotionDiscount").doubleValue()).isEqualTo(6.67);
+        assertThat(a1.get("couponDiscount").doubleValue()).isEqualTo(3.33);
+        assertThat(a1.get("finalSubtotal").doubleValue()).isEqualTo(23.33);
+        assertThat(a1.get("promotions")).hasSize(1);
+        assertThat(a1.get("promotions").get(0).get("amount").doubleValue()).isEqualTo(6.67);
+        assertThat(a1.get("coupons").get(0).get("amount").doubleValue()).isEqualTo(3.33);
+        // A2 66.66：尾差归最后一行 → 活动 13.33、券 6.67 → 46.66
+        JsonNode a2 = rows.get(1);
+        assertThat(a2.get("promotionDiscount").doubleValue()).isEqualTo(13.33);
+        assertThat(a2.get("couponDiscount").doubleValue()).isEqualTo(6.67);
+        assertThat(a2.get("finalSubtotal").doubleValue()).isEqualTo(46.66);
+        // 行级合计与订单总额严格相等
+        double promoSum = a1.get("promotionDiscount").doubleValue() + a2.get("promotionDiscount").doubleValue();
+        double couponSum = a1.get("couponDiscount").doubleValue() + a2.get("couponDiscount").doubleValue();
+        assertThat(promoSum).isEqualTo(vo.get("promotionDiscount").doubleValue());
+        assertThat(couponSum).isEqualTo(vo.get("couponDiscount").doubleValue());
+    }
+
     // ==================== 结算页可用券 ====================
 
     @Test
@@ -332,6 +423,107 @@ class DiscountCalculateApiBBTTest extends DiscountApiBBTSupport {
                         .content(objectMapper.writeValueAsString(Map.of("items", items99_99()))))
                 .andExpect(result -> assertThat(objectMapper.readTree(
                         result.getResponse().getContentAsString()).get("code").asInt()).isEqualTo(401));
+    }
+
+    // ==================== 商品展示最低价（单件口径） ====================
+
+    @Test
+    void productPriceCombinesPromotionAndCouponForLoggedUser() throws Exception {
+        createActivity("BBT-单品满30减5可叠", "FULL_REDUCTION", 30, 5, "ALL", null, 0, true);
+        claimOf(USER_1, platformCoupon("BBT-单品满30减4", 30, 4));
+
+        JsonNode list = productPrices(List.of(item(PRODUCT_A1, SHOP_A, 7L, "33.33", 1)),
+                customer(USER_1));
+        assertThat(list).hasSize(1);
+        JsonNode row = list.get(0);
+        assertThat(row.get("productId").asLong()).isEqualTo(PRODUCT_A1);
+        assertThat(row.get("originalPrice").doubleValue()).isEqualTo(33.33);
+        assertThat(row.get("promotionDiscount").doubleValue()).isEqualTo(5);
+        assertThat(row.get("couponDiscount").doubleValue()).isEqualTo(4);
+        assertThat(row.get("finalPrice").doubleValue()).isEqualTo(24.33);
+        // 明细带出参与的活动/券，供商品卡展示「都进行了哪些优惠」
+        assertThat(row.get("promotions")).hasSize(1);
+        assertThat(row.get("promotions").get(0).get("title").asText()).isEqualTo("BBT-单品满30减5可叠");
+        assertThat(row.get("promotions").get(0).get("amount").doubleValue()).isEqualTo(5);
+        assertThat(row.get("coupons")).hasSize(1);
+        assertThat(row.get("coupons").get(0).get("title").asText()).isEqualTo("BBT-单品满30减4");
+    }
+
+    @Test
+    void productPriceForGuestOnlyAppliesPromotion() throws Exception {
+        createActivity("BBT-游客满30减5", "FULL_REDUCTION", 30, 5, "ALL", null, 0, true);
+        // 券属于登录用户，游客不携带身份头 → 只看到活动价
+        claimOf(USER_1, platformCoupon("BBT-游客满30减4", 30, 4));
+
+        JsonNode row = productPrices(List.of(item(PRODUCT_A1, SHOP_A, 7L, "33.33", 1))).get(0);
+        assertThat(row.get("promotionDiscount").doubleValue()).isEqualTo(5);
+        assertThat(row.get("couponDiscount").doubleValue()).isZero();
+        assertThat(row.get("coupons")).isEmpty();
+        assertThat(row.get("finalPrice").doubleValue()).isEqualTo(28.33);
+    }
+
+    @Test
+    void productPriceThresholdJudgedOnSingleItem() throws Exception {
+        // 满 60 减 10：A1(33.33) 单件不达门槛，A2(66.66) 达门槛
+        createActivity("BBT-单件满60减10", "FULL_REDUCTION", 60, 10, "ALL", null, 0, true);
+
+        JsonNode list = productPrices(List.of(
+                item(PRODUCT_A1, SHOP_A, 7L, "33.33", 1),
+                item(PRODUCT_A2, SHOP_A, 8L, "66.66", 1)));
+        assertThat(list).hasSize(2);
+        assertThat(list.get(0).get("promotionDiscount").doubleValue()).isZero();
+        assertThat(list.get(0).get("finalPrice").doubleValue()).isEqualTo(33.33);
+        assertThat(list.get(1).get("promotionDiscount").doubleValue()).isEqualTo(10);
+        assertThat(list.get(1).get("finalPrice").doubleValue()).isEqualTo(56.66);
+    }
+
+    @Test
+    void productPriceRespectsMerchantCouponShopScope() throws Exception {
+        // B 店券只对 B 店商品生效；A 店商品只吃 A 店券
+        long shopACoupon = longOf(okData(post("/coupons/templates", body(
+                "title", "BBT-A店单品券", "thresholdAmount", 30, "discountAmount", 6,
+                "scopeType", "SHOP", "totalStock", 100, "perUserLimit", 5,
+                "validStart", timeFromNow(-1), "validEnd", timeFromNow(7)), merchantA())), "id");
+        long shopBCoupon = longOf(okData(post("/coupons/templates", body(
+                "title", "BBT-B店单品券", "thresholdAmount", 10, "discountAmount", 9,
+                "scopeType", "SHOP", "totalStock", 100, "perUserLimit", 5,
+                "validStart", timeFromNow(-1), "validEnd", timeFromNow(7)), merchantB())), "id");
+        claimOf(USER_1, shopACoupon);
+        claimOf(USER_1, shopBCoupon);
+
+        JsonNode a1 = productPrices(List.of(item(PRODUCT_A1, SHOP_A, 7L, "33.33", 1)),
+                customer(USER_1)).get(0);
+        assertThat(a1.get("couponDiscount").doubleValue()).isEqualTo(6);
+        assertThat(a1.get("coupons").get(0).get("title").asText()).isEqualTo("BBT-A店单品券");
+
+        JsonNode b1 = productPrices(List.of(item(PRODUCT_B1, SHOP_B, 7L, "20.00", 1)),
+                customer(USER_1)).get(0);
+        assertThat(b1.get("couponDiscount").doubleValue()).isEqualTo(9);
+        assertThat(b1.get("coupons").get(0).get("title").asText()).isEqualTo("BBT-B店单品券");
+    }
+
+    @Test
+    void productPriceAlwaysSingleUnitEvenIfQuantitySent() throws Exception {
+        // 满 90 减 20：若按请求数量 5 件算（166.65）会命中，单件口径（33.33）不命中
+        createActivity("BBT-单件口径满90减20", "FULL_REDUCTION", 90, 20, "ALL", null, 0, true);
+
+        JsonNode row = productPrices(List.of(item(PRODUCT_A1, SHOP_A, 7L, "33.33", 5))).get(0);
+        assertThat(row.get("originalPrice").doubleValue()).isEqualTo(33.33);
+        assertThat(row.get("promotionDiscount").doubleValue()).isZero();
+        assertThat(row.get("finalPrice").doubleValue()).isEqualTo(33.33);
+    }
+
+    @Test
+    void productPricePicksBetterSideWhenPromotionBlocksCoupon() throws Exception {
+        // 活动不可与券同用：活动减 10 > 券减 4 → 自动保留活动，券不生效
+        createActivity("BBT-单品不可叠减10", "FULL_REDUCTION", 30, 10, "ALL", null, 0, false);
+        claimOf(USER_1, platformCoupon("BBT-单品不可叠券4", 30, 4));
+
+        JsonNode row = productPrices(List.of(item(PRODUCT_A1, SHOP_A, 7L, "33.33", 1)),
+                customer(USER_1)).get(0);
+        assertThat(row.get("promotionDiscount").doubleValue()).isEqualTo(10);
+        assertThat(row.get("couponDiscount").doubleValue()).isZero();
+        assertThat(row.get("finalPrice").doubleValue()).isEqualTo(23.33);
     }
 
     // ==================== 校验 ====================
@@ -375,6 +567,12 @@ class DiscountCalculateApiBBTTest extends DiscountApiBBTSupport {
     private JsonNode calculate(RequestPostProcessor user, List<Map<String, Object>> items,
                                List<Long> couponIds) throws Exception {
         return okData(post(URI + "/calculate", body("couponIds", couponIds, "items", items), user));
+    }
+
+    /** 商品展示最低价：不传身份头即游客视角 */
+    private JsonNode productPrices(List<Map<String, Object>> items,
+                                   RequestPostProcessor... users) throws Exception {
+        return okData(post(URI + "/product-prices", body("items", items), users));
     }
 
     private long createActivity(String title, String ruleType, double threshold, double amount,

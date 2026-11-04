@@ -1,14 +1,18 @@
 package com.four_person.payment.api.dto;
 
-import jakarta.validation.constraints.NotBlank;
 import lombok.Data;
 
+/**
+ * 创建支付单：普通订单传 orderNo；跨店合单整组支付传 groupNo（二选一）。
+ */
 @Data
 public class CreatePaymentRequest {
 
-    @NotBlank(message = "订单号不能为空")
+    /** 普通订单号（与 groupNo 二选一） */
     private String orderNo;
 
-    @NotBlank(message = "支付渠道不能为空")
+    /** 跨店合单订单组号（与 orderNo 二选一，一次付清整组） */
+    private String groupNo;
+
     private String channel;
 }

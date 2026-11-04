@@ -38,6 +38,9 @@ public class Order {
     /** 补款订单对应的售后单 */
     private Long afterSaleId;
 
+    /** 跨店合单订单组号；非空表示合单子订单，取消/支付按组处理 */
+    private String groupNo;
+
     /** 所属店铺：一店一单 */
     private Long shopId;
 
@@ -54,6 +57,12 @@ public class Order {
 
     /** 优惠中平台承担（补贴）的部分 */
     private BigDecimal platformBearAmount;
+
+    /** 本单抵现消耗的积分 */
+    private Integer pointsUsed;
+
+    /** 本单积分抵现金额（平台承担，已含在 platformBearAmount 内） */
+    private BigDecimal pointsDeduction;
 
     private BigDecimal freightAmount;
 

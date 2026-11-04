@@ -37,6 +37,17 @@ public class CouponTemplateRepositoryImpl implements CouponTemplateRepository {
     }
 
     @Override
+    public List<CouponTemplate> findPointsExchangeable(LocalDateTime now) {
+        return templateMapper.selectList(Wrappers.<CouponTemplatePO>lambdaQuery()
+                        .eq(CouponTemplatePO::getStatus, CouponTemplate.STATUS_ACTIVE)
+                        .gt(CouponTemplatePO::getPointsPrice, 0)
+                        .and(w -> w.isNull(CouponTemplatePO::getValidStart).or().le(CouponTemplatePO::getValidStart, now))
+                        .and(w -> w.isNull(CouponTemplatePO::getValidEnd).or().ge(CouponTemplatePO::getValidEnd, now))
+                        .orderByDesc(CouponTemplatePO::getId))
+                .stream().map(this::toDomain).toList();
+    }
+
+    @Override
     public List<CouponTemplate> findByShop(Long shopId) {
         return templateMapper.selectList(Wrappers.<CouponTemplatePO>lambdaQuery()
                         .eq(CouponTemplatePO::getShopId, shopId)
@@ -80,6 +91,7 @@ public class CouponTemplateRepositoryImpl implements CouponTemplateRepository {
                 po.getTotalStock() == null ? 0 : po.getTotalStock(),
                 po.getClaimedCount() == null ? 0 : po.getClaimedCount(),
                 po.getPerUserLimit() == null ? 1 : po.getPerUserLimit(),
+                po.getPointsPrice(),
                 po.getCouponStackable() == null || po.getCouponStackable() == 1,
                 po.getStackable() == null || po.getStackable() == 1,
                 po.getValidStart(), po.getValidEnd(), po.getStatus());
@@ -97,6 +109,7 @@ public class CouponTemplateRepositoryImpl implements CouponTemplateRepository {
         po.setTotalStock(template.getTotalStock());
         po.setClaimedCount(template.getClaimedCount());
         po.setPerUserLimit(template.getPerUserLimit());
+        po.setPointsPrice(template.getPointsPrice());
         po.setCouponStackable(template.isCouponStackable() ? 1 : 0);
         po.setStackable(template.isStackable() ? 1 : 0);
         po.setValidStart(template.getValidStart());

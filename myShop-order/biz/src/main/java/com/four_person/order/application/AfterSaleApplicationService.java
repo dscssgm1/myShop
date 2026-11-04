@@ -69,6 +69,7 @@ public class AfterSaleApplicationService {
     private final MessageInternalApi messageInternalApi;
     private final MemberInternalApi memberInternalApi;
     private final CommissionApplicationService commissionApplicationService;
+    private final OrderGroupService orderGroupService;
     private final OrderNoGenerator orderNoGenerator;
 
     // ==================== 创建 / 查询 ====================
@@ -313,6 +314,12 @@ public class AfterSaleApplicationService {
         if (!orderRepository.markRefundedAfterSale(afterSale.getOrderNo(), now)) {
             throw new BusinessException(OrderErrorCode.ORDER_STATUS_INVALID, "订单状态已变化，请刷新后重试");
         }
+        // 合单黄金不变量：组内最后一个子订单退款关闭后，整组关闭并全额退回优惠券
+        orderRepository.findByOrderNo(afterSale.getOrderNo())
+                .ifPresent(order -> {
+                    orderGroupService.releaseCouponsIfGroupFullyClosed(order);
+                    refundDeductedPoints(order, afterSale);
+                });
         // 退货退款：商家确认收到退货并退款，商品回到库存
         if (AfterSaleType.RETURN_REFUND.name().equals(afterSale.getType())) {
             List<OrderItem> items = orderRepository.findItems(afterSale.getOrderNo());
@@ -578,6 +585,27 @@ public class AfterSaleApplicationService {
         }
     }
 
+    /** 售后退款成功后退回该订单下单时抵现扣减的积分，按订单号幂等；失败不影响退款 */
+    private void refundDeductedPoints(Order order, AfterSale afterSale) {
+        if (order.getPointsUsed() == null || order.getPointsUsed() <= 0) {
+            return;
+        }
+        try {
+            MemberDtos.RefundSpendRequest request = new MemberDtos.RefundSpendRequest();
+            request.setUserId(order.getUserId());
+            request.setBizNo(order.getOrderNo());
+            request.setRemark("售后退款退回抵现积分");
+            Integer refunded = Results.data(memberInternalApi.refundSpend(request));
+            if (refunded != null && refunded > 0) {
+                notify(order.getUserId(), "积分退回",
+                        "售后单 " + afterSale.getAfterSaleNo() + " 退款成功，退回抵现使用的 " + refunded + " 积分");
+            }
+        } catch (Exception ex) {
+            log.warn("售后退款退回抵现积分失败: afterSaleNo={}, orderNo={}",
+                    afterSale.getAfterSaleNo(), order.getOrderNo(), ex);
+        }
+    }
+
     /** 售后退款成功后按单扣回订单完成时发放的积分，失败不影响退款 */
     private void deductEarnedPoints(AfterSale afterSale) {
         MemberDtos.EarnPointsRequest request = new MemberDtos.EarnPointsRequest();
@@ -608,6 +636,13 @@ public class AfterSaleApplicationService {
     private RefundResultVO refundOrder(String orderNo, String reason) {
         RefundRequest request = new RefundRequest();
         request.setOrderNo(orderNo);
+        // 合单子订单共用一张组支付单：按子单分摊后的实付金额部分退款
+        orderRepository.findByOrderNo(orderNo).ifPresent(order -> {
+            if (StringUtils.hasText(order.getGroupNo())) {
+                request.setGroupNo(order.getGroupNo());
+                request.setAmount(order.getPayAmount());
+            }
+        });
         request.setReason(reason);
         try {
             RefundResultVO result = Results.data(paymentInternalApi.refund(request));

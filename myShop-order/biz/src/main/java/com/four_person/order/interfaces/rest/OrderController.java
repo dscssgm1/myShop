@@ -6,6 +6,7 @@ import com.four_person.common.web.AccessGuard;
 import com.four_person.common.web.UserContext;
 import com.four_person.order.api.dto.CreateOrderVO;
 import com.four_person.order.api.dto.OrderCreateRequest;
+import com.four_person.order.api.dto.OrderGroupVO;
 import com.four_person.order.api.dto.OrderPreviewRequest;
 import com.four_person.order.api.dto.OrderPreviewVO;
 import com.four_person.order.api.dto.OrderVO;
@@ -50,7 +51,7 @@ public class OrderController {
     public Result<PageResult<OrderVO>> adminPage(@RequestParam(required = false) String status,
                                                  @RequestParam(defaultValue = "1") int page,
                                                  @RequestParam(defaultValue = "10") int size) {
-        AccessGuard.requireGroup("PLATFORM");
+        AccessGuard.requirePerm("admin:orders");
         return Result.success(orderApplicationService.adminPage(status, page, size));
     }
 
@@ -59,7 +60,7 @@ public class OrderController {
     public Result<PageResult<OrderVO>> merchantPage(@RequestParam(required = false) String status,
                                                     @RequestParam(defaultValue = "1") int page,
                                                     @RequestParam(defaultValue = "10") int size) {
-        AccessGuard.requireGroup("MERCHANT", "PLATFORM");
+        AccessGuard.requirePerm("merchant:orders", "admin:orders");
         return Result.success(orderApplicationService.merchantPage(
                 UserContext.requireShopId(), status, page, size));
     }
@@ -75,6 +76,19 @@ public class OrderController {
         return Result.success();
     }
 
+    /** 跨店合单订单组详情（父订单 + 子订单 + 分摊金额） */
+    @GetMapping("/groups/{groupNo}")
+    public Result<OrderGroupVO> groupDetail(@PathVariable String groupNo) {
+        return Result.success(orderApplicationService.groupDetail(UserContext.getUserId(), groupNo));
+    }
+
+    /** 整组取消未发货订单：全部未付整组取消退券；部分已付只取消未付子单（券不退回） */
+    @PostMapping("/groups/{groupNo}/cancel")
+    public Result<Void> cancelGroup(@PathVariable String groupNo) {
+        orderApplicationService.cancelGroup(UserContext.getUserId(), groupNo);
+        return Result.success();
+    }
+
     /** 买家确认收货（按订单） */
     @PostMapping("/{orderNo}/confirm")
     public Result<Void> confirm(@PathVariable String orderNo) {
@@ -85,7 +99,7 @@ public class OrderController {
     /** 商家发货（只能发本店铺订单）：订单服务编排创建运单并标记已发货 */
     @PostMapping("/{orderNo}/ship")
     public Result<Void> ship(@PathVariable String orderNo, @Valid @RequestBody ShipRequest request) {
-        AccessGuard.requireGroup("MERCHANT", "PLATFORM");
+        AccessGuard.requirePerm("merchant:orders:ship", "admin:orders:ship");
         orderApplicationService.ship(UserContext.getShopId(), orderNo, request.getCompanyId());
         return Result.success();
     }

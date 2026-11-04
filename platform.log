@@ -1,9 +1,9 @@
-00:47:44.965 [main] INFO com.alibaba.nacos.plugin.auth.spi.client.ClientAuthPluginManager -- [ClientAuthPluginManager] Load ClientAuthService com.alibaba.nacos.client.auth.impl.NacosClientAuthServiceImpl success.
-00:47:44.965 [main] INFO com.alibaba.nacos.plugin.auth.spi.client.ClientAuthPluginManager -- [ClientAuthPluginManager] Load ClientAuthService com.alibaba.nacos.client.auth.ram.RamClientAuthServiceImpl success.
-00:47:45.987 [main] INFO com.alibaba.nacos.common.ability.AbstractAbilityControlManager -- Ready to get current node abilities...
-00:47:45.990 [main] INFO com.alibaba.nacos.common.ability.AbstractAbilityControlManager -- Ready to initialize current node abilities, support modes: [SDK_CLIENT]
-00:47:45.991 [main] INFO com.alibaba.nacos.common.ability.AbstractAbilityControlManager -- Initialize current abilities finish...
-00:47:45.992 [main] INFO com.alibaba.nacos.common.ability.discover.NacosAbilityManagerHolder -- [AbilityControlManager] Successfully initialize AbilityControlManager
+14:02:27.696 [main] INFO com.alibaba.nacos.plugin.auth.spi.client.ClientAuthPluginManager -- [ClientAuthPluginManager] Load ClientAuthService com.alibaba.nacos.client.auth.impl.NacosClientAuthServiceImpl success.
+14:02:27.696 [main] INFO com.alibaba.nacos.plugin.auth.spi.client.ClientAuthPluginManager -- [ClientAuthPluginManager] Load ClientAuthService com.alibaba.nacos.client.auth.ram.RamClientAuthServiceImpl success.
+14:02:28.833 [main] INFO com.alibaba.nacos.common.ability.AbstractAbilityControlManager -- Ready to get current node abilities...
+14:02:28.834 [main] INFO com.alibaba.nacos.common.ability.AbstractAbilityControlManager -- Ready to initialize current node abilities, support modes: [SDK_CLIENT]
+14:02:28.835 [main] INFO com.alibaba.nacos.common.ability.AbstractAbilityControlManager -- Initialize current abilities finish...
+14:02:28.835 [main] INFO com.alibaba.nacos.common.ability.discover.NacosAbilityManagerHolder -- [AbilityControlManager] Successfully initialize AbilityControlManager
 
   .   ____          _            __ _ _
  /\\ / ___'_ __ _ _(_)_ __  __ _ \ \ \ \
@@ -14,28 +14,104 @@
 
  :: Spring Boot ::                (v3.3.1)
 
-2026-11-03T00:47:46.749+08:00  INFO 109752 --- [myshop-platform] [           main] c.f.platform.PlatformApplication         : Starting PlatformApplication v1.0-SNAPSHOT using Java 21.0.10 with PID 109752 (E:\JavaProject\myShop\myShop\myShop-platform\biz\target\myShop-platform-biz-1.0-SNAPSHOT.jar started by Dawn in E:\JavaProject\myShop\myShop\myShop-platform\biz)
-2026-11-03T00:47:46.749+08:00 DEBUG 109752 --- [myshop-platform] [           main] c.f.platform.PlatformApplication         : Running with Spring Boot v3.3.1, Spring v6.1.10
-2026-11-03T00:47:46.751+08:00  INFO 109752 --- [myshop-platform] [           main] c.f.platform.PlatformApplication         : No active profile set, falling back to 1 default profile: "default"
-2026-11-03T00:47:46.961+08:00  INFO 109752 --- [myshop-platform] [           main] c.a.c.n.c.NacosConfigDataLoader          : [Nacos Config] Load config[dataId=myshop-platform.yml, group=config] success
-2026-11-03T00:47:48.679+08:00  INFO 109752 --- [myshop-platform] [           main] o.s.cloud.context.scope.GenericScope     : BeanFactory id=3c987648-9e22-3263-bbb5-9bc9d5aa1099
-2026-11-03T00:47:48.761+08:00  WARN 109752 --- [myshop-platform] [           main] trationDelegate$BeanPostProcessorChecker : Bean 'com.alibaba.cloud.nacos.NacosConfigAutoConfiguration' of type [com.alibaba.cloud.nacos.NacosConfigAutoConfiguration] is not eligible for getting processed by all BeanPostProcessors (for example: not eligible for auto-proxying). The currently created BeanPostProcessor [nacosAnnotationProcessor] is declared through a non-static factory method on that class; consider declaring it as static instead.
-2026-11-03T00:47:49.035+08:00  WARN 109752 --- [myshop-platform] [           main] trationDelegate$BeanPostProcessorChecker : Bean 'org.springframework.cloud.client.loadbalancer.LoadBalancerAutoConfiguration$DeferringLoadBalancerInterceptorConfig' of type [org.springframework.cloud.client.loadbalancer.LoadBalancerAutoConfiguration$DeferringLoadBalancerInterceptorConfig] is not eligible for getting processed by all BeanPostProcessors (for example: not eligible for auto-proxying). The currently created BeanPostProcessor [lbRestClientPostProcessor] is declared through a non-static factory method on that class; consider declaring it as static instead.
-2026-11-03T00:47:49.042+08:00  WARN 109752 --- [myshop-platform] [           main] trationDelegate$BeanPostProcessorChecker : Bean 'deferringLoadBalancerInterceptor' of type [org.springframework.cloud.client.loadbalancer.DeferringLoadBalancerInterceptor] is not eligible for getting processed by all BeanPostProcessors (for example: not eligible for auto-proxying). Is this bean getting eagerly injected into a currently created BeanPostProcessor [lbRestClientPostProcessor]? Check the corresponding BeanPostProcessor declaration and its dependencies.
-2026-11-03T00:47:49.611+08:00  INFO 109752 --- [myshop-platform] [           main] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat initialized with port 8089 (http)
-2026-11-03T00:47:49.641+08:00  INFO 109752 --- [myshop-platform] [           main] o.apache.catalina.core.StandardService   : Starting service [Tomcat]
-2026-11-03T00:47:49.642+08:00  INFO 109752 --- [myshop-platform] [           main] o.apache.catalina.core.StandardEngine    : Starting Servlet engine: [Apache Tomcat/10.1.25]
-2026-11-03T00:47:49.733+08:00  INFO 109752 --- [myshop-platform] [           main] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring embedded WebApplicationContext
-2026-11-03T00:47:49.735+08:00  INFO 109752 --- [myshop-platform] [           main] w.s.c.ServletWebServerApplicationContext : Root WebApplicationContext: initialization completed in 2756 ms
+2026-11-04T14:02:29.220+08:00  INFO 161312 --- [myshop-platform] [           main] c.f.platform.PlatformApplication         : Starting PlatformApplication v1.0-SNAPSHOT using Java 21.0.10 with PID 161312 (E:\JavaProject\myShop\myShop\myShop-platform\biz\target\myShop-platform-biz-1.0-SNAPSHOT.jar started by Dawn in E:\JavaProject\myShop\myShop)
+2026-11-04T14:02:29.221+08:00 DEBUG 161312 --- [myshop-platform] [           main] c.f.platform.PlatformApplication         : Running with Spring Boot v3.3.1, Spring v6.1.10
+2026-11-04T14:02:29.221+08:00  INFO 161312 --- [myshop-platform] [           main] c.f.platform.PlatformApplication         : No active profile set, falling back to 1 default profile: "default"
+2026-11-04T14:02:29.295+08:00  INFO 161312 --- [myshop-platform] [           main] c.a.c.n.c.NacosConfigDataLoader          : [Nacos Config] Load config[dataId=myshop-platform.yml, group=config] success
+2026-11-04T14:02:30.239+08:00  INFO 161312 --- [myshop-platform] [           main] o.s.cloud.context.scope.GenericScope     : BeanFactory id=48c369f4-5eab-34a5-8fd8-5a2b2ec0025b
+2026-11-04T14:02:30.285+08:00  WARN 161312 --- [myshop-platform] [           main] trationDelegate$BeanPostProcessorChecker : Bean 'com.alibaba.cloud.nacos.NacosConfigAutoConfiguration' of type [com.alibaba.cloud.nacos.NacosConfigAutoConfiguration] is not eligible for getting processed by all BeanPostProcessors (for example: not eligible for auto-proxying). The currently created BeanPostProcessor [nacosAnnotationProcessor] is declared through a non-static factory method on that class; consider declaring it as static instead.
+2026-11-04T14:02:30.458+08:00  WARN 161312 --- [myshop-platform] [           main] trationDelegate$BeanPostProcessorChecker : Bean 'org.springframework.cloud.client.loadbalancer.LoadBalancerAutoConfiguration$DeferringLoadBalancerInterceptorConfig' of type [org.springframework.cloud.client.loadbalancer.LoadBalancerAutoConfiguration$DeferringLoadBalancerInterceptorConfig] is not eligible for getting processed by all BeanPostProcessors (for example: not eligible for auto-proxying). The currently created BeanPostProcessor [lbRestClientPostProcessor] is declared through a non-static factory method on that class; consider declaring it as static instead.
+2026-11-04T14:02:30.461+08:00  WARN 161312 --- [myshop-platform] [           main] trationDelegate$BeanPostProcessorChecker : Bean 'deferringLoadBalancerInterceptor' of type [org.springframework.cloud.client.loadbalancer.DeferringLoadBalancerInterceptor] is not eligible for getting processed by all BeanPostProcessors (for example: not eligible for auto-proxying). Is this bean getting eagerly injected into a currently created BeanPostProcessor [lbRestClientPostProcessor]? Check the corresponding BeanPostProcessor declaration and its dependencies.
+2026-11-04T14:02:30.787+08:00  INFO 161312 --- [myshop-platform] [           main] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat initialized with port 8089 (http)
+2026-11-04T14:02:30.907+08:00  INFO 161312 --- [myshop-platform] [           main] o.apache.catalina.core.StandardService   : Starting service [Tomcat]
+2026-11-04T14:02:30.907+08:00  INFO 161312 --- [myshop-platform] [           main] o.apache.catalina.core.StandardEngine    : Starting Servlet engine: [Apache Tomcat/10.1.25]
+2026-11-04T14:02:30.951+08:00  INFO 161312 --- [myshop-platform] [           main] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring embedded WebApplicationContext
+2026-11-04T14:02:30.952+08:00  INFO 161312 --- [myshop-platform] [           main] w.s.c.ServletWebServerApplicationContext : Root WebApplicationContext: initialization completed in 1654 ms
  _ _   |_  _ _|_. ___ _ |    _ 
 | | |\/|_)(_| | |_\  |_)||_|_\ 
      /               |         
                         3.5.7 
-2026-11-03T00:47:51.362+08:00  INFO 109752 --- [myshop-platform] [           main] o.s.c.openfeign.FeignClientFactoryBean   : For 'myshop-message' URL not provided. Will try picking an instance via load-balancing.
-2026-11-03T00:47:52.650+08:00  WARN 109752 --- [myshop-platform] [           main] iguration$LoadBalancerCaffeineWarnLogger : Spring Cloud LoadBalancer is currently working with the default cache. While this cache implementation is useful for development and tests, it's recommended to use Caffeine cache in production.You can switch to using Caffeine cache, by adding it and org.springframework.cache.caffeine.CaffeineCacheManager to the classpath.
-2026-11-03T00:47:52.682+08:00  INFO 109752 --- [myshop-platform] [           main] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat started on port 8089 (http) with context path '/'
-2026-11-03T00:47:52.712+08:00  INFO 109752 --- [myshop-platform] [           main] c.a.n.p.a.s.c.ClientAuthPluginManager    : [ClientAuthPluginManager] Load ClientAuthService com.alibaba.nacos.client.auth.impl.NacosClientAuthServiceImpl success.
-2026-11-03T00:47:52.712+08:00  INFO 109752 --- [myshop-platform] [           main] c.a.n.p.a.s.c.ClientAuthPluginManager    : [ClientAuthPluginManager] Load ClientAuthService com.alibaba.nacos.client.auth.ram.RamClientAuthServiceImpl success.
-2026-11-03T00:47:52.758+08:00  INFO 109752 --- [myshop-platform] [           main] c.a.c.n.registry.NacosServiceRegistry    : nacos registry, config myshop-platform 192.168.174.1:8089 register finished
-2026-11-03T00:47:52.776+08:00  INFO 109752 --- [myshop-platform] [           main] c.f.platform.PlatformApplication         : Started PlatformApplication in 9.237 seconds (process running for 10.205)
-2026-11-03T00:47:52.803+08:00  INFO 109752 --- [myshop-platform] [           main] c.a.c.n.refresh.NacosContextRefresher    : [Nacos Config] Listening config: dataId=myshop-platform.yml, group=config
+2026-11-04T14:02:31.765+08:00  INFO 161312 --- [myshop-platform] [           main] o.s.c.openfeign.FeignClientFactoryBean   : For 'myshop-message' URL not provided. Will try picking an instance via load-balancing.
+2026-11-04T14:02:32.509+08:00  WARN 161312 --- [myshop-platform] [           main] iguration$LoadBalancerCaffeineWarnLogger : Spring Cloud LoadBalancer is currently working with the default cache. While this cache implementation is useful for development and tests, it's recommended to use Caffeine cache in production.You can switch to using Caffeine cache, by adding it and org.springframework.cache.caffeine.CaffeineCacheManager to the classpath.
+2026-11-04T14:02:32.544+08:00  INFO 161312 --- [myshop-platform] [           main] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat started on port 8089 (http) with context path '/'
+2026-11-04T14:02:32.565+08:00  INFO 161312 --- [myshop-platform] [           main] c.a.n.p.a.s.c.ClientAuthPluginManager    : [ClientAuthPluginManager] Load ClientAuthService com.alibaba.nacos.client.auth.impl.NacosClientAuthServiceImpl success.
+2026-11-04T14:02:32.566+08:00  INFO 161312 --- [myshop-platform] [           main] c.a.n.p.a.s.c.ClientAuthPluginManager    : [ClientAuthPluginManager] Load ClientAuthService com.alibaba.nacos.client.auth.ram.RamClientAuthServiceImpl success.
+2026-11-04T14:02:32.600+08:00  INFO 161312 --- [myshop-platform] [           main] c.a.c.n.registry.NacosServiceRegistry    : nacos registry, config myshop-platform 192.168.174.1:8089 register finished
+2026-11-04T14:02:32.618+08:00  INFO 161312 --- [myshop-platform] [           main] c.f.platform.PlatformApplication         : Started PlatformApplication in 6.033 seconds (process running for 6.763)
+2026-11-04T14:02:32.699+08:00  INFO 161312 --- [myshop-platform] [           main] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Starting...
+2026-11-04T14:02:32.718+08:00  INFO 161312 --- [myshop-platform] [           main] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Start completed.
+2026-11-04T14:02:33.121+08:00 DEBUG 161312 --- [myshop-platform] [           main] c.f.p.i.p.m.C.selectCount                : ==>  Preparing: SELECT COUNT( * ) AS total FROM config_item WHERE (config_group = ? AND config_key = ?)
+2026-11-04T14:02:33.146+08:00 DEBUG 161312 --- [myshop-platform] [           main] c.f.p.i.p.m.C.selectCount                : ==> Parameters: points-rule(String), earn-amount-per-point(String)
+2026-11-04T14:02:33.184+08:00 DEBUG 161312 --- [myshop-platform] [           main] c.f.p.i.p.m.C.selectCount                : <==      Total: 1
+2026-11-04T14:02:33.188+08:00 DEBUG 161312 --- [myshop-platform] [           main] c.f.p.i.p.m.C.selectCount                : ==>  Preparing: SELECT COUNT( * ) AS total FROM config_item WHERE (config_group = ? AND config_key = ?)
+2026-11-04T14:02:33.189+08:00 DEBUG 161312 --- [myshop-platform] [           main] c.f.p.i.p.m.C.selectCount                : ==> Parameters: points-rule(String), mall-rate(String)
+2026-11-04T14:02:33.192+08:00 DEBUG 161312 --- [myshop-platform] [           main] c.f.p.i.p.m.C.selectCount                : <==      Total: 1
+2026-11-04T14:02:33.194+08:00 DEBUG 161312 --- [myshop-platform] [           main] c.f.p.i.p.m.C.selectCount                : ==>  Preparing: SELECT COUNT( * ) AS total FROM config_item WHERE (config_group = ? AND config_key = ?)
+2026-11-04T14:02:33.195+08:00 DEBUG 161312 --- [myshop-platform] [           main] c.f.p.i.p.m.C.selectCount                : ==> Parameters: points-rule(String), review-reward(String)
+2026-11-04T14:02:33.197+08:00 DEBUG 161312 --- [myshop-platform] [           main] c.f.p.i.p.m.C.selectCount                : <==      Total: 1
+2026-11-04T14:02:33.198+08:00 DEBUG 161312 --- [myshop-platform] [           main] c.f.p.i.p.m.C.selectCount                : ==>  Preparing: SELECT COUNT( * ) AS total FROM config_item WHERE (config_group = ? AND config_key = ?)
+2026-11-04T14:02:33.198+08:00 DEBUG 161312 --- [myshop-platform] [           main] c.f.p.i.p.m.C.selectCount                : ==> Parameters: system(String), platformName(String)
+2026-11-04T14:02:33.199+08:00 DEBUG 161312 --- [myshop-platform] [           main] c.f.p.i.p.m.C.selectCount                : <==      Total: 1
+2026-11-04T14:02:33.200+08:00 DEBUG 161312 --- [myshop-platform] [           main] c.f.p.i.p.m.C.selectCount                : ==>  Preparing: SELECT COUNT( * ) AS total FROM config_item WHERE (config_group = ? AND config_key = ?)
+2026-11-04T14:02:33.201+08:00 DEBUG 161312 --- [myshop-platform] [           main] c.f.p.i.p.m.C.selectCount                : ==> Parameters: system(String), servicePhone(String)
+2026-11-04T14:02:33.202+08:00 DEBUG 161312 --- [myshop-platform] [           main] c.f.p.i.p.m.C.selectCount                : <==      Total: 1
+2026-11-04T14:02:33.203+08:00 DEBUG 161312 --- [myshop-platform] [           main] c.f.p.i.p.m.C.selectCount                : ==>  Preparing: SELECT COUNT( * ) AS total FROM config_item WHERE (config_group = ? AND config_key = ?)
+2026-11-04T14:02:33.203+08:00 DEBUG 161312 --- [myshop-platform] [           main] c.f.p.i.p.m.C.selectCount                : ==> Parameters: system(String), serviceHours(String)
+2026-11-04T14:02:33.204+08:00 DEBUG 161312 --- [myshop-platform] [           main] c.f.p.i.p.m.C.selectCount                : <==      Total: 1
+2026-11-04T14:02:33.205+08:00 DEBUG 161312 --- [myshop-platform] [           main] c.f.p.i.p.m.C.selectCount                : ==>  Preparing: SELECT COUNT( * ) AS total FROM config_item WHERE (config_group = ? AND config_key = ?)
+2026-11-04T14:02:33.205+08:00 DEBUG 161312 --- [myshop-platform] [           main] c.f.p.i.p.m.C.selectCount                : ==> Parameters: system(String), freeShippingThreshold(String)
+2026-11-04T14:02:33.207+08:00 DEBUG 161312 --- [myshop-platform] [           main] c.f.p.i.p.m.C.selectCount                : <==      Total: 1
+2026-11-04T14:02:33.208+08:00 DEBUG 161312 --- [myshop-platform] [           main] c.f.p.i.p.m.C.selectCount                : ==>  Preparing: SELECT COUNT( * ) AS total FROM config_item WHERE (config_group = ? AND config_key = ?)
+2026-11-04T14:02:33.208+08:00 DEBUG 161312 --- [myshop-platform] [           main] c.f.p.i.p.m.C.selectCount                : ==> Parameters: system(String), orderTimeoutMinutes(String)
+2026-11-04T14:02:33.209+08:00 DEBUG 161312 --- [myshop-platform] [           main] c.f.p.i.p.m.C.selectCount                : <==      Total: 1
+2026-11-04T14:02:33.210+08:00 DEBUG 161312 --- [myshop-platform] [           main] c.f.p.i.p.m.C.selectCount                : ==>  Preparing: SELECT COUNT( * ) AS total FROM config_item WHERE (config_group = ? AND config_key = ?)
+2026-11-04T14:02:33.210+08:00 DEBUG 161312 --- [myshop-platform] [           main] c.f.p.i.p.m.C.selectCount                : ==> Parameters: banner(String), default(String)
+2026-11-04T14:02:33.211+08:00 DEBUG 161312 --- [myshop-platform] [           main] c.f.p.i.p.m.C.selectCount                : <==      Total: 1
+2026-11-04T14:02:33.212+08:00 DEBUG 161312 --- [myshop-platform] [           main] c.f.p.i.p.m.C.selectCount                : ==>  Preparing: SELECT COUNT( * ) AS total FROM config_item WHERE (config_group = ? AND config_key = ?)
+2026-11-04T14:02:33.213+08:00 DEBUG 161312 --- [myshop-platform] [           main] c.f.p.i.p.m.C.selectCount                : ==> Parameters: pay-method(String), alipay(String)
+2026-11-04T14:02:33.214+08:00 DEBUG 161312 --- [myshop-platform] [           main] c.f.p.i.p.m.C.selectCount                : <==      Total: 1
+2026-11-04T14:02:33.215+08:00 DEBUG 161312 --- [myshop-platform] [           main] c.f.p.i.p.m.C.selectCount                : ==>  Preparing: SELECT COUNT( * ) AS total FROM config_item WHERE (config_group = ? AND config_key = ?)
+2026-11-04T14:02:33.215+08:00 DEBUG 161312 --- [myshop-platform] [           main] c.f.p.i.p.m.C.selectCount                : ==> Parameters: pay-method(String), wechat(String)
+2026-11-04T14:02:33.217+08:00 DEBUG 161312 --- [myshop-platform] [           main] c.f.p.i.p.m.C.selectCount                : <==      Total: 1
+2026-11-04T14:02:33.218+08:00 DEBUG 161312 --- [myshop-platform] [           main] c.f.p.i.p.m.C.selectCount                : ==>  Preparing: SELECT COUNT( * ) AS total FROM config_item WHERE (config_group = ? AND config_key = ?)
+2026-11-04T14:02:33.218+08:00 DEBUG 161312 --- [myshop-platform] [           main] c.f.p.i.p.m.C.selectCount                : ==> Parameters: pay-method(String), card(String)
+2026-11-04T14:02:33.220+08:00 DEBUG 161312 --- [myshop-platform] [           main] c.f.p.i.p.m.C.selectCount                : <==      Total: 1
+2026-11-04T14:02:33.221+08:00 DEBUG 161312 --- [myshop-platform] [           main] c.f.p.i.p.m.C.selectCount                : ==>  Preparing: SELECT COUNT( * ) AS total FROM config_item WHERE (config_group = ? AND config_key = ?)
+2026-11-04T14:02:33.221+08:00 DEBUG 161312 --- [myshop-platform] [           main] c.f.p.i.p.m.C.selectCount                : ==> Parameters: aftersale-reason(String), default(String)
+2026-11-04T14:02:33.223+08:00 DEBUG 161312 --- [myshop-platform] [           main] c.f.p.i.p.m.C.selectCount                : <==      Total: 1
+2026-11-04T14:02:33.224+08:00 DEBUG 161312 --- [myshop-platform] [           main] c.f.p.i.p.m.C.selectCount                : ==>  Preparing: SELECT COUNT( * ) AS total FROM config_item WHERE (config_group = ? AND config_key = ?)
+2026-11-04T14:02:33.224+08:00 DEBUG 161312 --- [myshop-platform] [           main] c.f.p.i.p.m.C.selectCount                : ==> Parameters: report-type(String), default(String)
+2026-11-04T14:02:33.226+08:00 DEBUG 161312 --- [myshop-platform] [           main] c.f.p.i.p.m.C.selectCount                : <==      Total: 1
+2026-11-04T14:02:33.227+08:00 DEBUG 161312 --- [myshop-platform] [           main] c.f.p.i.p.m.C.selectCount                : ==>  Preparing: SELECT COUNT( * ) AS total FROM config_item WHERE (config_group = ? AND config_key = ?)
+2026-11-04T14:02:33.227+08:00 DEBUG 161312 --- [myshop-platform] [           main] c.f.p.i.p.m.C.selectCount                : ==> Parameters: sensitive-word(String), default(String)
+2026-11-04T14:02:33.229+08:00 DEBUG 161312 --- [myshop-platform] [           main] c.f.p.i.p.m.C.selectCount                : <==      Total: 1
+2026-11-04T14:02:33.230+08:00 DEBUG 161312 --- [myshop-platform] [           main] c.f.p.i.p.m.C.selectCount                : ==>  Preparing: SELECT COUNT( * ) AS total FROM config_item WHERE (config_group = ? AND config_key = ?)
+2026-11-04T14:02:33.230+08:00 DEBUG 161312 --- [myshop-platform] [           main] c.f.p.i.p.m.C.selectCount                : ==> Parameters: service-guarantee(String), seven-day-return(String)
+2026-11-04T14:02:33.231+08:00 DEBUG 161312 --- [myshop-platform] [           main] c.f.p.i.p.m.C.selectCount                : <==      Total: 1
+2026-11-04T14:02:33.232+08:00 DEBUG 161312 --- [myshop-platform] [           main] c.f.p.i.p.m.C.selectCount                : ==>  Preparing: SELECT COUNT( * ) AS total FROM config_item WHERE (config_group = ? AND config_key = ?)
+2026-11-04T14:02:33.233+08:00 DEBUG 161312 --- [myshop-platform] [           main] c.f.p.i.p.m.C.selectCount                : ==> Parameters: service-guarantee(String), authentic-guarantee(String)
+2026-11-04T14:02:33.235+08:00 DEBUG 161312 --- [myshop-platform] [           main] c.f.p.i.p.m.C.selectCount                : <==      Total: 1
+2026-11-04T14:02:33.235+08:00 DEBUG 161312 --- [myshop-platform] [           main] c.f.p.i.p.m.C.selectCount                : ==>  Preparing: SELECT COUNT( * ) AS total FROM config_item WHERE (config_group = ? AND config_key = ?)
+2026-11-04T14:02:33.236+08:00 DEBUG 161312 --- [myshop-platform] [           main] c.f.p.i.p.m.C.selectCount                : ==> Parameters: service-guarantee(String), national-warranty(String)
+2026-11-04T14:02:33.238+08:00 DEBUG 161312 --- [myshop-platform] [           main] c.f.p.i.p.m.C.selectCount                : <==      Total: 1
+2026-11-04T14:02:33.238+08:00 DEBUG 161312 --- [myshop-platform] [           main] c.f.p.i.p.m.C.selectCount                : ==>  Preparing: SELECT COUNT( * ) AS total FROM config_item WHERE (config_group = ? AND config_key = ?)
+2026-11-04T14:02:33.239+08:00 DEBUG 161312 --- [myshop-platform] [           main] c.f.p.i.p.m.C.selectCount                : ==> Parameters: service-guarantee(String), fast-delivery(String)
+2026-11-04T14:02:33.241+08:00 DEBUG 161312 --- [myshop-platform] [           main] c.f.p.i.p.m.C.selectCount                : <==      Total: 1
+2026-11-04T14:02:33.242+08:00 DEBUG 161312 --- [myshop-platform] [           main] c.f.p.i.p.m.C.selectCount                : ==>  Preparing: SELECT COUNT( * ) AS total FROM config_item WHERE (config_group = ? AND config_key = ?)
+2026-11-04T14:02:33.242+08:00 DEBUG 161312 --- [myshop-platform] [           main] c.f.p.i.p.m.C.selectCount                : ==> Parameters: audit-reject-reason(String), default(String)
+2026-11-04T14:02:33.243+08:00 DEBUG 161312 --- [myshop-platform] [           main] c.f.p.i.p.m.C.selectCount                : <==      Total: 1
+2026-11-04T14:02:33.244+08:00 DEBUG 161312 --- [myshop-platform] [           main] c.f.p.i.p.m.C.selectCount                : ==>  Preparing: SELECT COUNT( * ) AS total FROM config_item WHERE (config_group = ? AND config_key = ?)
+2026-11-04T14:02:33.244+08:00 DEBUG 161312 --- [myshop-platform] [           main] c.f.p.i.p.m.C.selectCount                : ==> Parameters: aftersale-reject-reason(String), default(String)
+2026-11-04T14:02:33.246+08:00 DEBUG 161312 --- [myshop-platform] [           main] c.f.p.i.p.m.C.selectCount                : <==      Total: 1
+2026-11-04T14:02:33.246+08:00 DEBUG 161312 --- [myshop-platform] [           main] c.f.p.i.p.m.C.selectCount                : ==>  Preparing: SELECT COUNT( * ) AS total FROM config_item WHERE (config_group = ? AND config_key = ?)
+2026-11-04T14:02:33.247+08:00 DEBUG 161312 --- [myshop-platform] [           main] c.f.p.i.p.m.C.selectCount                : ==> Parameters: off-shelf-reason(String), default(String)
+2026-11-04T14:02:33.248+08:00 DEBUG 161312 --- [myshop-platform] [           main] c.f.p.i.p.m.C.selectCount                : <==      Total: 1
+2026-11-04T14:02:33.249+08:00 DEBUG 161312 --- [myshop-platform] [           main] c.f.p.i.p.m.C.selectCount                : ==>  Preparing: SELECT COUNT( * ) AS total FROM config_item WHERE (config_group = ? AND config_key = ?)
+2026-11-04T14:02:33.249+08:00 DEBUG 161312 --- [myshop-platform] [           main] c.f.p.i.p.m.C.selectCount                : ==> Parameters: shop-disable-reason(String), default(String)
+2026-11-04T14:02:33.251+08:00 DEBUG 161312 --- [myshop-platform] [           main] c.f.p.i.p.m.C.selectCount                : <==      Total: 1
+2026-11-04T14:02:33.264+08:00  INFO 161312 --- [myshop-platform] [           main] c.a.c.n.refresh.NacosContextRefresher    : [Nacos Config] Listening config: dataId=myshop-platform.yml, group=config
+2026-11-04T14:03:26.451+08:00  INFO 161312 --- [myshop-platform] [nio-8089-exec-1] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring DispatcherServlet 'dispatcherServlet'
+2026-11-04T14:03:26.451+08:00  INFO 161312 --- [myshop-platform] [nio-8089-exec-1] o.s.web.servlet.DispatcherServlet        : Initializing Servlet 'dispatcherServlet'
+2026-11-04T14:03:26.453+08:00  INFO 161312 --- [myshop-platform] [nio-8089-exec-1] o.s.web.servlet.DispatcherServlet        : Completed initialization in 0 ms
+2026-11-04T14:03:40.556+08:00  WARN 161312 --- [myshop-platform] [nio-8089-exec-5] c.f.common.web.GlobalExceptionHandler    : 业务异常: code=403, message=没有权限访问
+2026-11-04T14:03:40.634+08:00  WARN 161312 --- [myshop-platform] [nio-8089-exec-8] c.f.common.web.GlobalExceptionHandler    : 业务异常: code=403, message=没有权限访问

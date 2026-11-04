@@ -42,7 +42,10 @@ public record Scope(ScopeType type, Set<Long> ids) {
     public boolean matches(OrderLine line, Long ownerShopId) {
         return switch (type) {
             case ALL -> true;
-            case CATEGORY -> line.categoryId() != null && ids.contains(line.categoryId());
+            // 分类范围：平台券/活动（ownerShopId=0）命中全平台该类商品；
+            // 商家券/活动（ownerShopId>0）只命中本店商品，防止分类范围漏到其他店铺
+            case CATEGORY -> line.categoryId() != null && ids.contains(line.categoryId())
+                    && (ownerShopId == null || ownerShopId <= 0 || ownerShopId.equals(line.shopId()));
             case PRODUCT -> ids.contains(line.productId());
             case SHOP -> ownerShopId != null && ownerShopId.equals(line.shopId());
         };

@@ -29,6 +29,7 @@ public class UserApplicationService {
 
     private final UserRepository userRepository;
     private final RoleRepository roleRepository;
+    private final RoleMenuApplicationService roleMenuApplicationService;
     private final VerificationCodeStore verificationCodeStore;
     private final PasswordEncoder passwordEncoder;
     private final SecurityApplicationService securityApplicationService;
@@ -152,8 +153,11 @@ public class UserApplicationService {
         SysUser user = require(id);
         user.setRoleCode(role.getCode());
         userRepository.save(user);
-        // 角色变更立即生效：刷新在线会话中的身份属性，网关下次请求即使用新角色
-        sessionStore.updateAttributes(id, Map.of("role", role.getCode(), "group", role.getGroupCode()));
+        // 角色变更立即生效：刷新在线会话中的身份属性与权限集，网关下次请求即按新角色/权限放行
+        sessionStore.updateAttributes(id, Map.of(
+                "role", role.getCode(),
+                "group", role.getGroupCode(),
+                "perms", roleMenuApplicationService.permsJoined(role.getCode())));
     }
 
     // ==================== 平台管理员：登录设备管理 ====================

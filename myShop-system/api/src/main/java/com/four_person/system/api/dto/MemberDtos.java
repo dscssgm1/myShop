@@ -67,6 +67,28 @@ public final class MemberDtos {
         private String bizNo;
     }
 
+    /** 扣减积分（下单抵现、积分商城兑换），bizNo 幂等——同一单号重复调用不重复扣 */
+    @Data
+    public static class SpendPointsRequest {
+
+        private Long userId;
+        /** 消耗积分数 */
+        private Integer points;
+        /** 业务单号（订单号/组号），重复请求按此幂等 */
+        private String bizNo;
+        private String remark;
+    }
+
+    /** 退回抵现扣减的积分（取消/退款），按业务单号定位原扣减流水并幂等退回 */
+    @Data
+    public static class RefundSpendRequest {
+
+        private Long userId;
+        /** 原扣减时的业务单号 */
+        private String bizNo;
+        private String remark;
+    }
+
     /** 会员等级（平台配置中心可维护） */
     @Data
     public static class MemberLevelVO {

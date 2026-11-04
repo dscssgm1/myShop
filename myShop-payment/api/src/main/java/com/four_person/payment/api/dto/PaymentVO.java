@@ -12,7 +12,13 @@ public class PaymentVO {
 
     private String orderNo;
 
+    /** 跨店合单订单组号；非空表示整组一次付清的支付单 */
+    private String groupNo;
+
     private BigDecimal amount;
+
+    /** 已累计退款金额（合单部分退款） */
+    private BigDecimal refundedAmount;
 
     private String channel;
 

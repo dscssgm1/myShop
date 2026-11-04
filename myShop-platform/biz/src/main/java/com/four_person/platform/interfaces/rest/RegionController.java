@@ -38,33 +38,33 @@ public class RegionController {
     /** 平台管理员：完整树（含停用节点） */
     @GetMapping("/regions/tree")
     public Result<List<TreeNodeVO>> tree() {
-        AccessGuard.requireGroup("PLATFORM");
+        AccessGuard.requirePerm("admin:config:region");
         return Result.success(regionApplicationService.tree());
     }
 
     @PostMapping("/regions")
     public Result<TreeNodeVO> create(@Valid @RequestBody RegionDtos.RegionRequest request) {
-        AccessGuard.requireGroup("PLATFORM");
+        AccessGuard.requirePerm("admin:config:region");
         return Result.success("区域已新增", regionApplicationService.create(request));
     }
 
     @PutMapping("/regions/{id}")
     public Result<TreeNodeVO> rename(@PathVariable Long id,
                                      @Valid @RequestBody RegionDtos.RegionRequest request) {
-        AccessGuard.requireGroup("PLATFORM");
+        AccessGuard.requirePerm("admin:config:region");
         return Result.success("区域名称已更新", regionApplicationService.rename(id, request));
     }
 
     @PutMapping("/regions/{id}/status")
     public Result<Void> updateStatus(@PathVariable Long id, @RequestParam Integer status) {
-        AccessGuard.requireGroup("PLATFORM");
+        AccessGuard.requirePerm("admin:config:region");
         regionApplicationService.updateStatus(id, status);
         return Result.success("状态已更新", null);
     }
 
     @DeleteMapping("/regions/{id}")
     public Result<Void> delete(@PathVariable Long id) {
-        AccessGuard.requireGroup("PLATFORM");
+        AccessGuard.requirePerm("admin:config:region");
         regionApplicationService.delete(id);
         return Result.success("区域已删除", null);
     }

@@ -32,6 +32,17 @@ class CouponApiBBTTest extends DiscountApiBBTSupport {
         return longOf(okData(post(URI + "/" + templateId + "/claim", null, customer(userId))), "id");
     }
 
+    /** 结算页商品明细：A1 33.33（分类 7）+ A2 66.66（分类 8），均在店铺 A */
+    private List<Map<String, Object>> orderItems() {
+        return List.of(
+                item(PRODUCT_A1, SHOP_A, 7L, "33.33", 1),
+                item(PRODUCT_A2, SHOP_A, 8L, "66.66", 1));
+    }
+
+    private JsonNode claimable(RequestPostProcessor user) throws Exception {
+        return okData(post(URI + "/claimable", body("items", orderItems()), user));
+    }
+
     private List<Long> mineIds(long userId, String status) throws Exception {
         String uri = status == null ? URI + "/mine" : URI + "/mine?status=" + status;
         JsonNode list = okData(get(uri, customer(userId)));
@@ -69,29 +80,29 @@ class CouponApiBBTTest extends DiscountApiBBTSupport {
     }
 
     @Test
-    void merchantCouponScopeForcedToShop() throws Exception {
+    void merchantCouponScopeCorrectedToShopOrCategory() throws Exception {
         // 商家传 ALL → 服务端纠正为本店
         JsonNode vo = okData(post(URI + "/templates", templateRequest(), merchantA()));
         assertThat(longOf(vo, "shopId")).isEqualTo(SHOP_A);
         assertThat(vo.get("scopeType").asText()).isEqualTo("SHOP");
         assertThat(vo.get("shopName").asText()).isEqualTo("黑盒店铺A");
 
-        // 显式 CATEGORY 同样纠正为本店
+        // 显式 CATEGORY → 保留分类范围（商家侧按本店商品匹配）
         Map<String, Object> categoryRequest = templateRequest();
         categoryRequest.put("title", "BBT-分类券");
         categoryRequest.put("scopeType", "CATEGORY");
         categoryRequest.put("scopeIds", List.of(7L));
-        assertThat(okData(post(URI + "/templates", categoryRequest, merchantA()))
-                .get("scopeType").asText()).isEqualTo("SHOP");
+        JsonNode categoryVo = okData(post(URI + "/templates", categoryRequest, merchantA()));
+        assertThat(categoryVo.get("scopeType").asText()).isEqualTo("CATEGORY");
+        assertThat(categoryVo.get("scopeIds").get(0).asLong()).isEqualTo(7L);
 
-        // 显式圈本店商品 → 保留 PRODUCT
+        // 指定商品范围已下线 → 拒绝
         Map<String, Object> productRequest = templateRequest();
         productRequest.put("title", "BBT-商品券");
         productRequest.put("scopeType", "PRODUCT");
         productRequest.put("scopeIds", List.of(PRODUCT_A1));
-        JsonNode productVo = okData(post(URI + "/templates", productRequest, merchantA()));
-        assertThat(productVo.get("scopeType").asText()).isEqualTo("PRODUCT");
-        assertThat(productVo.get("scopeIds").get(0).asLong()).isEqualTo(PRODUCT_A1);
+        JsonNode root = expectCode(post(URI + "/templates", productRequest, merchantA()), 40007);
+        assertThat(root.get("message").asText()).contains("已不支持指定商品范围");
     }
 
     @Test
@@ -103,13 +114,13 @@ class CouponApiBBTTest extends DiscountApiBBTSupport {
     }
 
     @Test
-    void merchantProductScopeEnforcesOwnership() throws Exception {
-        Map<String, Object> crossShop = templateRequest();
-        crossShop.put("title", "BBT-跨店券");
-        crossShop.put("scopeType", "PRODUCT");
-        crossShop.put("scopeIds", List.of(PRODUCT_B1));
-        JsonNode root = expectCode(post(URI + "/templates", crossShop, merchantA()), 40007);
-        assertThat(root.get("message").asText()).contains("券适用商品必须属于当前店铺");
+    void merchantProductScopeRejected() throws Exception {
+        Map<String, Object> productRequest = templateRequest();
+        productRequest.put("title", "BBT-商品券");
+        productRequest.put("scopeType", "PRODUCT");
+        productRequest.put("scopeIds", List.of(PRODUCT_B1));
+        JsonNode root = expectCode(post(URI + "/templates", productRequest, merchantA()), 40007);
+        assertThat(root.get("message").asText()).contains("已不支持指定商品范围");
     }
 
     @Test
@@ -140,6 +151,70 @@ class CouponApiBBTTest extends DiscountApiBBTSupport {
     void createTemplateRequiresPlatformOrMerchantGroup() throws Exception {
         expectCode(post(URI + "/templates", templateRequest()), 403);
         expectCode(post(URI + "/templates", templateRequest(), customer(USER_1)), 403);
+    }
+
+    // ==================== 结算页本单可领 ====================
+
+    @Test
+    void claimableFiltersByOrderScopeAndThreshold() throws Exception {
+        long usable = longOf(okData(post(URI + "/templates", body(
+                "title", "BBT-本单可领满80减30", "thresholdAmount", 80, "discountAmount", 30,
+                "scopeType", "ALL", "totalStock", 100, "perUserLimit", 5,
+                "validStart", timeFromNow(-1), "validEnd", timeFromNow(7)), platform())), "id");
+        // 门槛未达 → 不列出
+        long aboveThreshold = longOf(okData(post(URI + "/templates", body(
+                "title", "BBT-本单可领满200减50", "thresholdAmount", 200, "discountAmount", 50,
+                "scopeType", "ALL", "totalStock", 100, "perUserLimit", 5,
+                "validStart", timeFromNow(-1), "validEnd", timeFromNow(7)), platform())), "id");
+        // 商家券：本单含该店商品 → 列出；本单无该店商品 → 不列出
+        long shopACoupon = longOf(okData(post(URI + "/templates", body(
+                "title", "BBT-A店本单券", "thresholdAmount", 50, "discountAmount", 10,
+                "scopeType", "SHOP", "totalStock", 100, "perUserLimit", 5,
+                "validStart", timeFromNow(-1), "validEnd", timeFromNow(7)), merchantA())), "id");
+        long shopBCoupon = longOf(okData(post(URI + "/templates", body(
+                "title", "BBT-B店本单券", "thresholdAmount", 50, "discountAmount", 10,
+                "scopeType", "SHOP", "totalStock", 100, "perUserLimit", 5,
+                "validStart", timeFromNow(-1), "validEnd", timeFromNow(7)), merchantB())), "id");
+
+        JsonNode list = claimable(customer(USER_1));
+        assertThat(list).hasSize(2);
+        Map<Long, JsonNode> byId = new java.util.HashMap<>();
+        list.forEach(node -> byId.put(node.get("id").asLong(), node));
+        assertThat(byId).containsKeys(usable, shopACoupon);
+        assertThat(byId).doesNotContainKeys(aboveThreshold, shopBCoupon);
+        // 每张带本单可抵扣金额（范围内小计达门槛后的实际抵扣额）
+        assertThat(byId.get(usable).get("applicableAmount").doubleValue()).isEqualTo(30);
+        assertThat(byId.get(shopACoupon).get("applicableAmount").doubleValue()).isEqualTo(10);
+        assertThat(byId.get(usable).get("claimed").asBoolean()).isFalse();
+    }
+
+    @Test
+    void claimableExcludesPerUserLimitReached() throws Exception {
+        Map<String, Object> limited = templateRequest();
+        limited.put("title", "BBT-限领1张");
+        limited.put("perUserLimit", 1);
+        long limitedId = longOf(okData(post(URI + "/templates", limited, platform())), "id");
+
+        // 未领：列出且 claimed=false
+        assertThat(nodeWithId(claimable(customer(USER_1)), limitedId).get("claimed").asBoolean()).isFalse();
+
+        // 已达个人限领：不再列出；其他用户不受影响
+        claim(USER_1, limitedId);
+        assertThat(claimable(customer(USER_1))).isEmpty();
+        assertThat(claimable(customer(USER_2))).hasSize(1);
+    }
+
+    @Test
+    void claimableExcludesStockEmptyTemplates() throws Exception {
+        Map<String, Object> single = templateRequest();
+        single.put("title", "BBT-单库存");
+        single.put("totalStock", 1);
+        single.put("perUserLimit", 5);
+        long id = longOf(okData(post(URI + "/templates", single, platform())), "id");
+        claim(USER_1, id);
+
+        // 库存已领完 → 其他用户也不再列出
+        assertThat(claimable(customer(USER_2))).isEmpty();
     }
 
     // ==================== 领取边界 ====================

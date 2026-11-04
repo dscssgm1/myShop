@@ -22,6 +22,9 @@ public interface OrderRepository {
 
     Optional<Order> findByOrderNo(String orderNo);
 
+    /** 跨店合单订单组的全部子订单（含已取消/退款） */
+    List<Order> findByGroupNo(String groupNo);
+
     List<OrderItem> findItems(String orderNo);
 
     Map<String, List<OrderItem>> findItemsByOrderNos(List<String> orderNos);
@@ -37,6 +40,9 @@ public interface OrderRepository {
     void saveItems(List<OrderItem> items);
 
     boolean markPaid(String orderNo, LocalDateTime time);
+
+    /** 合单支付成功回调：组内全部待付款子订单置为已支付，返回受影响行数 */
+    int markGroupChildrenPaid(String groupNo, LocalDateTime time);
 
     boolean markShipped(String orderNo, LocalDateTime time);
 

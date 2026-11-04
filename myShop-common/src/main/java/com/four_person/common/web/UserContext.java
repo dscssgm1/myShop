@@ -6,6 +6,10 @@ import org.springframework.util.StringUtils;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 
+import java.util.Arrays;
+import java.util.Set;
+import java.util.stream.Collectors;
+
 /**
  * 当前请求的用户上下文。
  * <p>
@@ -28,6 +32,7 @@ public final class UserContext {
     public static final String SHOP_ID_HEADER = "X-User-Shop-Id";
     public static final String COMPANY_ID_HEADER = "X-User-Company-Id";
     public static final String COURIER_ID_HEADER = "X-User-Courier-Id";
+    public static final String PERMS_HEADER = "X-User-Perms";
 
     private UserContext() {
     }
@@ -62,6 +67,21 @@ public final class UserContext {
 
     public static Long getCourierId() {
         return readLong(COURIER_ID_HEADER);
+    }
+
+    /**
+     * 当前用户的权限码集合（角色管理里勾选的菜单/按钮，逗号分隔下发）。
+     * 网关从登录会话读取后写入 {@code X-User-Perms}；角色菜单变更后下一次请求即生效。
+     */
+    public static Set<String> getPerms() {
+        String value = readHeader(PERMS_HEADER);
+        if (!StringUtils.hasText(value)) {
+            return Set.of();
+        }
+        return Arrays.stream(value.split(","))
+                .map(String::trim)
+                .filter(StringUtils::hasText)
+                .collect(Collectors.toUnmodifiableSet());
     }
 
     public static Long requireShopId() {

@@ -163,11 +163,33 @@ public class MembershipApplicationService {
         return deduct;
     }
 
-    /** 扣减积分（积分商城兑换等场景） */
+    /** 当前积分余额（未建账户视为 0） */
+    public int balance(Long userId) {
+        PointsAccount account = membershipRepository.findAccount(userId).orElse(null);
+        return account == null || account.getPoints() == null ? 0 : account.getPoints();
+    }
+
+    /** 扣减积分（积分商城兑换等本地场景） */
     @Transactional
     public void spend(Long userId, int points, String remark) {
+        doSpend(userId, points, null, remark);
+    }
+
+    /**
+     * 扣减积分（下单抵现等跨服务场景），bizNo 幂等：
+     * 同一单号已扣过则直接返回，重试不会重复扣。
+     */
+    @Transactional
+    public void spend(Long userId, int points, String bizNo, String remark) {
+        doSpend(userId, points, bizNo, remark);
+    }
+
+    private void doSpend(Long userId, int points, String bizNo, String remark) {
         if (points <= 0) {
             return;
+        }
+        if (bizNo != null && membershipRepository.sumSpentByBizNo(userId, bizNo) < 0) {
+            return; // 已有同单号扣减流水（changeAmount 为负），幂等返回
         }
         if (!membershipRepository.deductPoints(userId, points)) {
             throw new BusinessException(SystemErrorCode.POINTS_INSUFFICIENT);
@@ -177,8 +199,37 @@ public class MembershipApplicationService {
         log.setChangeAmount(-points);
         log.setBalance(accountOf(userId).getPoints());
         log.setType("SPEND");
+        log.setBizNo(bizNo == null ? "" : bizNo);
         log.setRemark(remark == null ? "积分消费" : remark);
         membershipRepository.saveLog(log);
+    }
+
+    /**
+     * 退回抵现扣减的积分（取消订单/退款）。按业务单号定位原扣减流水，
+     * 已有同单号退回流水则幂等返回 0。成长值不回补（消费退回不产生成长值）。
+     */
+    @Transactional
+    public int refundSpend(Long userId, String bizNo, String remark) {
+        if (bizNo == null) {
+            return 0;
+        }
+        int spent = -membershipRepository.sumSpentByBizNo(userId, bizNo);
+        if (spent <= 0) {
+            return 0; // 无扣减记录（异常调用/积分未扣）
+        }
+        if (membershipRepository.sumRefundedByBizNo(userId, bizNo) > 0) {
+            return 0; // 已退过，幂等
+        }
+        membershipRepository.addPoints(userId, spent, 0);
+        PointsLog log = new PointsLog();
+        log.setUserId(userId);
+        log.setChangeAmount(spent);
+        log.setBalance(accountOf(userId).getPoints());
+        log.setType("REFUND");
+        log.setBizNo(bizNo);
+        log.setRemark(remark == null ? "积分抵现退回" : remark);
+        membershipRepository.saveLog(log);
+        return spent;
     }
 
     private PointsAccount accountOf(Long userId) {

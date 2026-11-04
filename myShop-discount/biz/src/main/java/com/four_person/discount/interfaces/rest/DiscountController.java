@@ -5,6 +5,7 @@ import com.four_person.common.web.UserContext;
 import com.four_person.discount.api.dto.AvailableCoupon;
 import com.four_person.discount.api.dto.DiscountCalculateRequest;
 import com.four_person.discount.api.dto.DiscountResultVO;
+import com.four_person.discount.api.dto.ProductPriceVO;
 import com.four_person.discount.application.DiscountApplicationService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -27,7 +28,7 @@ public class DiscountController {
     public Result<DiscountResultVO> calculate(@Valid @RequestBody DiscountCalculateRequest request) {
         Long userId = request.getUserId() != null ? request.getUserId() : UserContext.getUserId();
         return Result.success(discountApplicationService.calculate(
-                userId, request.getCouponIds(), request.getItems()));
+                userId, request.getCouponIds(), request.getPromotionIds(), request.getItems()));
     }
 
     /** 结算页可用优惠券：按当前明细给出每张券实际可抵扣金额 */
@@ -35,5 +36,15 @@ public class DiscountController {
     public Result<List<AvailableCoupon>> availableCoupons(@Valid @RequestBody DiscountCalculateRequest request) {
         return Result.success(discountApplicationService.availableCoupons(
                 UserContext.getUserId(), request.getItems()));
+    }
+
+    /**
+     * 商品展示最低价：每件商品按单件口径算价（活动 + 登录用户满足门槛的券）。
+     * 公开接口（网关白名单）：匿名用户只返回活动价，登录用户返回券后价。
+     */
+    @PostMapping("/product-prices")
+    public Result<List<ProductPriceVO>> productPrices(@Valid @RequestBody DiscountCalculateRequest request) {
+        return Result.success(discountApplicationService.productPrices(
+                UserContext.getUserIdOrNull(), request.getItems()));
     }
 }

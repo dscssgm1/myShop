@@ -123,18 +123,19 @@ class PromotionApiBBTTest extends DiscountApiBBTSupport {
     }
 
     @Test
-    void merchantProductScopeEnforcesOwnership() throws Exception {
-        Map<String, Object> crossShop = body("title", "BBT-跨店商品", "ruleType", "FULL_REDUCTION",
-                "discountAmount", 5, "scopeType", "PRODUCT",
-                "scopeIds", List.of(PRODUCT_A1, PRODUCT_B1));
-        JsonNode root = expectCode(post(URI + "/merchant", crossShop, merchantA()), 40007);
-        assertThat(root.get("message").asText()).contains("活动商品必须属于当前店铺");
+    void merchantCategoryScopeKeptAndProductRejected() throws Exception {
+        // 指定分类：保留分类范围（按本店商品匹配）
+        Map<String, Object> categoryRequest = body("title", "BBT-分类活动", "ruleType", "FULL_REDUCTION",
+                "discountAmount", 5, "scopeType", "CATEGORY", "scopeIds", List.of(7L));
+        JsonNode vo = okData(post(URI + "/merchant", categoryRequest, merchantA()));
+        assertThat(vo.get("scopeType").asText()).isEqualTo("CATEGORY");
+        assertThat(vo.get("scopeIds").get(0).asLong()).isEqualTo(7L);
 
-        // 只圈自家商品 → 放行
-        Map<String, Object> ownShop = body("title", "BBT-本店商品", "ruleType", "FULL_REDUCTION",
+        // 指定商品已下线 → 拒绝
+        Map<String, Object> productRequest = body("title", "BBT-商品活动", "ruleType", "FULL_REDUCTION",
                 "discountAmount", 5, "scopeType", "PRODUCT", "scopeIds", List.of(PRODUCT_A1));
-        JsonNode vo = okData(post(URI + "/merchant", ownShop, merchantA()));
-        assertThat(vo.get("scopeIds").get(0).asLong()).isEqualTo(PRODUCT_A1);
+        JsonNode root = expectCode(post(URI + "/merchant", productRequest, merchantA()), 40007);
+        assertThat(root.get("message").asText()).contains("已不支持指定商品范围");
     }
 
     @Test

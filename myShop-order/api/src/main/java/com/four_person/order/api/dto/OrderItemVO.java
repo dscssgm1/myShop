@@ -31,4 +31,10 @@ public class OrderItemVO {
     private Integer quantity;
 
     private BigDecimal subtotal;
+
+    /** 本行促销活动优惠金额（下单时行级分摊快照） */
+    private BigDecimal promotionDiscount;
+
+    /** 本行优惠券抵扣金额（下单时行级分摊快照） */
+    private BigDecimal couponDiscount;
 }

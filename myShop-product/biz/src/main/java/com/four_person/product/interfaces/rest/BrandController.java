@@ -31,19 +31,19 @@ public class BrandController {
 
     @PostMapping
     public Result<BrandDtos.BrandVO> create(@Valid @RequestBody BrandDtos.BrandRequest request) {
-        AccessGuard.requireGroup("PLATFORM");
+        AccessGuard.requirePerm("admin:brands:create");
         return Result.success("品牌已新增", brandApplicationService.create(request));
     }
 
     @PutMapping("/{id}")
     public Result<BrandDtos.BrandVO> update(@PathVariable Long id, @Valid @RequestBody BrandDtos.BrandRequest request) {
-        AccessGuard.requireGroup("PLATFORM");
+        AccessGuard.requirePerm("admin:brands:update");
         return Result.success("品牌已更新", brandApplicationService.update(id, request));
     }
 
     @DeleteMapping("/{id}")
     public Result<Void> delete(@PathVariable Long id) {
-        AccessGuard.requireGroup("PLATFORM");
+        AccessGuard.requirePerm("admin:brands:delete");
         brandApplicationService.delete(id);
         return Result.success("品牌已删除", null);
     }

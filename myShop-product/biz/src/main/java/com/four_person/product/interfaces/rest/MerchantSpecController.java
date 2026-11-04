@@ -28,26 +28,26 @@ public class MerchantSpecController {
 
     @GetMapping
     public Result<List<SpecDtos.SpecTemplateVO>> list() {
-        AccessGuard.requireGroup("MERCHANT", "MERCHANT-SALES");
+        AccessGuard.requirePerm("merchant:specs", "merchant:specs:create");
         return Result.success(merchantSpecApplicationService.list(UserContext.requireShopId()));
     }
 
     @PostMapping
     public Result<SpecDtos.SpecTemplateVO> create(@Valid @RequestBody SpecDtos.SpecTemplateRequest request) {
-        AccessGuard.requireGroup("MERCHANT", "MERCHANT-SALES");
+        AccessGuard.requirePerm("merchant:specs:create");
         return Result.success("规格已新增", merchantSpecApplicationService.create(UserContext.requireShopId(), request));
     }
 
     @PutMapping("/{id}")
     public Result<SpecDtos.SpecTemplateVO> update(@PathVariable Long id,
                                                   @Valid @RequestBody SpecDtos.SpecTemplateRequest request) {
-        AccessGuard.requireGroup("MERCHANT", "MERCHANT-SALES");
+        AccessGuard.requirePerm("merchant:specs:create");
         return Result.success("规格已更新", merchantSpecApplicationService.update(UserContext.requireShopId(), id, request));
     }
 
     @DeleteMapping("/{id}")
     public Result<Void> delete(@PathVariable Long id) {
-        AccessGuard.requireGroup("MERCHANT", "MERCHANT-SALES");
+        AccessGuard.requirePerm("merchant:specs:delete");
         merchantSpecApplicationService.delete(UserContext.requireShopId(), id);
         return Result.success("规格已删除", null);
     }

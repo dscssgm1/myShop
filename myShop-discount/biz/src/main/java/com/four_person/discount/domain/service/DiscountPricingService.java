@@ -3,18 +3,23 @@ package com.four_person.discount.domain.service;
 import com.four_person.common.exception.BusinessException;
 import com.four_person.discount.domain.model.CouponOffer;
 import com.four_person.discount.domain.model.DiscountSelection;
+import com.four_person.discount.domain.model.LineBreakdown;
 import com.four_person.discount.domain.model.Money;
 import com.four_person.discount.domain.model.OrderLine;
 import com.four_person.discount.domain.model.Promotion;
 import com.four_person.discount.enums.DiscountErrorCode;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.function.BiConsumer;
+import java.util.function.Predicate;
 
 /**
  * 折扣计算领域服务。
@@ -46,6 +51,7 @@ public class DiscountPricingService {
                                        List<Promotion> promotions,
                                        List<CouponOffer> offers,
                                        List<Long> selectedCouponIds,
+                                       List<Long> selectedPromotionIds,
                                        LocalDateTime now) {
         Money original = lines.stream()
                 .map(OrderLine::subtotal)
@@ -54,7 +60,7 @@ public class DiscountPricingService {
             return new DiscountSelection(original, List.of(), List.of(), List.of(), List.of(), false);
         }
 
-        List<Promotion> appliedPromotions = selectPromotions(promotions, lines, now);
+        List<Promotion> appliedPromotions = selectPromotions(promotions, lines, now, selectedPromotionIds);
         Money promotionDiscount = appliedPromotions.stream()
                 .map(promotion -> promotion.discountFor(lines))
                 .reduce(Money.zero(), Money::add);
@@ -195,17 +201,63 @@ public class DiscountPricingService {
     /**
      * 平台活动取全单最优一个；商家活动每店铺取最优一个；
      * 平台活动与商家活动的命中行有交集时，保留总优惠更大的一侧。
+     *
+     * @param selectedPromotionIds null = 自动最优；非 null = 用户精确指定（空列表 = 不参与活动），
+     *                             所选活动不存在/未开始/对本单无优惠时报错
      */
-    private List<Promotion> selectPromotions(List<Promotion> promotions, List<OrderLine> lines, LocalDateTime now) {
+    private List<Promotion> selectPromotions(List<Promotion> promotions, List<OrderLine> lines,
+                                             LocalDateTime now, List<Long> selectedPromotionIds) {
         if (promotions == null || promotions.isEmpty()) {
+            if (selectedPromotionIds != null && !selectedPromotionIds.isEmpty()) {
+                throw new BusinessException(DiscountErrorCode.PROMOTION_NOT_APPLICABLE, "所选促销活动对本单不可用");
+            }
             return List.of();
         }
+        if (selectedPromotionIds != null) {
+            return selectRequestedPromotions(promotions, lines, now, selectedPromotionIds);
+        }
+        List<Promotion> applicable = promotions.stream()
+                .filter(promotion -> promotion != null && promotion.isActiveAt(now)
+                        && promotion.discountFor(lines).isPositive())
+                .toList();
+        return bestPerSide(applicable, lines);
+    }
+
+    /** 用户指定活动：逐个校验适用性（进行中 + 范围命中 + 本单有优惠），再按分侧规则取优 */
+    private List<Promotion> selectRequestedPromotions(List<Promotion> promotions, List<OrderLine> lines,
+                                                      LocalDateTime now, List<Long> selectedPromotionIds) {
+        List<Long> requested = selectedPromotionIds.stream().distinct().toList();
+        Map<Long, Promotion> applicable = new LinkedHashMap<>();
+        for (Promotion promotion : promotions) {
+            if (promotion == null || !promotion.isActiveAt(now)
+                    || !promotion.discountFor(lines).isPositive()) {
+                continue;
+            }
+            applicable.put(promotion.getId(), promotion);
+        }
+        List<Promotion> picked = new ArrayList<>();
+        for (Long id : requested) {
+            Promotion promotion = applicable.get(id);
+            if (promotion == null) {
+                throw new BusinessException(DiscountErrorCode.PROMOTION_NOT_APPLICABLE,
+                        "所选促销活动对本单不可用，请重新选择");
+            }
+            picked.add(promotion);
+        }
+        return bestPerSide(picked, lines);
+    }
+
+    /**
+     * 分侧取优（自动与用户指定共用同一规则）：平台侧取最优一个，商家侧每店取最优一个；
+     * 平台活动与商家活动的命中行有交集时，保留总优惠更大的一侧。
+     */
+    private List<Promotion> bestPerSide(List<Promotion> candidates, List<OrderLine> lines) {
         Promotion bestPlatform = null;
         Money bestPlatformDiscount = Money.zero();
         Map<Long, Promotion> bestMerchantByShop = new LinkedHashMap<>();
         Map<Long, Money> bestMerchantDiscount = new LinkedHashMap<>();
-        for (Promotion promotion : promotions) {
-            if (promotion == null || !promotion.isActiveAt(now)) {
+        for (Promotion promotion : candidates) {
+            if (promotion == null) {
                 continue;
             }
             Money discount = promotion.discountFor(lines);
@@ -257,6 +309,113 @@ public class DiscountPricingService {
 
     private List<Money> promotionHits(List<Promotion> applied, List<OrderLine> lines) {
         return applied.stream().map(promotion -> promotion.discountFor(lines)).toList();
+    }
+
+    // ==================== 行级优惠拆解（结算页逐行展示） ====================
+
+    /**
+     * 逐行拆解优惠：活动先在各自范围命中的行之间按小计比例分摊，
+     * 券再在各行剩余余额之间按比例分摊（引擎保证总额不超过商品总额，因此每行优惠后不为负）；
+     * 尾差给最后一行，分摊额合计与活动/券总优惠严格相等。
+     */
+    public List<LineBreakdown> breakDown(List<OrderLine> lines, DiscountSelection selection) {
+        int n = lines.size();
+        BigDecimal[] remaining = new BigDecimal[n];
+        BigDecimal[] promotionAlloc = new BigDecimal[n];
+        BigDecimal[] couponAlloc = new BigDecimal[n];
+        List<List<LineBreakdown.Hit>> promotionHitRows = new ArrayList<>(n);
+        List<List<LineBreakdown.Hit>> couponHitRows = new ArrayList<>(n);
+        for (int i = 0; i < n; i++) {
+            remaining[i] = lines.get(i).subtotal().amount();
+            promotionAlloc[i] = BigDecimal.ZERO;
+            couponAlloc[i] = BigDecimal.ZERO;
+            promotionHitRows.add(new ArrayList<>());
+            couponHitRows.add(new ArrayList<>());
+        }
+
+        // 活动分摊：权重 = 范围内行的小计
+        for (int p = 0; p < selection.promotions().size(); p++) {
+            Promotion promotion = selection.promotions().get(p);
+            BigDecimal hit = selection.promotionHits().get(p).amount();
+            BigDecimal[] weights = new BigDecimal[n];
+            for (int i = 0; i < n; i++) {
+                weights[i] = lines.get(i).subtotal().amount();
+            }
+            List<Integer> matched = matchedLines(lines,
+                    line -> promotion.getScope().matches(line, promotion.getShopId()));
+            distribute(remaining, weights, matched, hit, (i, share) -> {
+                promotionAlloc[i] = promotionAlloc[i].add(share);
+                promotionHitRows.get(i).add(new LineBreakdown.Hit(promotion.getId(), promotion.getTitle(), share));
+            });
+        }
+
+        // 券分摊：权重 = 各行剩余余额（活动优惠后）
+        for (int c = 0; c < selection.coupons().size(); c++) {
+            CouponOffer offer = selection.coupons().get(c);
+            BigDecimal hit = selection.couponHits().get(c).amount();
+            List<Integer> matched = matchedLines(lines,
+                    line -> offer.template().getScope().matches(line, offer.template().getShopId()));
+            distribute(remaining, remaining, matched, hit, (i, share) -> {
+                couponAlloc[i] = couponAlloc[i].add(share);
+                couponHitRows.get(i).add(new LineBreakdown.Hit(
+                        offer.coupon().getId(), offer.template().getTitle(), share));
+            });
+        }
+
+        List<LineBreakdown> result = new ArrayList<>(n);
+        for (int i = 0; i < n; i++) {
+            OrderLine line = lines.get(i);
+            BigDecimal original = line.subtotal().amount();
+            result.add(new LineBreakdown(line.productId(), original,
+                    promotionAlloc[i], couponAlloc[i],
+                    original.subtract(promotionAlloc[i]).subtract(couponAlloc[i]),
+                    List.copyOf(promotionHitRows.get(i)), List.copyOf(couponHitRows.get(i))));
+        }
+        return result;
+    }
+
+    /** 在命中行之间按权重比例分摊 hit（每行不超过 remaining 余量，尾差给最后一行），返回实际分摊总额 */
+    private BigDecimal distribute(BigDecimal[] remaining, BigDecimal[] weights, List<Integer> matched,
+                                  BigDecimal hit, BiConsumer<Integer, BigDecimal> assign) {
+        if (hit == null || hit.signum() <= 0 || matched.isEmpty()) {
+            return BigDecimal.ZERO;
+        }
+        BigDecimal weightSum = BigDecimal.ZERO;
+        for (int i : matched) {
+            weightSum = weightSum.add(weights[i]);
+        }
+        if (weightSum.signum() <= 0) {
+            return BigDecimal.ZERO;
+        }
+        BigDecimal allocated = BigDecimal.ZERO;
+        for (int m = 0; m < matched.size() - 1; m++) {
+            int i = matched.get(m);
+            BigDecimal share = hit.multiply(weights[i]).divide(weightSum, 2, RoundingMode.HALF_UP)
+                    .min(remaining[i]);
+            if (share.signum() > 0) {
+                assign.accept(i, share);
+                remaining[i] = remaining[i].subtract(share);
+                allocated = allocated.add(share);
+            }
+        }
+        int last = matched.get(matched.size() - 1);
+        BigDecimal lastShare = hit.subtract(allocated).min(remaining[last]);
+        if (lastShare.signum() > 0) {
+            assign.accept(last, lastShare);
+            remaining[last] = remaining[last].subtract(lastShare);
+            allocated = allocated.add(lastShare);
+        }
+        return allocated;
+    }
+
+    private List<Integer> matchedLines(List<OrderLine> lines, Predicate<OrderLine> predicate) {
+        List<Integer> matched = new ArrayList<>();
+        for (int i = 0; i < lines.size(); i++) {
+            if (predicate.test(lines.get(i))) {
+                matched.add(i);
+            }
+        }
+        return matched;
     }
 
     // ==================== 优惠券组装 ====================

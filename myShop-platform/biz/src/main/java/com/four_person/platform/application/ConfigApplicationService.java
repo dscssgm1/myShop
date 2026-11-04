@@ -28,7 +28,7 @@ public class ConfigApplicationService {
     /** 按 key 覆盖保存，未提供的 key 保持不变 */
     @Transactional
     public List<PlatformDtos.ConfigItemVO> save(String group, PlatformDtos.ConfigSaveRequest request) {
-        AccessGuard.requireGroup("PLATFORM");
+        AccessGuard.requirePerm("admin:config");
         if (request.getItems() == null) {
             return list(group);
         }
@@ -58,7 +58,7 @@ public class ConfigApplicationService {
     /** 删除配置项（如配置中心中可增删的服务保障 key） */
     @Transactional
     public void deleteItem(String group, String key) {
-        AccessGuard.requireGroup("PLATFORM");
+        AccessGuard.requirePerm("admin:config:save");
         configMapper.delete(Wrappers.<ConfigItem>lambdaQuery()
                 .eq(ConfigItem::getConfigGroup, group)
                 .eq(ConfigItem::getConfigKey, key));

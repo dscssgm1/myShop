@@ -35,6 +35,9 @@ public class CouponTemplatePO {
 
     private Integer perUserLimit;
 
+    /** 积分兑换价：NULL/0 = 普通免费领取券；>0 = 仅在积分商城用积分兑换 */
+    private Integer pointsPrice;
+
     /** 是否可与促销活动同用：1 是 0 否 */
     private Integer couponStackable;
 

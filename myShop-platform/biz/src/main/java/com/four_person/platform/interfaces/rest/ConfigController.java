@@ -32,7 +32,7 @@ public class ConfigController {
     /** 平台管理员：读取配置组 */
     @GetMapping("/{group}")
     public Result<List<PlatformDtos.ConfigItemVO>> list(@PathVariable String group) {
-        AccessGuard.requireGroup("PLATFORM");
+        AccessGuard.requirePerm("admin:config:save");
         return Result.success(configApplicationService.list(group));
     }
 

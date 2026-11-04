@@ -20,7 +20,7 @@ public class DashboardApplicationService {
     private final JdbcTemplate jdbcTemplate;
 
     public DashboardVO overview() {
-        AccessGuard.requireGroup("PLATFORM");
+        AccessGuard.requirePerm("admin:dashboard");
         DashboardVO vo = new DashboardVO();
 
         vo.setTodayOrderCount(count("""

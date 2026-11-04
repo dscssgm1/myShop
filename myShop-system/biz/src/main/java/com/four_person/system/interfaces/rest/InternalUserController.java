@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 /**
@@ -37,10 +38,24 @@ public class InternalUserController {
     }
 
     @PostMapping("/points/spend")
-    public Result<Void> spend(@RequestBody MemberDtos.EarnPointsRequest request) {
+    public Result<Void> spend(@RequestBody MemberDtos.SpendPointsRequest request) {
         membershipApplicationService.spend(
-                request.getUserId(), request.getAmount().intValue(), request.getRemark());
+                request.getUserId(), request.getPoints() == null ? 0 : request.getPoints(),
+                request.getBizNo(), request.getRemark());
         return Result.success();
+    }
+
+    /** 结算页算可抵上限：查积分余额 */
+    @GetMapping("/points/balance")
+    public Result<Integer> balance(@RequestParam("userId") Long userId) {
+        return Result.success(membershipApplicationService.balance(userId));
+    }
+
+    /** 取消订单/退款：退回抵现扣减的积分，按业务单号幂等，返回实际退回数 */
+    @PostMapping("/points/refund-spend")
+    public Result<Integer> refundSpend(@RequestBody MemberDtos.RefundSpendRequest request) {
+        return Result.success(membershipApplicationService.refundSpend(
+                request.getUserId(), request.getBizNo(), request.getRemark()));
     }
 
     /** 售后退款扣回该订单发放的积分，返回实际扣回数 */

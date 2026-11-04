@@ -37,6 +37,8 @@ CREATE TABLE IF NOT EXISTS order_info (
     coupon_discount    DECIMAL(10, 2) NOT NULL DEFAULT 0.00,
     merchant_bear_amount DECIMAL(10, 2) NOT NULL DEFAULT 0.00 COMMENT '商家承担的优惠金额',
     platform_bear_amount DECIMAL(10, 2) NOT NULL DEFAULT 0.00 COMMENT '平台承担的优惠金额（补贴）',
+    points_used        INT            NOT NULL DEFAULT 0 COMMENT '本单抵现消耗的积分',
+    points_deduction   DECIMAL(10, 2) NOT NULL DEFAULT 0.00 COMMENT '本单积分抵现金额（平台承担）',
     freight_amount     DECIMAL(10, 2) NOT NULL DEFAULT 0.00,
     pay_amount         DECIMAL(10, 2) NOT NULL DEFAULT 0.00,
     promotion_id       BIGINT         NULL,

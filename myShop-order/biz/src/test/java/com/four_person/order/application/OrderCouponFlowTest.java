@@ -13,15 +13,18 @@ import com.four_person.message.api.MessageInternalApi;
 import com.four_person.order.api.dto.CreateOrderVO;
 import com.four_person.order.api.dto.OrderCreateRequest;
 import com.four_person.order.api.dto.OrderItemRequest;
+import com.four_person.order.api.dto.OrderPreviewItemVO;
 import com.four_person.order.api.dto.OrderPreviewRequest;
 import com.four_person.order.api.dto.OrderPreviewVO;
 import com.four_person.order.api.enums.OrderStatus;
 import com.four_person.order.domain.model.Order;
 import com.four_person.order.domain.model.OrderCoupon;
 import com.four_person.order.domain.model.OrderItem;
+import com.four_person.order.domain.repository.OrderGroupRepository;
 import com.four_person.order.domain.repository.OrderRepository;
 import com.four_person.order.enums.OrderErrorCode;
 import com.four_person.order.infrastructure.support.OrderNoGenerator;
+import com.four_person.order.infrastructure.support.PointsRuleReader;
 import com.four_person.payment.api.PaymentInternalApi;
 import com.four_person.payment.api.dto.RefundRequest;
 import com.four_person.payment.api.dto.RefundResultVO;
@@ -72,11 +75,16 @@ class OrderCouponFlowTest {
     @Mock private LogisticsInternalApi logisticsInternalApi;
     @Mock private MemberInternalApi memberInternalApi;
     @Mock private CommissionApplicationService commissionApplicationService;
+    @Mock private OrderGroupRepository orderGroupRepository;
+    @Mock private OrderGroupService orderGroupService;
 
     private OrderApplicationService service() {
         return new OrderApplicationService(orderRepository, productInternalApi, discountInternalApi,
                 orderNoGenerator, messageInternalApi, paymentInternalApi, merchantInternalApi,
-                logisticsInternalApi, memberInternalApi, commissionApplicationService);
+                logisticsInternalApi, memberInternalApi, commissionApplicationService,
+                orderGroupRepository, orderGroupService,
+                // jdbcTemplate 传 null → 配置读取兜底返回 0，抵现关闭，不干扰既有用例
+                new PointsRuleReader(null));
     }
 
     // ==================== 测试数据构造 ====================
@@ -191,14 +199,19 @@ class OrderCouponFlowTest {
                 discount("80.00", "10.00", "0.00", "6.00", "4.00"));
         stubStockApis();
         when(orderRepository.save(any(Order.class))).thenAnswer(invocation -> invocation.getArgument(0));
+        when(orderNoGenerator.nextGroup()).thenReturn("MG-TEST-0001");
 
         CreateOrderVO vo = service().create(USER, createRequest(item(1L, 1), item(2L, 1)));
         assertThat(vo.getOrders()).hasSize(2);
+        // 跨店结算生成订单组，子单都挂组号
+        assertThat(vo.getGroupNo()).isEqualTo("MG-TEST-0001");
 
         ArgumentCaptor<Order> captor = ArgumentCaptor.forClass(Order.class);
         verify(orderRepository, times(2)).save(captor.capture());
         Order orderA = captor.getAllValues().get(0);
         Order orderB = captor.getAllValues().get(1);
+        assertThat(orderA.getGroupNo()).isEqualTo("MG-TEST-0001");
+        assertThat(orderB.getGroupNo()).isEqualTo("MG-TEST-0001");
         // 承担金额随优惠一起按店铺比例拆分，两单合计守恒
         assertThat(orderA.getMerchantBearAmount().doubleValue()).isEqualTo(2.00);
         assertThat(orderA.getPlatformBearAmount().doubleValue()).isEqualTo(1.33);
@@ -208,6 +221,19 @@ class OrderCouponFlowTest {
         // 未用券：券字段为空，不落核销明细
         assertThat(orderA.getCouponId()).isNull();
         verify(orderRepository, never()).saveCoupons(anyString(), any());
+
+        // 父订单落库：金额取分摊前总额，核销单号取第一张子单
+        org.mockito.ArgumentCaptor<com.four_person.order.domain.model.OrderGroup> groupCaptor =
+                org.mockito.ArgumentCaptor.forClass(com.four_person.order.domain.model.OrderGroup.class);
+        verify(orderGroupRepository).save(groupCaptor.capture());
+        com.four_person.order.domain.model.OrderGroup group = groupCaptor.getValue();
+        assertThat(group.getGroupNo()).isEqualTo("MG-TEST-0001");
+        assertThat(group.getShopCount()).isEqualTo(2);
+        assertThat(group.getOriginalAmount().doubleValue()).isEqualTo(99.99);
+        assertThat(group.getPayAmount().doubleValue()).isEqualTo(80.00);
+        assertThat(group.getPromotionDiscount().doubleValue()).isEqualTo(10.00);
+        assertThat(group.getPayAmount()).isEqualTo(orderA.getPayAmount().add(orderB.getPayAmount()));
+        assertThat(group.getCouponUseOrderNo()).isEqualTo(orderA.getOrderNo());
     }
 
     // ==================== 下单用券 ====================
@@ -230,6 +256,9 @@ class OrderCouponFlowTest {
         Order order = orderCaptor.getValue();
         assertThat(order.getCouponId()).isEqualTo(10L);
         assertThat(order.getCouponTitle()).isEqualTo("满减券A、立减券B");
+        // 单店铺不生成订单组
+        assertThat(order.getGroupNo()).isNull();
+        verify(orderGroupRepository, never()).save(any());
 
         // 一单多券核销明细逐张落库
         ArgumentCaptor<List<OrderCoupon>> couponCaptor = ArgumentCaptor.forClass(List.class);
@@ -258,6 +287,7 @@ class OrderCouponFlowTest {
         stubStockApis();
         when(orderRepository.save(any(Order.class))).thenAnswer(invocation -> invocation.getArgument(0));
         when(orderNoGenerator.next()).thenReturn(ORDER_NO, "MS-TEST-0002");
+        when(orderNoGenerator.nextGroup()).thenReturn("MG-TEST-0001");
         when(discountInternalApi.useCoupon(any(Long.class), any(CouponUseRequest.class)))
                 .thenReturn(Result.success(null));
 
@@ -275,6 +305,7 @@ class OrderCouponFlowTest {
         verify(discountInternalApi, times(1)).useCoupon(eq(10L), useCaptor.capture());
         assertThat(useCaptor.getValue().getOrderNo()).isEqualTo(ORDER_NO);
         assertThat(vo.getOrderNo()).isEqualTo(ORDER_NO);
+        assertThat(vo.getGroupNo()).isEqualTo("MG-TEST-0001");
     }
 
     @Test
@@ -310,6 +341,152 @@ class OrderCouponFlowTest {
         service().create(USER, createRequest(item(1L, 1)));
         verify(discountInternalApi, never()).useCoupon(any(), any());
         verify(orderRepository, never()).saveCoupons(anyString(), any());
+    }
+
+    // ==================== 结算页活动选择 / 逐商品优惠 ====================
+
+    /** 引擎返回的行级优惠明细（原价小计 / 活动 / 券 / 优惠后） */
+    private DiscountResultVO.ItemDiscount row(long productId, String original, String promo, String coupon) {
+        DiscountResultVO.ItemDiscount row = new DiscountResultVO.ItemDiscount();
+        row.setProductId(productId);
+        row.setOriginalSubtotal(new BigDecimal(original));
+        row.setPromotionDiscount(new BigDecimal(promo));
+        row.setCouponDiscount(new BigDecimal(coupon));
+        row.setFinalSubtotal(new BigDecimal(original).subtract(new BigDecimal(promo))
+                .subtract(new BigDecimal(coupon)));
+        row.setPromotions(List.of());
+        row.setCoupons(List.of());
+        return row;
+    }
+
+    private DiscountResultVO.PromotionOption option(long id, String title, String amount) {
+        DiscountResultVO.PromotionOption option = new DiscountResultVO.PromotionOption();
+        option.setPromotionId(id);
+        option.setTitle(title);
+        option.setShopId(0L);
+        option.setRuleText("满 90 减 20");
+        option.setScopeText("全品类");
+        option.setDiscount(new BigDecimal(amount));
+        option.setCouponStackable(true);
+        option.setChosen(true);
+        return option;
+    }
+
+    @Test
+    void previewMapsPromotionOptionsAndPassesRequestedIds() {
+        DiscountResultVO discountVO = discount("70.00", "20.00", "10.00", "0.00", "30.00");
+        discountVO.setAppliedPromotionIds(List.of(7L));
+        discountVO.setPromotionOptions(List.of(option(7L, "平台大促", "20.00")));
+        discountVO.setItemDiscounts(List.of(row(1L, "100.00", "20.00", "10.00")));
+        stubPrepare(List.of(product(1L, SHOP_A, "店铺A", 7L, "100.00", 10)), discountVO);
+
+        OrderPreviewRequest request = new OrderPreviewRequest();
+        request.setItems(List.of(item(1L, 1)));
+        request.setPromotionIds(List.of(7L));
+        OrderPreviewVO vo = service().preview(USER, request);
+
+        // 用户所选活动原样透传给折扣服务
+        ArgumentCaptor<DiscountCalculateRequest> calcCaptor =
+                ArgumentCaptor.forClass(DiscountCalculateRequest.class);
+        verify(discountInternalApi).calculate(calcCaptor.capture());
+        assertThat(calcCaptor.getValue().getPromotionIds()).containsExactly(7L);
+
+        // 活动选项与逐商品优惠明细映射到预览结果
+        assertThat(vo.getAppliedPromotionIds()).containsExactly(7L);
+        assertThat(vo.getPromotionOptions()).hasSize(1);
+        OrderPreviewVO.PromotionOptionVO mapped = vo.getPromotionOptions().get(0);
+        assertThat(mapped.getPromotionId()).isEqualTo(7L);
+        assertThat(mapped.getDiscount().doubleValue()).isEqualTo(20.0);
+        assertThat(mapped.getChosen()).isTrue();
+
+        OrderPreviewItemVO item = vo.getItems().get(0);
+        assertThat(item.getPromotionDiscount().doubleValue()).isEqualTo(20);
+        assertThat(item.getCouponDiscount().doubleValue()).isEqualTo(10);
+        assertThat(item.getFinalSubtotal().doubleValue()).isEqualTo(70);
+    }
+
+    @Test
+    void previewWithoutPromotionSelectionSendsNullForAutoBest() {
+        DiscountResultVO discountVO = discount("70.00", "20.00", "10.00", "0.00", "30.00");
+        stubPrepare(List.of(product(1L, SHOP_A, "店铺A", 7L, "100.00", 10)), discountVO);
+
+        OrderPreviewRequest request = new OrderPreviewRequest();
+        request.setItems(List.of(item(1L, 1)));
+        OrderPreviewVO vo = service().preview(USER, request);
+
+        ArgumentCaptor<DiscountCalculateRequest> calcCaptor =
+                ArgumentCaptor.forClass(DiscountCalculateRequest.class);
+        verify(discountInternalApi).calculate(calcCaptor.capture());
+        // 未指定 → null，由引擎自动选最优组合
+        assertThat(calcCaptor.getValue().getPromotionIds()).isNull();
+        // 旧返回无逐商品明细 → 行级字段兜底为零，不抛空指针
+        OrderPreviewItemVO item = vo.getItems().get(0);
+        assertThat(item.getPromotionDiscount().doubleValue()).isZero();
+        assertThat(item.getCouponDiscount().doubleValue()).isZero();
+        assertThat(item.getFinalSubtotal().doubleValue()).isEqualTo(100);
+        assertThat(item.getItemPromotions()).isEmpty();
+    }
+
+    @Test
+    void createPersistsPerItemDiscountsFromEngineBreakdown() {
+        DiscountResultVO discountVO = discount("70.00", "20.00", "10.00", "0.00", "30.00",
+                usage(10L, "券", "10.00"));
+        discountVO.setItemDiscounts(List.of(row(1L, "100.00", "20.00", "10.00")));
+        stubPrepare(List.of(product(1L, SHOP_A, "店铺A", 7L, "100.00", 10)), discountVO);
+        stubStockApis();
+        when(orderRepository.save(any(Order.class))).thenAnswer(invocation -> invocation.getArgument(0));
+        when(discountInternalApi.useCoupon(any(Long.class), any(CouponUseRequest.class)))
+                .thenReturn(Result.success(null));
+
+        service().create(USER, createRequest(item(1L, 1)));
+
+        // 订单行落库带行级优惠快照
+        ArgumentCaptor<List<OrderItem>> itemsCaptor = ArgumentCaptor.forClass(List.class);
+        verify(orderRepository).saveItems(itemsCaptor.capture());
+        OrderItem saved = itemsCaptor.getValue().get(0);
+        assertThat(saved.getPromotionDiscount().doubleValue()).isEqualTo(20);
+        assertThat(saved.getCouponDiscount().doubleValue()).isEqualTo(10);
+
+        // 店铺级金额取行级明细之和（与引擎总额一致）
+        ArgumentCaptor<Order> orderCaptor = ArgumentCaptor.forClass(Order.class);
+        verify(orderRepository).save(orderCaptor.capture());
+        assertThat(orderCaptor.getValue().getPromotionDiscount().doubleValue()).isEqualTo(20);
+        assertThat(orderCaptor.getValue().getCouponDiscount().doubleValue()).isEqualTo(10);
+        assertThat(orderCaptor.getValue().getPayAmount().doubleValue()).isEqualTo(70);
+    }
+
+    @Test
+    void crossShopAllocationFollowsEngineRowsNotProportionalSpread() {
+        // 活动只命中 B 店：按比例分摊会给 A 店也摊一半；行级明细齐全时应精确落到命中店铺
+        DiscountResultVO discountVO = discount("80.00", "10.00", "10.00", "0.00", "20.00");
+        discountVO.setItemDiscounts(List.of(
+                row(1L, "50.00", "0.00", "5.00"),
+                row(2L, "50.00", "10.00", "5.00")));
+        stubPrepare(List.of(
+                        product(1L, SHOP_A, "店铺A", 7L, "50.00", 10),
+                        product(2L, SHOP_B, "店铺B", 8L, "50.00", 10)), discountVO);
+        stubStockApis();
+        when(orderRepository.save(any(Order.class))).thenAnswer(invocation -> invocation.getArgument(0));
+        when(orderNoGenerator.next()).thenReturn(ORDER_NO, "MS-TEST-0002");
+        when(orderNoGenerator.nextGroup()).thenReturn("MG-TEST-0001");
+
+        service().create(USER, createRequest(item(1L, 1), item(2L, 1)));
+
+        ArgumentCaptor<Order> captor = ArgumentCaptor.forClass(Order.class);
+        verify(orderRepository, times(2)).save(captor.capture());
+        Order shopA = captor.getAllValues().get(0);
+        Order shopB = captor.getAllValues().get(1);
+        assertThat(shopA.getPromotionDiscount().doubleValue()).isZero();
+        assertThat(shopA.getCouponDiscount().doubleValue()).isEqualTo(5);
+        assertThat(shopA.getPayAmount().doubleValue()).isEqualTo(45);
+        assertThat(shopB.getPromotionDiscount().doubleValue()).isEqualTo(10);
+        assertThat(shopB.getCouponDiscount().doubleValue()).isEqualTo(5);
+        assertThat(shopB.getPayAmount().doubleValue()).isEqualTo(35);
+        // 承担额按各店活动优惠占比：活动全在 B 店 → 平台补贴也全给 B 店
+        assertThat(shopA.getPlatformBearAmount().doubleValue()).isZero();
+        assertThat(shopB.getPlatformBearAmount().doubleValue()).isEqualTo(20);
+        // 子单应付合计仍与订单组总额守恒
+        assertThat(shopA.getPayAmount().add(shopB.getPayAmount()).doubleValue()).isEqualTo(80);
     }
 
     // ==================== 取消订单释放 ====================

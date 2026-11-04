@@ -31,20 +31,20 @@ public class SpecController {
 
     @PostMapping
     public Result<SpecDtos.SpecTemplateVO> create(@Valid @RequestBody SpecDtos.SpecTemplateRequest request) {
-        AccessGuard.requireGroup("PLATFORM");
+        AccessGuard.requirePerm("admin:config:spec");
         return Result.success("规格模板已新增", specApplicationService.create(request));
     }
 
     @PutMapping("/{id}")
     public Result<SpecDtos.SpecTemplateVO> update(@PathVariable Long id,
                                                   @Valid @RequestBody SpecDtos.SpecTemplateRequest request) {
-        AccessGuard.requireGroup("PLATFORM");
+        AccessGuard.requirePerm("admin:config:spec");
         return Result.success("规格模板已更新", specApplicationService.update(id, request));
     }
 
     @DeleteMapping("/{id}")
     public Result<Void> delete(@PathVariable Long id) {
-        AccessGuard.requireGroup("PLATFORM");
+        AccessGuard.requirePerm("admin:config:spec");
         specApplicationService.delete(id);
         return Result.success("规格模板已删除", null);
     }

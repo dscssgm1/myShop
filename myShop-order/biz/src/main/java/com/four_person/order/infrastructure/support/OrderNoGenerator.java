@@ -23,4 +23,10 @@ public class OrderNoGenerator {
         return "AS" + LocalDateTime.now().format(FORMATTER)
                 + ThreadLocalRandom.current().nextInt(100, 1000);
     }
+
+    /** 跨店合单订单组号：MG + 毫秒级时间 + 3 位随机数 */
+    public String nextGroup() {
+        return "MG" + LocalDateTime.now().format(FORMATTER)
+                + ThreadLocalRandom.current().nextInt(100, 1000);
+    }
 }

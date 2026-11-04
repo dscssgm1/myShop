@@ -43,6 +43,7 @@ public class AuthApplicationService {
 
     private final UserRepository userRepository;
     private final RoleRepository roleRepository;
+    private final RoleMenuApplicationService roleMenuApplicationService;
     private final MembershipRepository membershipRepository;
     private final UserApplicationService userApplicationService;
     private final SecurityApplicationService securityApplicationService;
@@ -168,13 +169,16 @@ public class AuthApplicationService {
         String groupCode = roleRepository.findByCode(user.getRoleCode())
                 .map(SysRole::getGroupCode)
                 .orElse("USER");
+        // 角色勾选的权限码：写入会话供网关下发（X-User-Perms），同时随登录响应给前端渲染菜单
+        List<String> perms = roleMenuApplicationService.menusOfRole(user.getRoleCode());
 
         String sessionId = UUID.randomUUID().toString();
         AuthDtos.LoginResponse response = new AuthDtos.LoginResponse();
         response.setToken(tokenProvider.generate(user, groupCode, sessionId));
         response.setExpiresIn(tokenProvider.getExpirationSeconds());
         response.setUser(userApplicationService.toVO(user));
-        sessionStore.create(sessionId, user, groupCode);
+        response.setPerms(perms);
+        sessionStore.create(sessionId, user, groupCode, String.join(",", perms));
         return response;
     }
 

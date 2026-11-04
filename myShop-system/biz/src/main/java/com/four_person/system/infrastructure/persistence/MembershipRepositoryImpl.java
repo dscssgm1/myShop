@@ -85,6 +85,24 @@ public class MembershipRepositoryImpl implements MembershipRepository {
     }
 
     @Override
+    public int sumSpentByBizNo(Long userId, String bizNo) {
+        List<PointsLog> logs = logMapper.selectList(Wrappers.<PointsLog>lambdaQuery()
+                .eq(PointsLog::getUserId, userId)
+                .eq(PointsLog::getBizNo, bizNo)
+                .eq(PointsLog::getType, "SPEND"));
+        return logs.stream().mapToInt(log -> log.getChangeAmount() == null ? 0 : log.getChangeAmount()).sum();
+    }
+
+    @Override
+    public int sumRefundedByBizNo(Long userId, String bizNo) {
+        List<PointsLog> logs = logMapper.selectList(Wrappers.<PointsLog>lambdaQuery()
+                .eq(PointsLog::getUserId, userId)
+                .eq(PointsLog::getBizNo, bizNo)
+                .eq(PointsLog::getType, "REFUND"));
+        return logs.stream().mapToInt(log -> log.getChangeAmount() == null ? 0 : log.getChangeAmount()).sum();
+    }
+
+    @Override
     public void saveLog(PointsLog log) {
         logMapper.insert(log);
     }

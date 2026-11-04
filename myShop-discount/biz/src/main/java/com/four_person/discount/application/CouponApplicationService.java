@@ -4,15 +4,15 @@ import com.four_person.common.exception.BusinessException;
 import com.four_person.common.exception.CommonErrorCode;
 import com.four_person.discount.api.dto.CouponTemplateRequest;
 import com.four_person.discount.api.dto.CouponTemplateVO;
+import com.four_person.discount.api.dto.DiscountItem;
 import com.four_person.discount.api.dto.UserCouponVO;
-import com.four_person.discount.application.port.ProductQueryPort;
 import com.four_person.discount.application.port.ShopQueryPort;
 import com.four_person.discount.domain.event.CouponClaimedEvent;
 import com.four_person.discount.domain.event.CouponReleasedEvent;
 import com.four_person.discount.domain.event.CouponUsedEvent;
 import com.four_person.discount.domain.model.CouponTemplate;
 import com.four_person.discount.domain.model.Money;
-import com.four_person.discount.domain.model.ProductSnapshot;
+import com.four_person.discount.domain.model.OrderLine;
 import com.four_person.discount.domain.model.Scope;
 import com.four_person.discount.domain.model.UserCoupon;
 import com.four_person.discount.domain.repository.CouponTemplateRepository;
@@ -27,6 +27,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -41,19 +42,77 @@ public class CouponApplicationService {
     private final CouponTemplateRepository templateRepository;
     private final UserCouponRepository userCouponRepository;
     private final ShopQueryPort shopQueryPort;
-    private final ProductQueryPort productQueryPort;
     private final ApplicationEventPublisher eventPublisher;
 
-    /** 领券中心：平台券 + 商家券全部可领 */
-    public List<CouponTemplateVO> listTemplates(Long userId) {
-        LocalDateTime now = LocalDateTime.now();
-        List<CouponTemplate> templates = templateRepository.findActive(now);
+    /** 领券中心：平台券 + 商家券可免费领取（积分兑换券只在积分商城） */
+    public List<CouponTemplateVO> listTemplates(Long userId) {        LocalDateTime now = LocalDateTime.now();
+        List<CouponTemplate> templates = templateRepository.findActive(now).stream()
+                .filter(template -> !template.isPointsExclusive())
+                .toList();
         Map<Long, Long> claimedCounts = userId == null
                 ? Collections.emptyMap()
                 : userCouponRepository.findByUserId(userId).stream()
                 .collect(Collectors.groupingBy(UserCoupon::getTemplateId, Collectors.counting()));
         return templates.stream()
                 .map(template -> toTemplateVO(template, claimedCounts.getOrDefault(template.getId(), 0L) > 0))
+                .toList();
+    }
+
+    /**
+     * 结算页「本单可领」：按当前商品明细过滤可领券——范围内小计达门槛且抵扣为正才显示，
+     * 每张带本单可抵扣金额；已领完/达个人限领的模板不再列出。
+     */
+    @Transactional(readOnly = true)
+    public List<CouponTemplateVO> claimableForOrder(Long userId, List<DiscountItem> items) {
+        List<OrderLine> lines = items.stream()
+                .map(item -> new OrderLine(item.getProductId(), item.getCategoryId(), item.getShopId(),
+                        Money.of(item.getPrice()), item.getQuantity()))
+                .toList();
+        return claimableForLines(userId, lines);
+    }
+
+    /** 按已构建的商品行过滤「本单可领」券模板 */
+    private List<CouponTemplateVO> claimableForLines(Long userId, List<OrderLine> lines) {
+        LocalDateTime now = LocalDateTime.now();
+        List<CouponTemplate> templates = templateRepository.findActive(now).stream()
+                .filter(template -> !template.isPointsExclusive())
+                .filter(template -> template.getRemaining() > 0)
+                .filter(template -> template.discountFor(lines).amount().signum() > 0)
+                .toList();
+        if (templates.isEmpty()) {
+            return Collections.emptyList();
+        }
+        Map<Long, Long> claimedCounts = userId == null
+                ? Collections.emptyMap()
+                : userCouponRepository.findByUserId(userId).stream()
+                .collect(Collectors.groupingBy(UserCoupon::getTemplateId, Collectors.counting()));
+        List<CouponTemplateVO> result = new ArrayList<>();
+        for (CouponTemplate template : templates) {
+            long claimedByUser = claimedCounts.getOrDefault(template.getId(), 0L);
+            if (userId != null && claimedByUser >= template.getPerUserLimit()) {
+                continue; // 已达个人限领上限，不再列出
+            }
+            CouponTemplateVO vo = toTemplateVO(template, claimedByUser > 0);
+            vo.setApplicableAmount(template.discountFor(lines).amount());
+            result.add(vo);
+        }
+        return result;
+    }
+
+    /** 积分商城货架：设了积分价的券模板；claimed 标记当前用户是否已达限领上限 */
+    public List<CouponTemplateVO> pointsMallItems(Long userId) {
+        LocalDateTime now = LocalDateTime.now();
+        List<CouponTemplate> templates = templateRepository.findPointsExchangeable(now);
+        Map<Long, Long> claimedCounts = userId == null
+                ? Collections.emptyMap()
+                : userCouponRepository.findByUserId(userId).stream()
+                .collect(Collectors.groupingBy(UserCoupon::getTemplateId, Collectors.counting()));
+        return templates.stream()
+                .map(template -> {
+                    long claimedByUser = claimedCounts.getOrDefault(template.getId(), 0L);
+                    CouponTemplateVO vo = toTemplateVO(template, claimedByUser >= template.getPerUserLimit());
+                    return vo;
+                })
                 .toList();
     }
 
@@ -65,19 +124,17 @@ public class CouponApplicationService {
     }
 
     /**
-     * 发放优惠券模板。ownerShopId 为 null 表示平台券（全品类/分类/商品均可）；
-     * 商家券范围限本店商品，费用由商家承担。
+     * 发放优惠券模板。ownerShopId 为 null 表示平台券（全场/指定分类）；
+     * 商家券范围限本店商品或指定分类，费用由商家承担。
      */
     public CouponTemplateVO createTemplate(Long ownerShopId, CouponTemplateRequest request) {
         long owner = ownerShopId == null ? 0 : ownerShopId;
         ScopeType scopeType = parseScopeType(request.getScopeType(), owner);
         Set<Long> scopeIds = request.getScopeIds() == null ? Set.of() : Set.copyOf(request.getScopeIds());
-        if (owner > 0 && scopeType == ScopeType.PRODUCT) {
-            scopeIds = requireOwnedProducts(ownerShopId, scopeIds);
-        }
         CouponTemplate template = new CouponTemplate(null, owner, request.getTitle(),
                 Money.of(request.getThresholdAmount()), Money.of(request.getDiscountAmount()),
                 new Scope(scopeType, scopeIds), request.getTotalStock(), 0, request.getPerUserLimit(),
+                request.getPointsPrice(),
                 request.getCouponStackable(), request.getStackable(),
                 request.getValidStart(), request.getValidEnd(), request.getStatus());
         return toTemplateVO(templateRepository.save(template), false);
@@ -112,43 +169,49 @@ public class CouponApplicationService {
         } catch (IllegalArgumentException ex) {
             throw new BusinessException(DiscountErrorCode.INVALID_RULE, "不支持的适用范围");
         }
-        if (owner > 0 && scopeType != ScopeType.SHOP && scopeType != ScopeType.PRODUCT) {
-            return ScopeType.SHOP;
+        if (scopeType == ScopeType.PRODUCT) {
+            throw new BusinessException(DiscountErrorCode.INVALID_RULE, "已不支持指定商品范围，请选择全场或指定分类");
         }
-        if (owner == 0 && scopeType == ScopeType.SHOP) {
+        if (owner > 0) {
+            // 商家券只能圈本店：本店全部商品(SHOP) 或 本店指定分类(CATEGORY)
+            return scopeType == ScopeType.CATEGORY ? ScopeType.CATEGORY : ScopeType.SHOP;
+        }
+        if (scopeType == ScopeType.SHOP) {
             throw new BusinessException(DiscountErrorCode.INVALID_RULE, "平台券不能使用店铺范围");
         }
-        return scopeType;
+        return scopeType == ScopeType.CATEGORY ? ScopeType.CATEGORY : ScopeType.ALL;
     }
 
-    /** 商家圈定指定商品时校验商品归属 */
-    private Set<Long> requireOwnedProducts(Long shopId, Set<Long> productIds) {
-        if (productIds.isEmpty()) {
-            throw new BusinessException(DiscountErrorCode.INVALID_RULE, "指定商品范围不能为空");
-        }
-        List<Long> owned = productQueryPort.batch(List.copyOf(productIds)).stream()
-                .filter(product -> shopId.equals(product.shopId()))
-                .map(ProductSnapshot::id)
-                .toList();
-        if (owned.size() != productIds.size()) {
-            throw new BusinessException(DiscountErrorCode.INVALID_RULE, "券适用商品必须属于当前店铺");
-        }
-        return productIds;
-    }
-
+    /** 免费领券中心领取：积分兑换券不允许在此领取 */
     @Transactional(rollbackFor = Exception.class)
     public UserCouponVO claim(Long userId, Long templateId) {
         CouponTemplate template = templateRepository.findById(templateId)
                 .orElseThrow(() -> new BusinessException(DiscountErrorCode.COUPON_NOT_FOUND));
+        if (template.isPointsExclusive()) {
+            throw new BusinessException(DiscountErrorCode.COUPON_NOT_AVAILABLE,
+                    "该券为积分兑换券，请到积分商城用积分兑换");
+        }
+        return doClaim(userId, template);
+    }
+
+    /** 积分商城兑换领取（system 服务扣积分成功后调用）：允许积分兑换券 */
+    @Transactional(rollbackFor = Exception.class)
+    public UserCouponVO claimForUser(Long userId, Long templateId) {
+        CouponTemplate template = templateRepository.findById(templateId)
+                .orElseThrow(() -> new BusinessException(DiscountErrorCode.COUPON_NOT_FOUND));
+        return doClaim(userId, template);
+    }
+
+    private UserCouponVO doClaim(Long userId, CouponTemplate template) {
         LocalDateTime now = LocalDateTime.now();
-        int claimedByUser = userCouponRepository.countByUserAndTemplate(userId, templateId);
+        int claimedByUser = userCouponRepository.countByUserAndTemplate(userId, template.getId());
         template.ensureClaimable(claimedByUser, now);
-        if (!templateRepository.increaseClaimed(templateId)) {
+        if (!templateRepository.increaseClaimed(template.getId())) {
             throw new BusinessException(DiscountErrorCode.COUPON_STOCK_EMPTY);
         }
         UserCoupon coupon = userCouponRepository.save(
-                UserCoupon.claim(userId, templateId, now, template.getValidEnd()));
-        eventPublisher.publishEvent(new CouponClaimedEvent(userId, coupon.getId(), templateId));
+                UserCoupon.claim(userId, template.getId(), now, template.getValidEnd()));
+        eventPublisher.publishEvent(new CouponClaimedEvent(userId, coupon.getId(), template.getId()));
         return toUserCouponVO(coupon, template);
     }
 
@@ -223,6 +286,7 @@ public class CouponApplicationService {
         vo.setClaimedCount(template.getClaimedCount());
         vo.setRemaining(template.getRemaining());
         vo.setPerUserLimit(template.getPerUserLimit());
+        vo.setPointsPrice(template.getPointsPrice());
         vo.setCouponStackable(template.isCouponStackable());
         vo.setStackable(template.isStackable());
         vo.setValidStart(template.getValidStart());

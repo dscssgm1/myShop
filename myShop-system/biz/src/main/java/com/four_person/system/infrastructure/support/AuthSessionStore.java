@@ -37,14 +37,15 @@ public class AuthSessionStore {
     private final StringRedisTemplate redisTemplate;
     private final JwtProperties jwtProperties;
 
-    /** 登录成功后创建会话，记录设备与 IP，供「登录设备」列表展示 */
-    public void create(String sessionId, SysUser user, String groupCode) {
+    /** 登录成功后创建会话，记录设备与 IP，供「登录设备」列表展示；perms 为角色勾选的权限码（逗号分隔） */
+    public void create(String sessionId, SysUser user, String groupCode, String perms) {
         Map<String, String> values = new LinkedHashMap<>();
         values.put("userId", String.valueOf(user.getId()));
         values.put("username", nullToEmpty(user.getUsername()));
         values.put("nickname", nullToEmpty(user.getNickname()));
         values.put("role", nullToEmpty(user.getRoleCode()));
         values.put("group", nullToEmpty(groupCode));
+        values.put("perms", nullToEmpty(perms));
         values.put("shopId", nullToEmpty(user.getShopId()));
         values.put("companyId", nullToEmpty(user.getCompanyId()));
         values.put("courierId", nullToEmpty(user.getCourierId()));

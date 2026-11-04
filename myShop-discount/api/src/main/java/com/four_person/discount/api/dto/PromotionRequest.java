@@ -30,9 +30,10 @@ public class PromotionRequest {
 
     private BigDecimal maxDiscount;
 
-    /** ALL / CATEGORY / PRODUCT */
+    /** ALL（平台活动：全品类）/ CATEGORY（指定分类）；商家活动 SHOP（本店全部商品）/ CATEGORY */
     private String scopeType;
 
+    /** CATEGORY 时为分类 ID 列表 */
     private List<Long> scopeIds;
 
     private Boolean couponStackable;

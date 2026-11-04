@@ -6,6 +6,8 @@ import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 import lombok.Data;
 
+import java.util.List;
+
 /**
  * 认证相关契约：注册、登录、邮箱验证码、修改邮箱与密码。
  */
@@ -58,6 +60,8 @@ public final class AuthDtos {
         private String tokenType = "Bearer";
         private long expiresIn;
         private UserDtos.UserVO user;
+        /** 角色勾选的菜单/按钮权限码（前端渲染侧边菜单与按钮显隐） */
+        private List<String> perms;
         /** 注册等场景随登录返回的短时效身份验证凭证，用于「信任此设备」提示 */
         private String deviceVerifyToken;
     }

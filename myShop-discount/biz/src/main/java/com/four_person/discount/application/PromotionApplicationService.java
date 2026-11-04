@@ -4,11 +4,9 @@ import com.four_person.common.exception.BusinessException;
 import com.four_person.common.exception.CommonErrorCode;
 import com.four_person.discount.api.dto.PromotionRequest;
 import com.four_person.discount.api.dto.PromotionVO;
-import com.four_person.discount.application.port.ProductQueryPort;
 import com.four_person.discount.application.port.ShopQueryPort;
 import com.four_person.discount.domain.model.DiscountRule;
 import com.four_person.discount.domain.model.Money;
-import com.four_person.discount.domain.model.ProductSnapshot;
 import com.four_person.discount.domain.model.Promotion;
 import com.four_person.discount.domain.model.Scope;
 import com.four_person.discount.domain.repository.PromotionRepository;
@@ -30,7 +28,6 @@ public class PromotionApplicationService {
 
     private final PromotionRepository promotionRepository;
     private final ShopQueryPort shopQueryPort;
-    private final ProductQueryPort productQueryPort;
 
     /** 平台侧活动列表（平台活动 + 商家活动均可查看） */
     public List<PromotionVO> list(String status) {
@@ -109,30 +106,12 @@ public class PromotionApplicationService {
         RuleType ruleType = parseRuleType(request.getRuleType());
         ScopeType scopeType = parseScopeType(request.getScopeType(), ownerShopId);
         Set<Long> scopeIds = request.getScopeIds() == null ? Set.of() : Set.copyOf(request.getScopeIds());
-        if (ownerShopId > 0 && scopeType == ScopeType.PRODUCT) {
-            scopeIds = requireOwnedProducts(ownerShopId, scopeIds);
-        }
         boolean enrollRequired = ownerShopId == 0 && Boolean.TRUE.equals(request.getEnrollRequired());
         return new Promotion(id, ownerShopId, request.getTitle(), request.getType(), rule(ruleType, request),
                 new Scope(scopeType, scopeIds), Boolean.TRUE.equals(request.getCouponStackable()),
                 enrollRequired, request.getPlatformBearRate(),
                 request.getStartTime(), request.getEndTime(), request.getStatus(),
                 request.getDescription(), request.getColor());
-    }
-
-    /** 商家圈定指定商品时校验商品归属，防止把他店商品挂进自家活动 */
-    private Set<Long> requireOwnedProducts(Long shopId, Set<Long> productIds) {
-        if (productIds.isEmpty()) {
-            throw new BusinessException(DiscountErrorCode.INVALID_RULE, "指定商品范围不能为空");
-        }
-        List<Long> owned = productQueryPort.batch(List.copyOf(productIds)).stream()
-                .filter(product -> shopId.equals(product.shopId()))
-                .map(ProductSnapshot::id)
-                .toList();
-        if (owned.size() != productIds.size()) {
-            throw new BusinessException(DiscountErrorCode.INVALID_RULE, "活动商品必须属于当前店铺");
-        }
-        return productIds;
     }
 
     private RuleType parseRuleType(String raw) {
@@ -151,14 +130,17 @@ public class PromotionApplicationService {
         } catch (IllegalArgumentException ex) {
             throw new BusinessException(DiscountErrorCode.INVALID_RULE, "不支持的适用范围");
         }
-        // 商家活动范围兜底为本店；仅显式圈定商品时用 PRODUCT（归属在 requireOwnedProducts 校验）
-        if (ownerShopId > 0 && scopeType != ScopeType.SHOP && scopeType != ScopeType.PRODUCT) {
-            return ScopeType.SHOP;
+        if (scopeType == ScopeType.PRODUCT) {
+            throw new BusinessException(DiscountErrorCode.INVALID_RULE, "已不支持指定商品范围，请选择全场或指定分类");
         }
-        if (ownerShopId == 0 && scopeType == ScopeType.SHOP) {
+        // 商家活动只能圈本店：本店全部商品(SHOP) 或 本店指定分类(CATEGORY)
+        if (ownerShopId > 0) {
+            return scopeType == ScopeType.CATEGORY ? ScopeType.CATEGORY : ScopeType.SHOP;
+        }
+        if (scopeType == ScopeType.SHOP) {
             throw new BusinessException(DiscountErrorCode.INVALID_RULE, "平台活动不能使用店铺范围");
         }
-        return scopeType;
+        return scopeType == ScopeType.CATEGORY ? ScopeType.CATEGORY : ScopeType.ALL;
     }
 
     private DiscountRule rule(RuleType ruleType, PromotionRequest request) {

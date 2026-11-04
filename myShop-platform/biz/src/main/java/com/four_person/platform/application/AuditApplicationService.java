@@ -52,7 +52,7 @@ public class AuditApplicationService {
     }
 
     public PageResult<PlatformDtos.AuditVO> page(String type, String status, int page, int size) {
-        AccessGuard.requireGroup("PLATFORM");
+        AccessGuard.requirePerm("admin:audit");
         int pageNo = Math.max(page, 1);
         int pageSize = size < 1 ? 10 : Math.min(size, 100);
 
@@ -78,7 +78,7 @@ public class AuditApplicationService {
      */
     @Transactional
     public PlatformDtos.AuditVO firstApprove(Long id, String reason) {
-        AccessGuard.requireRole("admin-sales");
+        AccessGuard.requirePerm("admin:audit:logistics-first");
         AuditRecord record = requireRecord(id);
         if (!AuditRecord.TYPE_LOGISTICS_APPLY.equals(record.getType())) {
             throw new BusinessException(40006, "该类型不支持初审");
@@ -100,8 +100,8 @@ public class AuditApplicationService {
     public PlatformDtos.AuditVO approve(Long id, String reason) {
         AuditRecord record = requireRecord(id);
         if (AuditRecord.TYPE_LOGISTICS_APPLY.equals(record.getType())) {
-            // 物流入驻：管理员终审，业务员初审通过后才能终审
-            AccessGuard.requireRole("admin");
+            // 物流入驻：终审权限，业务员初审通过后才能终审
+            AccessGuard.requirePerm("admin:audit:logistics-final");
             if (!AuditRecord.FIRST_APPROVED.equals(record.getStatus())) {
                 throw new BusinessException(40005, "该申请还未通过业务员初审");
             }
@@ -111,7 +111,7 @@ public class AuditApplicationService {
                     "恭喜！您提交的「" + record.getTitle() + "」已通过平台管理员终审，物流公司正式入驻。");
             return toVO(record);
         }
-        AccessGuard.requireGroup("PLATFORM");
+        AccessGuard.requirePerm("admin:audit:record");
         if (!AuditRecord.PENDING.equals(record.getStatus())) {
             throw new BusinessException(40005, "该审核已处理");
         }
@@ -123,11 +123,11 @@ public class AuditApplicationService {
     public PlatformDtos.AuditVO reject(Long id, String reason) {
         AuditRecord record = requireRecord(id);
         if (AuditRecord.TYPE_LOGISTICS_APPLY.equals(record.getType())) {
-            // 初审阶段：业务员或管理员均可驳回；终审阶段：仅管理员
+            // 初审阶段：初审/终审权限均可驳回；终审阶段：仅终审权限
             if (AuditRecord.PENDING.equals(record.getStatus())) {
-                AccessGuard.requireRole("admin-sales", "admin");
+                AccessGuard.requirePerm("admin:audit:logistics-first", "admin:audit:logistics-final");
             } else if (AuditRecord.FIRST_APPROVED.equals(record.getStatus())) {
-                AccessGuard.requireRole("admin");
+                AccessGuard.requirePerm("admin:audit:logistics-final");
             } else {
                 throw new BusinessException(40005, "该审核已处理");
             }
@@ -136,7 +136,7 @@ public class AuditApplicationService {
                     "您提交的「" + record.getTitle() + "」被驳回，原因：" + (reason == null ? "无" : reason));
             return toVO(record);
         }
-        AccessGuard.requireGroup("PLATFORM");
+        AccessGuard.requirePerm("admin:audit:record");
         if (!AuditRecord.PENDING.equals(record.getStatus())) {
             throw new BusinessException(40005, "该审核已处理");
         }

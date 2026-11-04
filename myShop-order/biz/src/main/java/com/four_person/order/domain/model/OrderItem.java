@@ -48,5 +48,11 @@ public class OrderItem {
 
     private BigDecimal subtotal;
 
+    /** 本行促销活动优惠金额（行级分摊，与引擎逐商品明细一致） */
+    private BigDecimal promotionDiscount;
+
+    /** 本行优惠券抵扣金额（行级分摊，与引擎逐商品明细一致） */
+    private BigDecimal couponDiscount;
+
     private LocalDateTime createdAt;
 }

@@ -26,7 +26,8 @@ public class PlatformConfigInitializer implements ApplicationRunner {
     public void run(ApplicationArguments args) {
         try {
             seed("points-rule", "earn-amount-per-point", "1", "每消费多少元累计 1 积分");
-            seed("points-rule", "mall-rate", "1", "积分商城倍数：积分价 = 原价 × 倍数");
+            seed("points-rule", "deduct-points-per-yuan", "100", "下单抵现：多少积分抵 1 元（0 或未配置表示关闭抵现）");
+            seed("points-rule", "deduct-max-percent", "50", "下单抵现：最多抵应付金额的百分比");
             seed("points-rule", "review-reward", "10", "发表评价奖励积分");
 
             seed("system", "platformName", "myShop 电商购物平台", "平台名称");

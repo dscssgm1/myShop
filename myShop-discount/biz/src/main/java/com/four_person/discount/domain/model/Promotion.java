@@ -54,10 +54,10 @@ public class Promotion {
             throw new BusinessException(DiscountErrorCode.INVALID_RULE, "平台承担比例必须在 0~100 之间");
         }
         if (owner > 0) {
-            // 商家自建活动：范围只能圈本店，费用全部由商家承担
+            // 商家自建活动：范围只能圈本店（全场/指定分类），费用全部由商家承担
             if (effectiveScope.type() != com.four_person.discount.enums.ScopeType.SHOP
-                    && effectiveScope.type() != com.four_person.discount.enums.ScopeType.PRODUCT) {
-                throw new BusinessException(DiscountErrorCode.INVALID_RULE, "商家活动范围只能是本店商品");
+                    && effectiveScope.type() != com.four_person.discount.enums.ScopeType.CATEGORY) {
+                throw new BusinessException(DiscountErrorCode.INVALID_RULE, "商家活动范围只能是本店商品或指定分类");
             }
             bearRate = BigDecimal.ZERO;
         }

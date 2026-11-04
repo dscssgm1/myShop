@@ -42,6 +42,7 @@ public class JwtAuthGlobalFilter implements GlobalFilter, Ordered {
     private static final String HEADER_USERNAME = "X-User-Username";
     private static final String HEADER_ROLE = "X-User-Role";
     private static final String HEADER_GROUP = "X-User-Group";
+    private static final String HEADER_PERMS = "X-User-Perms";
     private static final String HEADER_SHOP_ID = "X-User-Shop-Id";
     private static final String HEADER_COMPANY_ID = "X-User-Company-Id";
     private static final String HEADER_COURIER_ID = "X-User-Courier-Id";
@@ -110,6 +111,7 @@ public class JwtAuthGlobalFilter implements GlobalFilter, Ordered {
                     set(headers, HEADER_USERNAME, session.get("username"));
                     set(headers, HEADER_ROLE, session.get("role"));
                     set(headers, HEADER_GROUP, session.get("group"));
+                    set(headers, HEADER_PERMS, session.get("perms"));
                     set(headers, HEADER_SHOP_ID, session.get("shopId"));
                     set(headers, HEADER_COMPANY_ID, session.get("companyId"));
                     set(headers, HEADER_COURIER_ID, session.get("courierId"));
@@ -131,6 +133,7 @@ public class JwtAuthGlobalFilter implements GlobalFilter, Ordered {
         headers.remove(HEADER_USERNAME);
         headers.remove(HEADER_ROLE);
         headers.remove(HEADER_GROUP);
+        headers.remove(HEADER_PERMS);
         headers.remove(HEADER_SHOP_ID);
         headers.remove(HEADER_COMPANY_ID);
         headers.remove(HEADER_COURIER_ID);

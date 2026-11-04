@@ -80,7 +80,7 @@ public class AfterSaleController {
     public Result<PageResult<AfterSaleVO>> merchantPage(@RequestParam(required = false) String status,
                                                         @RequestParam(defaultValue = "1") int page,
                                                         @RequestParam(defaultValue = "10") int size) {
-        AccessGuard.requireGroup("MERCHANT");
+        AccessGuard.requirePerm("merchant:after-sales");
         return Result.success(afterSaleApplicationService.merchantPage(
                 UserContext.requireShopId(), status, page, size));
     }
@@ -89,7 +89,7 @@ public class AfterSaleController {
     @PostMapping("/{afterSaleNo}/merchant-review")
     public Result<AfterSaleVO> merchantReview(@PathVariable String afterSaleNo,
                                               @Valid @RequestBody AfterSaleReviewRequest request) {
-        AccessGuard.requireGroup("MERCHANT");
+        AccessGuard.requirePerm("merchant:after-sales:review");
         return Result.success("审核完成", afterSaleApplicationService.merchantReview(
                 UserContext.requireShopId(), afterSaleNo, request));
     }
@@ -97,7 +97,7 @@ public class AfterSaleController {
     /** 商家触发退款（平台可代为操作） */
     @PostMapping("/{afterSaleNo}/refund")
     public Result<AfterSaleVO> refund(@PathVariable String afterSaleNo) {
-        AccessGuard.requireGroup("MERCHANT", "PLATFORM");
+        AccessGuard.requirePerm("merchant:after-sales:refund", "admin:audit:aftersale");
         Long shopId = "MERCHANT".equals(UserContext.getGroup()) ? UserContext.requireShopId() : null;
         return Result.success("退款成功", afterSaleApplicationService.refund(shopId, afterSaleNo));
     }
@@ -106,7 +106,7 @@ public class AfterSaleController {
     @PostMapping("/{afterSaleNo}/appeal")
     public Result<AfterSaleVO> appeal(@PathVariable String afterSaleNo,
                                       @RequestBody(required = false) AfterSaleReviewRequest request) {
-        AccessGuard.requireGroup("MERCHANT");
+        AccessGuard.requirePerm("merchant:after-sales:appeal");
         return Result.success("申诉已提交", afterSaleApplicationService.appeal(
                 UserContext.requireShopId(), afterSaleNo, request == null ? null : request.getReason()));
     }
@@ -117,7 +117,7 @@ public class AfterSaleController {
     public Result<PageResult<AfterSaleVO>> platformPage(@RequestParam(required = false) String status,
                                                         @RequestParam(defaultValue = "1") int page,
                                                         @RequestParam(defaultValue = "10") int size) {
-        AccessGuard.requireGroup("PLATFORM");
+        AccessGuard.requirePerm("admin:audit:aftersale");
         return Result.success(afterSaleApplicationService.platformPage(status, page, size));
     }
 
@@ -125,7 +125,7 @@ public class AfterSaleController {
     @PostMapping("/{afterSaleNo}/platform-review")
     public Result<AfterSaleVO> platformReview(@PathVariable String afterSaleNo,
                                               @Valid @RequestBody AfterSaleReviewRequest request) {
-        AccessGuard.requireGroup("PLATFORM");
+        AccessGuard.requirePerm("admin:audit:aftersale");
         return Result.success("审核完成", afterSaleApplicationService.platformReview(afterSaleNo, request));
     }
 
@@ -133,7 +133,7 @@ public class AfterSaleController {
     @PostMapping("/{afterSaleNo}/appeal-review")
     public Result<AfterSaleVO> appealReview(@PathVariable String afterSaleNo,
                                             @Valid @RequestBody AfterSaleReviewRequest request) {
-        AccessGuard.requireGroup("PLATFORM");
+        AccessGuard.requirePerm("admin:audit:aftersale");
         return Result.success("申诉处理完成", afterSaleApplicationService.appealReview(afterSaleNo, request));
     }
 }

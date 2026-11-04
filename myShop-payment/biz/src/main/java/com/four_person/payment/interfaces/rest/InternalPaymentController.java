@@ -25,8 +25,7 @@ public class InternalPaymentController {
 
     @PostMapping("/refund")
     public Result<RefundResultVO> refund(@Valid @RequestBody RefundRequest request) {
-        return Result.success(paymentApplicationService.refundByOrderNo(
-                request.getOrderNo(), request.getReason()));
+        return Result.success(paymentApplicationService.refund(request));
     }
 
     @GetMapping("/orders/{orderNo}/status")

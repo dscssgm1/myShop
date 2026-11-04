@@ -121,7 +121,7 @@ public class MessageApplicationService {
     // ---------------- 客服 ----------------
 
     public List<MessageDtos.SessionVO> csSessions(String type, Long shopId) {
-        AccessGuard.requireGroup("MERCHANT", "PLATFORM");
+        AccessGuard.requirePerm("merchant:cs", "admin:cs");
         String sessionType = StringUtils.hasText(type) ? type : MessageSession.TYPE_SHOP;
         Long scopeShopId = shopId != null ? shopId : UserContext.getShopId();
         return sessionMapper.selectList(Wrappers.<MessageSession>lambdaQuery()
@@ -135,14 +135,14 @@ public class MessageApplicationService {
 
     @Transactional
     public MessageDtos.MessageVO csReply(Long sessionId, String content) {
-        AccessGuard.requireGroup("MERCHANT", "PLATFORM");
+        AccessGuard.requirePerm("merchant:cs", "admin:cs");
         MessageSession session = require(sessionId);
         return append(session, Message.SENDER_CS, content);
     }
 
     @Transactional
     public void readByCs(Long sessionId) {
-        AccessGuard.requireGroup("MERCHANT", "PLATFORM");
+        AccessGuard.requirePerm("merchant:cs", "admin:cs");
         MessageSession session = require(sessionId);
         session.setCsUnread(0);
         sessionMapper.updateById(session);

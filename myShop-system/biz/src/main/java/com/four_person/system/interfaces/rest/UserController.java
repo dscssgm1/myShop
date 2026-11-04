@@ -29,7 +29,7 @@ public class UserController {
     /** 平台管理员：分页查询用户 */
     @GetMapping
     public Result<PageResult<UserDtos.UserVO>> page(UserDtos.UserQuery query) {
-        AccessGuard.requireGroup("PLATFORM");
+        AccessGuard.requirePerm("admin:users");
         return Result.success(userApplicationService.page(query));
     }
 
@@ -58,7 +58,7 @@ public class UserController {
     /** 平台管理员：启用 / 禁用用户 */
     @PutMapping("/{id}/status")
     public Result<Void> updateStatus(@PathVariable Long id, @Valid @RequestBody UserDtos.UpdateStatusRequest request) {
-        AccessGuard.requireGroup("PLATFORM");
+        AccessGuard.requirePerm("admin:users:status");
         userApplicationService.updateStatus(id, request.getStatus());
         return Result.success("状态已更新", null);
     }
@@ -66,7 +66,7 @@ public class UserController {
     /** 平台管理员：调整用户角色 */
     @PutMapping("/{id}/role")
     public Result<Void> updateRole(@PathVariable Long id, @Valid @RequestBody UserDtos.UpdateRoleRequest request) {
-        AccessGuard.requireGroup("PLATFORM");
+        AccessGuard.requirePerm("admin:users:role");
         userApplicationService.updateRole(id, request.getRoleCode());
         return Result.success("角色已更新", null);
     }
@@ -74,14 +74,14 @@ public class UserController {
     /** 平台管理员：查看用户在线登录设备 */
     @GetMapping("/{id}/sessions")
     public Result<List<AuthDtos.SessionVO>> sessions(@PathVariable Long id) {
-        AccessGuard.requireGroup("PLATFORM");
+        AccessGuard.requirePerm("admin:users:session");
         return Result.success(userApplicationService.sessions(id, SecurityUtils.currentUser().getSessionId()));
     }
 
     /** 平台管理员：单点下线用户的指定设备 */
     @DeleteMapping("/{id}/sessions/{sessionId}")
     public Result<Void> kickSession(@PathVariable Long id, @PathVariable String sessionId) {
-        AccessGuard.requireGroup("PLATFORM");
+        AccessGuard.requirePerm("admin:users:session");
         userApplicationService.kickSession(id, sessionId);
         return Result.success("该设备已下线", null);
     }

@@ -87,14 +87,19 @@ class PromotionTest {
     // ==================== 商家活动强制归一 ====================
 
     @Test
-    void merchantActivityMustBeShopOrProductScope() {
+    void merchantActivityMustBeShopOrCategoryScope() {
+        // 商家活动只能圈本店：全平台 / 指定商品都不允许
         assertThatThrownBy(() -> promotion(5L, DiscountRule.fullReduction(Money.zero(), 0, Money.of("1.00")),
                 Scope.all(), true, false, null, null, null, null))
                 .isInstanceOf(BusinessException.class)
                 .hasMessageContaining("商家活动范围只能是本店商品");
         assertThatThrownBy(() -> promotion(5L, DiscountRule.fullReduction(Money.zero(), 0, Money.of("1.00")),
-                new Scope(ScopeType.CATEGORY, Set.of(7L)), true, false, null, null, null, null))
+                new Scope(ScopeType.PRODUCT, Set.of(9L)), true, false, null, null, null, null))
                 .isInstanceOf(BusinessException.class);
+        // CATEGORY（本店指定分类）合法
+        assertThat(promotion(5L, DiscountRule.fullReduction(Money.zero(), 0, Money.of("1.00")),
+                new Scope(ScopeType.CATEGORY, Set.of(7L)), true, false, null, null, null, null)
+                .isMerchantActivity()).isTrue();
     }
 
     @Test

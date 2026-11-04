@@ -47,7 +47,7 @@ public class ShopAdminApplicationService {
     // ==================== 店铺列表 ====================
 
     public PageResult<PlatformDtos.ShopVO> page(String keyword, Integer status, int page, int size) {
-        AccessGuard.requireGroup("PLATFORM");
+        AccessGuard.requirePerm("admin:shops");
         int pageNo = Math.max(page, 1);
         int pageSize = size < 1 ? 10 : Math.min(size, 100);
 
@@ -101,7 +101,7 @@ public class ShopAdminApplicationService {
     }
 
     public void updateStatus(Long id, Integer status, String reason) {
-        AccessGuard.requireGroup("PLATFORM");
+        AccessGuard.requirePerm("admin:shops:status");
         if (status == null || (status != 0 && status != 1)) {
             throw new BusinessException(40001, "状态值不合法");
         }
@@ -116,7 +116,7 @@ public class ShopAdminApplicationService {
     // ==================== 商家入驻审核 ====================
 
     public PageResult<PlatformDtos.ShopApplyVO> pageApplies(String status, String keyword, int page, int size) {
-        AccessGuard.requireGroup("PLATFORM");
+        AccessGuard.requirePerm("admin:audit:shopApply");
         int pageNo = Math.max(page, 1);
         int pageSize = size < 1 ? 10 : Math.min(size, 100);
 
@@ -150,7 +150,7 @@ public class ShopAdminApplicationService {
 
     /** 待审核申请数（菜单角标） */
     public long pendingCount() {
-        AccessGuard.requireGroup("PLATFORM");
+        AccessGuard.requirePerm("admin:shops");
         Long count = jdbcTemplate.queryForObject(
                 "SELECT COUNT(*) FROM shop_apply WHERE status = 'PENDING' AND deleted = 0", Long.class);
         return count == null ? 0 : count;
@@ -162,7 +162,7 @@ public class ShopAdminApplicationService {
      */
     @Transactional
     public PlatformDtos.ShopApplyVO approveApply(Long id, String reason) {
-        AccessGuard.requireGroup("PLATFORM");
+        AccessGuard.requirePerm("admin:audit:shopApply");
         Map<String, Object> apply = requirePendingApply(id);
         Long userId = asLong(apply.get("user_id"));
 
@@ -222,7 +222,7 @@ public class ShopAdminApplicationService {
     /** 审核驳回：填写原因并站内通知申请人 */
     @Transactional
     public PlatformDtos.ShopApplyVO rejectApply(Long id, String reason) {
-        AccessGuard.requireGroup("PLATFORM");
+        AccessGuard.requirePerm("admin:audit:shopApply");
         if (!StringUtils.hasText(reason)) {
             throw new BusinessException(40001, "请填写驳回原因");
         }

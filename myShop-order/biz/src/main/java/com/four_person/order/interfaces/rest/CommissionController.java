@@ -26,7 +26,7 @@ public class CommissionController {
     /** 商家账单汇总 */
     @GetMapping("/merchant/summary")
     public Result<CommissionDtos.CommissionSummaryVO> merchantSummary() {
-        AccessGuard.requireGroup("MERCHANT", "PLATFORM");
+        AccessGuard.requirePerm("merchant:bill");
         return Result.success(commissionApplicationService.summary(UserContext.requireShopId()));
     }
 
@@ -35,14 +35,14 @@ public class CommissionController {
     public Result<PageResult<CommissionDtos.CommissionVO>> merchantPage(
             @RequestParam(defaultValue = "1") int page,
             @RequestParam(defaultValue = "10") int size) {
-        AccessGuard.requireGroup("MERCHANT", "PLATFORM");
+        AccessGuard.requirePerm("merchant:bill");
         return Result.success(commissionApplicationService.page(UserContext.requireShopId(), page, size));
     }
 
     /** 平台账单汇总：全平台累计 + 各店铺 */
     @GetMapping("/admin/summary")
     public Result<CommissionDtos.CommissionAdminSummaryVO> adminSummary() {
-        AccessGuard.requireGroup("PLATFORM");
+        AccessGuard.requirePerm("admin:commission");
         return Result.success(commissionApplicationService.adminSummary());
     }
 
@@ -52,7 +52,7 @@ public class CommissionController {
             @RequestParam(required = false) Long shopId,
             @RequestParam(defaultValue = "1") int page,
             @RequestParam(defaultValue = "10") int size) {
-        AccessGuard.requireGroup("PLATFORM");
+        AccessGuard.requirePerm("admin:commission");
         return Result.success(commissionApplicationService.page(shopId, page, size));
     }
 }

@@ -35,44 +35,44 @@ public class PromotionController {
     /** 商家自建活动列表 */
     @GetMapping("/merchant")
     public Result<List<PromotionVO>> merchantList() {
-        AccessGuard.requireGroup("MERCHANT");
+        AccessGuard.requirePerm("merchant:marketing");
         return Result.success(promotionApplicationService.listByShop(UserContext.requireShopId()));
     }
 
     @PostMapping("/merchant")
     public Result<PromotionVO> merchantCreate(@Valid @RequestBody PromotionRequest request) {
-        AccessGuard.requireGroup("MERCHANT");
+        AccessGuard.requirePerm("merchant:marketing:promo-create");
         return Result.success(promotionApplicationService.createForShop(UserContext.requireShopId(), request));
     }
 
     @PutMapping("/merchant/{id}")
     public Result<PromotionVO> merchantUpdate(@PathVariable Long id, @Valid @RequestBody PromotionRequest request) {
-        AccessGuard.requireGroup("MERCHANT");
+        AccessGuard.requirePerm("merchant:marketing:promo-update");
         return Result.success(promotionApplicationService.updateForShop(UserContext.requireShopId(), id, request));
     }
 
     @PostMapping("/merchant/{id}/end")
     public Result<Void> merchantEnd(@PathVariable Long id) {
-        AccessGuard.requireGroup("MERCHANT");
+        AccessGuard.requirePerm("merchant:marketing:promo-end");
         promotionApplicationService.endForShop(UserContext.requireShopId(), id);
         return Result.success();
     }
 
     @PostMapping
     public Result<PromotionVO> create(@Valid @RequestBody PromotionRequest request) {
-        AccessGuard.requireGroup("PLATFORM");
+        AccessGuard.requirePerm("admin:promotions:create");
         return Result.success(promotionApplicationService.create(request));
     }
 
     @PutMapping("/{id}")
     public Result<PromotionVO> update(@PathVariable Long id, @Valid @RequestBody PromotionRequest request) {
-        AccessGuard.requireGroup("PLATFORM");
+        AccessGuard.requirePerm("admin:promotions:update");
         return Result.success(promotionApplicationService.update(id, request));
     }
 
     @PostMapping("/{id}/end")
     public Result<Void> end(@PathVariable Long id) {
-        AccessGuard.requireGroup("PLATFORM");
+        AccessGuard.requirePerm("admin:promotions:end");
         promotionApplicationService.end(id);
         return Result.success();
     }

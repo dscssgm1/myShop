@@ -10,6 +10,9 @@ public interface CouponTemplateRepository {
 
     List<CouponTemplate> findActive(LocalDateTime now);
 
+    /** 积分商城货架：设了积分价（points_price > 0）且在有效期内的券 */
+    List<CouponTemplate> findPointsExchangeable(LocalDateTime now);
+
     /** 指定店铺发放的全部券（含已结束），商家券管理用 */
     List<CouponTemplate> findByShop(Long shopId);
 

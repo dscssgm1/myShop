@@ -137,6 +137,17 @@ public abstract class DiscountApiBBTSupport {
 
     // ==================== 身份与请求 ====================
 
+    /** 平台端权限全集（网关透传 X-User-Perms，AccessGuard.requirePerm 校验） */
+    private static final String PLATFORM_PERMS = String.join(",",
+            "admin:coupons:create", "admin:coupons:end",
+            "admin:promotions:create", "admin:promotions:end",
+            "admin:promotions:update", "admin:promotions:enrollment");
+    /** 商家端权限全集 */
+    private static final String MERCHANT_PERMS = String.join(",",
+            "merchant:marketing", "merchant:marketing:coupon-create", "merchant:marketing:coupon-end",
+            "merchant:marketing:promo-create", "merchant:marketing:promo-update", "merchant:marketing:promo-end",
+            "merchant:enrollment", "merchant:enrollment:apply");
+
     protected RequestPostProcessor platform() {
         return headers(1L, "PLATFORM", null);
     }
@@ -154,9 +165,15 @@ public abstract class DiscountApiBBTSupport {
     }
 
     private RequestPostProcessor headers(long userId, String group, Long shopId) {
+        // 普通用户不带权限头（无任何管理端权限码）；平台/商家按端带权限全集
+        String perms = "PLATFORM".equals(group) ? PLATFORM_PERMS
+                : "MERCHANT".equals(group) ? MERCHANT_PERMS : null;
         return (MockHttpServletRequest request) -> {
             request.addHeader(UserContext.USER_ID_HEADER, String.valueOf(userId));
             request.addHeader(UserContext.GROUP_HEADER, group);
+            if (perms != null) {
+                request.addHeader(UserContext.PERMS_HEADER, perms);
+            }
             if (shopId != null) {
                 request.addHeader(UserContext.SHOP_ID_HEADER, String.valueOf(shopId));
             }

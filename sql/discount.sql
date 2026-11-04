@@ -57,6 +57,7 @@ CREATE TABLE IF NOT EXISTS coupon_template (
     total_stock      INT            NOT NULL DEFAULT 0,
     claimed_count    INT            NOT NULL DEFAULT 0,
     per_user_limit   INT            NOT NULL DEFAULT 1,
+    points_price     INT            NULL COMMENT '积分兑换价：NULL/0 普通免费领取券；>0 仅在积分商城用积分兑换',
     valid_start      DATETIME       NULL,
     valid_end        DATETIME       NULL,
     status           VARCHAR(16)    NOT NULL DEFAULT 'ACTIVE',

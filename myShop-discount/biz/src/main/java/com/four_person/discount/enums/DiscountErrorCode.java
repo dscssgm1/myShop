@@ -11,7 +11,8 @@ public enum DiscountErrorCode implements ErrorCode {
     COUPON_STOCK_EMPTY(40005, "优惠券已领完"),
     CLAIM_LIMIT_REACHED(40006, "已达到领取上限"),
     INVALID_RULE(40007, "促销规则配置不合法"),
-    INVALID_SEGMENT(40008, "用户分层不合法");
+    INVALID_SEGMENT(40008, "用户分层不合法"),
+    PROMOTION_NOT_APPLICABLE(40021, "所选促销活动对本单不可用");
 
     private final int code;
     private final String message;

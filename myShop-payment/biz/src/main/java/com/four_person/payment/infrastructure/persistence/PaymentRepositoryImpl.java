@@ -7,6 +7,7 @@ import com.four_person.payment.infrastructure.persistence.mapper.PaymentMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.Optional;
 
@@ -26,6 +27,12 @@ public class PaymentRepositoryImpl implements PaymentRepository {
     public Optional<Payment> findByOrderNo(String orderNo) {
         return Optional.ofNullable(paymentMapper.selectOne(Wrappers.<Payment>lambdaQuery()
                 .eq(Payment::getOrderNo, orderNo)));
+    }
+
+    @Override
+    public Optional<Payment> findByGroupNo(String groupNo) {
+        return Optional.ofNullable(paymentMapper.selectOne(Wrappers.<Payment>lambdaQuery()
+                .eq(Payment::getGroupNo, groupNo)));
     }
 
     @Override
@@ -51,5 +58,10 @@ public class PaymentRepositoryImpl implements PaymentRepository {
     @Override
     public boolean markRefunded(String paymentNo, LocalDateTime refundedAt, String reason) {
         return paymentMapper.markRefunded(paymentNo, refundedAt, reason) > 0;
+    }
+
+    @Override
+    public boolean markPartialRefund(String paymentNo, BigDecimal delta, LocalDateTime refundedAt, String reason) {
+        return paymentMapper.markPartialRefund(paymentNo, delta, refundedAt, reason) > 0;
     }
 }
