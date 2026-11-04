@@ -26,7 +26,6 @@ import org.springframework.test.web.servlet.request.RequestPostProcessor;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -41,7 +40,6 @@ import static org.mockito.Mockito.lenient;
  * 隔离约定：
  * - 测试数据统一用 BBT- 前缀标题 / 900xxx 的高位 ID，前后各清理一次；
  * - 库中已有活动会污染算价断言，测试期间快照 status 并整体暂停，结束后恢复；
- * - discount 配置组（config_item）同样快照/恢复，供开关类用例自由改写；
  * - 商品/店铺查询端口 MockBean，固定返回 900301/900302/900303 三个测试商品。
  */
 @SpringBootTest
@@ -64,7 +62,6 @@ public abstract class DiscountApiBBTSupport {
     @MockBean protected ProductQueryPort productQueryPort;
     @MockBean protected ShopQueryPort shopQueryPort;
 
-    private Map<String, String> configSnapshot;
     private List<Map<String, Object>> promotionStatusSnapshot;
 
     @BeforeEach
@@ -90,11 +87,6 @@ public abstract class DiscountApiBBTSupport {
     }
 
     private void snapshotDbState() {
-        configSnapshot = new HashMap<>();
-        jdbcTemplate.query("SELECT config_key, config_value FROM config_item WHERE config_group = 'discount'",
-                rs -> {
-                    configSnapshot.put(rs.getString("config_key"), rs.getString("config_value"));
-                });
         promotionStatusSnapshot = jdbcTemplate.queryForList(
                 "SELECT id, status FROM promotion WHERE title NOT LIKE 'BBT-%'");
         // 测试期间暂停所有存量活动，让算价断言只受 BBT- 活动影响
@@ -108,17 +100,6 @@ public abstract class DiscountApiBBTSupport {
                         row.get("status"), row.get("id"));
             }
         }
-        if (configSnapshot != null) {
-            configSnapshot.forEach((key, value) ->
-                    jdbcTemplate.update("UPDATE config_item SET config_value = ? " +
-                            "WHERE config_group = 'discount' AND config_key = ?", value, key));
-        }
-    }
-
-    /** 修改 discount 配置开关（结束后由基类恢复） */
-    protected void setConfig(String key, String value) {
-        jdbcTemplate.update("UPDATE config_item SET config_value = ? " +
-                "WHERE config_group = 'discount' AND config_key = ?", value, key);
     }
 
     private void stubPorts() {

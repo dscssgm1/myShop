@@ -35,6 +35,12 @@ public class CouponTemplatePO {
 
     private Integer perUserLimit;
 
+    /** 是否可与促销活动同用：1 是 0 否 */
+    private Integer couponStackable;
+
+    /** 是否可与其他优惠券叠加：1 是 0 否 */
+    private Integer stackable;
+
     private LocalDateTime validStart;
 
     private LocalDateTime validEnd;

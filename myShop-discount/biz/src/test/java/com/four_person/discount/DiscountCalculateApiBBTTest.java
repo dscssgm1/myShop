@@ -11,7 +11,7 @@ import java.util.Map;
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * 算价黑盒（端到端）：活动门槛/阶梯/折扣、券自动与指定选择、叠加开关、报名收窄、
+ * 算价黑盒（端到端）：活动门槛/阶梯/折扣、券自动与指定选择、券模板叠加配置、报名收窄、
  * 承担拆分。存量活动已被基类暂停，所有断言都是精确值。
  */
 class DiscountCalculateApiBBTTest extends DiscountApiBBTSupport {
@@ -175,11 +175,11 @@ class DiscountCalculateApiBBTTest extends DiscountApiBBTSupport {
     }
 
     @Test
-    void stackingDisallowedPicksBetterSide() throws Exception {
-        // 活动 20 < 券 30 → 留券
+    void stackingConflictAutoPicksBetterSide() throws Exception {
+        // 活动 20 < 券 30 → 自动模式静默留券
         createActivity("BBT-不可叠20", "FULL_REDUCTION", 90, 20, "ALL", null, 0, false);
         long coupon = claimOf(USER_1, platformCoupon("BBT-券30", 80, 30));
-        JsonNode vo = calculate(customer(USER_1), items99_99(), List.of(coupon));
+        JsonNode vo = calculate(customer(USER_1), items99_99(), null);
         assertThat(vo.get("couponDiscount").doubleValue()).isEqualTo(30);
         assertThat(vo.get("promotionDiscount").doubleValue()).isZero();
         assertThat(vo.get("payAmount").doubleValue()).isEqualTo(69.99);
@@ -187,48 +187,91 @@ class DiscountCalculateApiBBTTest extends DiscountApiBBTSupport {
 
         // 反过来活动 40 > 券 30 → 留活动
         createActivity("BBT-不可叠40", "FULL_REDUCTION", 60, 40, "ALL", null, 0, false);
-        JsonNode vo2 = calculate(customer(USER_1), items99_99(), List.of(coupon));
+        JsonNode vo2 = calculate(customer(USER_1), items99_99(), null);
         assertThat(vo2.get("promotionDiscount").doubleValue()).isEqualTo(40);
         assertThat(vo2.get("couponDiscount").doubleValue()).isZero();
         assertThat(vo2.get("payAmount").doubleValue()).isEqualTo(59.99);
     }
 
     @Test
-    void globalStackingSwitchPicksBestOfBothSides() throws Exception {
-        // 活动允许叠券，但平台全局关闭叠加 → 仍取两侧最优
-        setConfig("promotion-coupon-stackable", "false");
-        createActivity("BBT-全局关叠加", "FULL_REDUCTION", 90, 20, "ALL", null, 0, true);
-        long coupon = claimOf(USER_1, platformCoupon("BBT-全局券", 80, 30));
-
-        JsonNode vo = calculate(customer(USER_1), items99_99(), List.of(coupon));
-        assertThat(vo.get("totalDiscount").doubleValue()).isEqualTo(30);
-        assertThat(vo.get("couponDiscount").doubleValue()).isEqualTo(30);
-        assertThat(vo.get("promotionDiscount").doubleValue()).isZero();
+    void stackingConflictSelectedErrors() throws Exception {
+        // 指定模式冲突直接报错：活动侧不允许叠券
+        createActivity("BBT-不可叠选券", "FULL_REDUCTION", 90, 20, "ALL", null, 0, false);
+        long coupon = claimOf(USER_1, platformCoupon("BBT-指定券30", 80, 30));
+        JsonNode root = expectCode(post(URI + "/calculate", body("couponIds", List.of(coupon),
+                "items", items99_99()), customer(USER_1)), 40003);
+        assertThat(root.get("message").asText()).contains("当前促销活动不可与优惠券叠加使用");
     }
 
     @Test
-    void maxCouponsPerOrderConfigLimitsStacking() throws Exception {
+    void couponNotStackableWithActivityEndToEnd() throws Exception {
+        // 券模板配置「不可与活动同用」：自动模式静默二选一，指定模式报错
+        long template = longOf(okData(post("/coupons/templates", body(
+                "title", "BBT-不可与活动同用券", "thresholdAmount", 80, "discountAmount", 30,
+                "scopeType", "ALL", "totalStock", 100, "perUserLimit", 5,
+                "couponStackable", false,
+                "validStart", timeFromNow(-1), "validEnd", timeFromNow(7)), platform())), "id");
+        long coupon = claimOf(USER_1, template);
+        createActivity("BBT-可叠20", "FULL_REDUCTION", 90, 20, "ALL", null, 50, true);
+
+        // 自动：券 30 > 活动 20 → 仅用券
+        JsonNode vo = calculate(customer(USER_1), items99_99(), null);
+        assertThat(vo.get("couponDiscount").doubleValue()).isEqualTo(30);
+        assertThat(vo.get("promotionDiscount").doubleValue()).isZero();
+
+        // 指定：冲突报错
+        JsonNode root = expectCode(post(URI + "/calculate", body("couponIds", List.of(coupon),
+                "items", items99_99()), customer(USER_1)), 40003);
+        assertThat(root.get("message").asText()).contains("不可与促销活动叠加使用");
+    }
+
+    @Test
+    void nonStackableCouponCannotCombineWithOthers() throws Exception {
+        // 券模板配置「不可与其他券叠加」：自动模式取最优单张，指定多张直接报错
+        long template = longOf(okData(post("/coupons/templates", body(
+                "title", "BBT-不可叠加券30", "thresholdAmount", 80, "discountAmount", 30,
+                "scopeType", "ALL", "totalStock", 100, "perUserLimit", 5,
+                "stackable", false,
+                "validStart", timeFromNow(-1), "validEnd", timeFromNow(7)), platform())), "id");
+        long solo = claimOf(USER_1, template);
+        long other = claimOf(USER_1, platformCoupon("BBT-可叠券10", 80, 10));
+
+        // 自动：30 > 10 → 单独用不可叠加券
+        JsonNode vo = calculate(customer(USER_1), items99_99(), null);
+        assertThat(vo.get("couponDiscount").doubleValue()).isEqualTo(30);
+        assertThat(vo.get("appliedCoupons")).hasSize(1);
+        assertThat(vo.get("appliedCouponId").asLong()).isEqualTo(solo);
+
+        // 指定两张 → 报错
+        JsonNode root = expectCode(post(URI + "/calculate", body("couponIds", List.of(solo, other),
+                "items", items99_99()), customer(USER_1)), 40003);
+        assertThat(root.get("message").asText()).contains("不可与其他优惠券叠加使用");
+
+        // 指定一张 → 正常
+        JsonNode single = calculate(customer(USER_1), items99_99(), List.of(solo));
+        assertThat(single.get("couponDiscount").doubleValue()).isEqualTo(30);
+    }
+
+    @Test
+    void maxCouponsPerOrderLimitIsThree() throws Exception {
         platformCoupon("BBT-多券30", 80, 30);
         platformCoupon("BBT-多券10", 80, 10);
         long big = claimOf(USER_1, findTemplateByTitle("BBT-多券30"));
         long small = claimOf(USER_1, findTemplateByTitle("BBT-多券10"));
 
-        // 默认上限 3 → 指定两张全用
+        // 指定两张全用
         JsonNode vo = calculate(customer(USER_1), items99_99(), List.of(big, small));
         assertThat(vo.get("couponDiscount").doubleValue()).isEqualTo(40);
         assertThat(vo.get("appliedCoupons")).hasSize(2);
 
-        // 上限收到 1 → 自动模式收敛为最优一张
-        setConfig("max-coupons-per-order", "1");
-        JsonNode limited = calculate(customer(USER_1), items99_99(), null);
-        assertThat(limited.get("couponDiscount").doubleValue()).isEqualTo(30);
-        assertThat(limited.get("appliedCoupons")).hasSize(1);
-        assertThat(limited.get("appliedCouponId").asLong()).isEqualTo(big);
-
-        // 指定数量超出上限 → 直接拒绝
-        JsonNode root = expectCode(post(URI + "/calculate", body("couponIds", List.of(big, small),
+        // 指定超出上限 3 张 → 直接拒绝
+        platformCoupon("BBT-多券5", 80, 5);
+        platformCoupon("BBT-多券1", 80, 1);
+        long third = claimOf(USER_1, findTemplateByTitle("BBT-多券5"));
+        long fourth = claimOf(USER_1, findTemplateByTitle("BBT-多券1"));
+        JsonNode root = expectCode(post(URI + "/calculate", body("couponIds", List.of(big, small, third, fourth),
                 "items", items99_99()), customer(USER_1)), 40003);
-        assertThat(root.get("message").asText()).contains("单笔订单最多叠加 1 张优惠券");
+        assertThat(root.get("message").asText()).contains("单笔订单最多叠加 3 张优惠券");
     }
 
     // ==================== 报名收窄端到端 ====================

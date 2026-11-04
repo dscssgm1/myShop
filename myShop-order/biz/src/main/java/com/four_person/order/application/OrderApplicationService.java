@@ -120,11 +120,7 @@ public class OrderApplicationService {
         List<DiscountResultVO.CouponUsage> couponUsages = prepared.discount.getAppliedCoupons() == null
                 ? List.of() : prepared.discount.getAppliedCoupons();
 
-        // 券核销明细挂在单个订单上，跨店铺时无法拆分释放，维持单店铺限制
-        if (!couponUsages.isEmpty() && allocations.size() > 1) {
-            throw new BusinessException(40010, "跨店铺下单暂不支持使用优惠券，请分店铺结算");
-        }
-
+        // 跨店铺也允许用券：券核销明细会写入每张子订单，取消任一子订单按 orderNo 幂等释放一次
         List<CreateOrderVO.OrderBrief> briefs = new ArrayList<>();
         for (AllocatedShop allocated : allocations) {
             String orderNo = orderNoGenerator.next();
@@ -185,7 +181,7 @@ public class OrderApplicationService {
         stockRequest.setItems(prepared.stockItems);
         Results.data(productInternalApi.deductStock(stockRequest));
 
-        // 逐张核销优惠券（仅单店铺场景），失败释放已核销的券并回滚库存
+        // 逐张核销优惠券（订单号取第一张子订单），失败释放已核销的券并回滚库存
         if (!couponUsages.isEmpty()) {
             String orderNo = briefs.get(0).getOrderNo();
             List<Long> usedCoupons = new ArrayList<>();

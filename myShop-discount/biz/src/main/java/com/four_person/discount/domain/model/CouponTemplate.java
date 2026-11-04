@@ -24,12 +24,17 @@ public class CouponTemplate {
     private final int totalStock;
     private final int claimedCount;
     private final int perUserLimit;
+    /** 是否可与促销活动同用（null 视为可） */
+    private final boolean couponStackable;
+    /** 是否可与其他优惠券叠加（false 时一单只能单独使用本券） */
+    private final boolean stackable;
     private final LocalDateTime validStart;
     private final LocalDateTime validEnd;
     private final String status;
 
     public CouponTemplate(Long id, Long shopId, String title, Money thresholdAmount, Money discountAmount, Scope scope,
                           int totalStock, int claimedCount, int perUserLimit,
+                          Boolean couponStackable, Boolean stackable,
                           LocalDateTime validStart, LocalDateTime validEnd, String status) {
         if (title == null || title.isBlank()) {
             throw new BusinessException(DiscountErrorCode.INVALID_RULE, "优惠券名称不能为空");
@@ -61,6 +66,8 @@ public class CouponTemplate {
         this.totalStock = totalStock;
         this.claimedCount = claimedCount;
         this.perUserLimit = perUserLimit;
+        this.couponStackable = couponStackable == null || couponStackable;
+        this.stackable = stackable == null || stackable;
         this.validStart = validStart;
         this.validEnd = validEnd;
         this.status = status == null || status.isBlank() ? STATUS_ACTIVE : status;
@@ -100,17 +107,17 @@ public class CouponTemplate {
 
     public CouponTemplate withId(Long newId) {
         return new CouponTemplate(newId, shopId, title, thresholdAmount, discountAmount, scope,
-                totalStock, claimedCount, perUserLimit, validStart, validEnd, status);
+                totalStock, claimedCount, perUserLimit, couponStackable, stackable, validStart, validEnd, status);
     }
 
     public CouponTemplate withClaimedCount(int count) {
         return new CouponTemplate(id, shopId, title, thresholdAmount, discountAmount, scope,
-                totalStock, count, perUserLimit, validStart, validEnd, status);
+                totalStock, count, perUserLimit, couponStackable, stackable, validStart, validEnd, status);
     }
 
     public CouponTemplate ended() {
         return new CouponTemplate(id, shopId, title, thresholdAmount, discountAmount, scope,
-                totalStock, claimedCount, perUserLimit, validStart, validEnd, STATUS_ENDED);
+                totalStock, claimedCount, perUserLimit, couponStackable, stackable, validStart, validEnd, STATUS_ENDED);
     }
 
     public Long getId() {
@@ -155,6 +162,14 @@ public class CouponTemplate {
 
     public int getPerUserLimit() {
         return perUserLimit;
+    }
+
+    public boolean isCouponStackable() {
+        return couponStackable;
+    }
+
+    public boolean isStackable() {
+        return stackable;
     }
 
     public LocalDateTime getValidStart() {

@@ -20,4 +20,14 @@ public record CouponOffer(UserCoupon coupon, CouponTemplate template) {
     public Money platformBearOf(Money discount) {
         return template.isMerchantCoupon() ? Money.zero() : discount;
     }
+
+    /** 该券是否可与促销活动同用（取模板配置） */
+    public boolean isActivityStackable() {
+        return template.isCouponStackable();
+    }
+
+    /** 该券是否可与其他优惠券叠加（取模板配置） */
+    public boolean isStackable() {
+        return template.isStackable();
+    }
 }

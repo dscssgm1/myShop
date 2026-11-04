@@ -24,7 +24,7 @@ class CouponTemplateTest {
                                     int totalStock, int claimedCount, int perUserLimit,
                                     LocalDateTime validStart, LocalDateTime validEnd, String status) {
         return new CouponTemplate(1L, shopId, "BBT-测试券", Money.of(threshold), Money.of(amount), scope,
-                totalStock, claimedCount, perUserLimit, validStart, validEnd, status);
+                totalStock, claimedCount, perUserLimit, null, null, validStart, validEnd, status);
     }
 
     // ==================== 构造校验 ====================
@@ -32,7 +32,7 @@ class CouponTemplateTest {
     @Test
     void shouldRejectInvalidConstruction() {
         assertThatThrownBy(() -> new CouponTemplate(1L, 0L, " ", Money.zero(), Money.of("5.00"), Scope.all(),
-                10, 0, 1, null, null, null)).isInstanceOf(BusinessException.class);
+                10, 0, 1, null, null, null, null, null)).isInstanceOf(BusinessException.class);
         assertThatThrownBy(() -> template(0L, "10", "0", Scope.all(), 10, 0, 1, null, null, null))
                 .isInstanceOf(BusinessException.class);
         assertThatThrownBy(() -> template(0L, "10", "-1", Scope.all(), 10, 0, 1, null, null, null))
@@ -65,9 +65,31 @@ class CouponTemplateTest {
     @Test
     void shouldDefaultNullThresholdAndStatus() {
         CouponTemplate template = new CouponTemplate(1L, 0L, "券", null, Money.of("5.00"), Scope.all(),
-                10, 0, 1, null, null, null);
+                10, 0, 1, null, null, null, null, null);
         assertThat(template.getThresholdAmount().amount()).isEqualByComparingTo("0.00");
         assertThat(template.getStatus()).isEqualTo(CouponTemplate.STATUS_ACTIVE);
+    }
+
+    // ==================== 叠加配置 ====================
+
+    @Test
+    void stackingFlagsDefaultTrueWhenNull() {
+        CouponTemplate template = template(0L, "0", "5", Scope.all(), 10, 0, 1, null, null, null);
+        assertThat(template.isCouponStackable()).isTrue();
+        assertThat(template.isStackable()).isTrue();
+    }
+
+    @Test
+    void stackingFlagsKeepExplicitValues() {
+        CouponTemplate noActivity = new CouponTemplate(1L, 0L, "券", Money.zero(), Money.of("5.00"), Scope.all(),
+                10, 0, 1, false, true, null, null, null);
+        assertThat(noActivity.isCouponStackable()).isFalse();
+        assertThat(noActivity.isStackable()).isTrue();
+
+        CouponTemplate soloOnly = new CouponTemplate(1L, 0L, "券", Money.zero(), Money.of("5.00"), Scope.all(),
+                10, 0, 1, true, false, null, null, null);
+        assertThat(soloOnly.isCouponStackable()).isTrue();
+        assertThat(soloOnly.isStackable()).isFalse();
     }
 
     // ==================== 活动中的时间边界 ====================

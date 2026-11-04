@@ -38,5 +38,11 @@ public class AvailableCoupon {
 
     private String shopName;
 
+    /** 是否可与促销活动同用 */
+    private Boolean couponStackable;
+
+    /** 是否可与其他优惠券叠加 */
+    private Boolean stackable;
+
     private LocalDateTime expiredAt;
 }

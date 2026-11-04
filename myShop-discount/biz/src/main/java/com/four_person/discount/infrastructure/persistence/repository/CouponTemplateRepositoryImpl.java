@@ -80,6 +80,8 @@ public class CouponTemplateRepositoryImpl implements CouponTemplateRepository {
                 po.getTotalStock() == null ? 0 : po.getTotalStock(),
                 po.getClaimedCount() == null ? 0 : po.getClaimedCount(),
                 po.getPerUserLimit() == null ? 1 : po.getPerUserLimit(),
+                po.getCouponStackable() == null || po.getCouponStackable() == 1,
+                po.getStackable() == null || po.getStackable() == 1,
                 po.getValidStart(), po.getValidEnd(), po.getStatus());
     }
 
@@ -95,6 +97,8 @@ public class CouponTemplateRepositoryImpl implements CouponTemplateRepository {
         po.setTotalStock(template.getTotalStock());
         po.setClaimedCount(template.getClaimedCount());
         po.setPerUserLimit(template.getPerUserLimit());
+        po.setCouponStackable(template.isCouponStackable() ? 1 : 0);
+        po.setStackable(template.isStackable() ? 1 : 0);
         po.setValidStart(template.getValidStart());
         po.setValidEnd(template.getValidEnd());
         po.setStatus(template.getStatus());

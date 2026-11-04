@@ -11,7 +11,6 @@ import com.four_person.discount.domain.model.Money;
 import com.four_person.discount.domain.model.OrderLine;
 import com.four_person.discount.domain.model.ProductSnapshot;
 import com.four_person.discount.domain.model.Promotion;
-import com.four_person.discount.domain.model.PromotionSettings;
 import com.four_person.discount.domain.model.UserCoupon;
 import com.four_person.discount.domain.repository.CouponTemplateRepository;
 import com.four_person.discount.domain.repository.PromotionEnrollmentRepository;
@@ -21,24 +20,19 @@ import com.four_person.discount.domain.service.DiscountPricingService;
 import com.four_person.discount.enums.CouponStatus;
 import com.four_person.discount.enums.ScopeType;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.util.StringUtils;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-@Slf4j
 @Service
 @RequiredArgsConstructor
 public class DiscountApplicationService {
@@ -49,7 +43,6 @@ public class DiscountApplicationService {
     private final UserCouponRepository userCouponRepository;
     private final DiscountPricingService discountPricingService;
     private final ShopQueryPort shopQueryPort;
-    private final JdbcTemplate jdbcTemplate;
 
     /**
      * 订单算价入口：按平台/商家活动与优惠券（可多张叠加）计算最终应付与费用承担，
@@ -63,7 +56,7 @@ public class DiscountApplicationService {
         List<CouponOffer> offers = offers(userId, now);
 
         DiscountSelection selection = discountPricingService.calculate(
-                lines, promotions, offers, selectedCouponIds, loadSettings(), now);
+                lines, promotions, offers, selectedCouponIds, now);
         return toResultVO(selection);
     }
 
@@ -103,6 +96,8 @@ public class DiscountApplicationService {
             vo.setScopeText(scopeText(template.getScope().type()));
             vo.setShopId(template.isMerchantCoupon() ? template.getShopId() : null);
             vo.setShopName(template.isMerchantCoupon() ? shopName(template.getShopId()) : null);
+            vo.setCouponStackable(template.isCouponStackable());
+            vo.setStackable(template.isStackable());
             vo.setExpiredAt(coupon.getExpiredAt());
             result.add(vo);
         }
@@ -131,40 +126,6 @@ public class DiscountApplicationService {
             result.add(promotion.narrowedToProducts(approved));
         }
         return result;
-    }
-
-    private PromotionSettings loadSettings() {
-        try {
-            Map<String, String> config = jdbcTemplate.query(
-                    "SELECT config_key, config_value FROM config_item WHERE config_group = 'discount'",
-                    rs -> {
-                        Map<String, String> values = new HashMap<>();
-                        while (rs.next()) {
-                            values.put(rs.getString("config_key"), rs.getString("config_value"));
-                        }
-                        return values;
-                    });
-            boolean stackable = !"false".equalsIgnoreCase(
-                    config.getOrDefault("promotion-coupon-stackable", "true"));
-            boolean multiCoupon = !"false".equalsIgnoreCase(
-                    config.getOrDefault("multi-coupon-enabled", "true"));
-            int maxCoupons = parseMaxCoupons(config.get("max-coupons-per-order"));
-            return new PromotionSettings(stackable, multiCoupon, maxCoupons);
-        } catch (Exception ex) {
-            log.warn("读取折扣规则配置失败，使用默认设置", ex);
-            return PromotionSettings.defaults();
-        }
-    }
-
-    private int parseMaxCoupons(String raw) {
-        if (!StringUtils.hasText(raw)) {
-            return 3;
-        }
-        try {
-            return Integer.parseInt(raw.trim());
-        } catch (NumberFormatException ex) {
-            return 3;
-        }
     }
 
     private List<CouponOffer> offers(Long userId, LocalDateTime now) {

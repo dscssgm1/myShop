@@ -78,6 +78,7 @@ public class CouponApplicationService {
         CouponTemplate template = new CouponTemplate(null, owner, request.getTitle(),
                 Money.of(request.getThresholdAmount()), Money.of(request.getDiscountAmount()),
                 new Scope(scopeType, scopeIds), request.getTotalStock(), 0, request.getPerUserLimit(),
+                request.getCouponStackable(), request.getStackable(),
                 request.getValidStart(), request.getValidEnd(), request.getStatus());
         return toTemplateVO(templateRepository.save(template), false);
     }
@@ -222,6 +223,8 @@ public class CouponApplicationService {
         vo.setClaimedCount(template.getClaimedCount());
         vo.setRemaining(template.getRemaining());
         vo.setPerUserLimit(template.getPerUserLimit());
+        vo.setCouponStackable(template.isCouponStackable());
+        vo.setStackable(template.isStackable());
         vo.setValidStart(template.getValidStart());
         vo.setValidEnd(template.getValidEnd());
         vo.setStatus(template.getStatus());

@@ -250,17 +250,31 @@ class OrderCouponFlowTest {
     }
 
     @Test
-    void createMultiShopWithCouponsRejected() {
+    void createMultiShopWithCouponsPersistsRowsPerOrder() {
         stubPrepare(List.of(
                         product(1L, SHOP_A, "店铺A", 7L, "50.00", 10),
                         product(2L, SHOP_B, "店铺B", 8L, "50.00", 10)),
                 discount("80.00", "0.00", "20.00", "0.00", "20.00", usage(10L, "券", "20.00")));
+        stubStockApis();
+        when(orderRepository.save(any(Order.class))).thenAnswer(invocation -> invocation.getArgument(0));
+        when(orderNoGenerator.next()).thenReturn(ORDER_NO, "MS-TEST-0002");
+        when(discountInternalApi.useCoupon(any(Long.class), any(CouponUseRequest.class)))
+                .thenReturn(Result.success(null));
 
-        assertThatThrownBy(() -> service().create(USER, createRequest(item(1L, 1), item(2L, 1))))
-                .isInstanceOf(BusinessException.class)
-                .hasMessageContaining("跨店铺下单暂不支持使用优惠券");
-        verify(orderRepository, never()).save(any());
-        verify(discountInternalApi, never()).useCoupon(any(), any());
+        CreateOrderVO vo = service().create(USER, createRequest(item(1L, 1), item(2L, 1)));
+
+        // 跨店铺也允许用券：两张子订单都写入券核销明细
+        assertThat(vo.getOrders()).hasSize(2);
+        ArgumentCaptor<List<OrderCoupon>> couponCaptor = ArgumentCaptor.forClass(List.class);
+        verify(orderRepository, times(2)).saveCoupons(anyString(), couponCaptor.capture());
+        assertThat(couponCaptor.getAllValues()).allSatisfy(rows ->
+                assertThat(rows).extracting(OrderCoupon::getCouponId).containsExactly(10L));
+
+        // 核销挂在第一张子订单的订单号上；取消任一子订单按 orderNo 幂等释放一次
+        ArgumentCaptor<CouponUseRequest> useCaptor = ArgumentCaptor.forClass(CouponUseRequest.class);
+        verify(discountInternalApi, times(1)).useCoupon(eq(10L), useCaptor.capture());
+        assertThat(useCaptor.getValue().getOrderNo()).isEqualTo(ORDER_NO);
+        assertThat(vo.getOrderNo()).isEqualTo(ORDER_NO);
     }
 
     @Test
