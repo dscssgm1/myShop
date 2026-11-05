@@ -67,6 +67,16 @@ public final class MemberDtos {
         private String bizNo;
     }
 
+    /** 扣回已发放的积分（删除评价等场景），按业务单号幂等 */
+    @Data
+    public static class RevokeEarnRequest {
+
+        private Long userId;
+        /** 原发放时的业务单号（如 REVIEW-123），据此定位原发放记录 */
+        private String bizNo;
+        private String remark;
+    }
+
     /** 扣减积分（下单抵现、积分商城兑换），bizNo 幂等——同一单号重复调用不重复扣 */
     @Data
     public static class SpendPointsRequest {

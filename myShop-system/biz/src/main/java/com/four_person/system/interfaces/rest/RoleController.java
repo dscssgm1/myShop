@@ -2,6 +2,7 @@ package com.four_person.system.interfaces.rest;
 
 import com.four_person.common.api.Result;
 import com.four_person.common.web.AccessGuard;
+import com.four_person.common.web.UserContext;
 import com.four_person.system.api.dto.RoleDtos;
 import com.four_person.system.api.dto.StaffDtos;
 import com.four_person.system.application.RoleApplicationService;
@@ -39,7 +40,9 @@ public class RoleController {
     @GetMapping
     public Result<List<RoleDtos.RoleVO>> list(@RequestParam(required = false) String groupCode) {
         AccessGuard.requireGroup("MERCHANT", "PLATFORM");
-        return Result.success(roleApplicationService.list(groupCode));
+        // 商家端只能看本端角色；平台端可看全部（用户管理页要给用户分配角色）
+        String group = "MERCHANT".equals(UserContext.getGroup()) ? "MERCHANT" : groupCode;
+        return Result.success(roleApplicationService.list(group));
     }
 
     @PostMapping

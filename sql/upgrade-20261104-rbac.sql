@@ -14,7 +14,7 @@ CREATE TABLE IF NOT EXISTS sys_role_menu (
 -- ==================== 平台管理员：全量 ====================
 INSERT IGNORE INTO sys_role_menu (role_code, perm_key) VALUES
 ('admin', 'admin:dashboard'),
-('admin', 'admin:orders'), ('admin', 'admin:orders:ship'),
+('admin', 'admin:orders'),
 ('admin', 'admin:products'), ('admin', 'admin:products:create'), ('admin', 'admin:products:edit'), ('admin', 'admin:products:status'), ('admin', 'admin:products:delete'),
 ('admin', 'admin:categories'), ('admin', 'admin:categories:create'), ('admin', 'admin:categories:update'), ('admin', 'admin:categories:delete'),
 ('admin', 'admin:brands'), ('admin', 'admin:brands:create'), ('admin', 'admin:brands:update'), ('admin', 'admin:brands:delete'),

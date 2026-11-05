@@ -657,12 +657,13 @@ public class OrderApplicationService {
     /**
      * 商家发货：订单服务统一编排——先标记已发货，再创建物流运单。
      * 运单创建失败时整体回滚，避免"订单已发货却无运单/重复运单"的不一致。
+     * <p>发货只允许订单所属店铺的商家操作：shopId 为空（平台方等无店铺归属的账号）同样拒绝。
      */
     @Transactional(rollbackFor = Exception.class)
     public void ship(Long shopId, String orderNo, Long companyId) {
         Order order = requireOrder(orderNo);
-        if (shopId != null && !shopId.equals(order.getShopId())) {
-            throw new BusinessException(OrderErrorCode.ORDER_FORBIDDEN);
+        if (shopId == null || !shopId.equals(order.getShopId())) {
+            throw new BusinessException(OrderErrorCode.ORDER_FORBIDDEN, "只有订单所属商家可以发货");
         }
         if (companyId == null) {
             throw new BusinessException(OrderErrorCode.SHIPMENT_FAILED, "请选择物流公司");

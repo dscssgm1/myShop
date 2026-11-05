@@ -25,6 +25,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;
@@ -72,6 +73,12 @@ public class ReviewApplicationService {
 
         Map<String, Object> orderItem = requireCompletedPurchase(userId, request.getOrderNo(),
                 request.getProductId());
+
+        // 已删除的评价仍占用 uk_user_order_product 唯一键，且业务上「同一商品终身只能评价一次」，
+        // 因此查重必须连同逻辑删除的记录一起统计，否则会落到数据库唯一键报错
+        if (countReviewsIncludingDeleted(userId, request.getProductId()) > 0) {
+            throw new BusinessException(ReviewErrorCode.REVIEW_DELETED_NO_REVIEW);
+        }
 
         Long sameOrder = reviewMapper.selectCount(Wrappers.<Review>lambdaQuery()
                 .eq(Review::getUserId, userId)
@@ -125,6 +132,27 @@ public class ReviewApplicationService {
         return toVO(review);
     }
 
+    /**
+     * 买家删除自己的评价。
+     * <p>
+     * 软删除（deleted=1）：评价从商品/店铺列表与评分统计中移除；
+     * 已发放的评价奖励积分按 bizNo=REVIEW-{id} 扣回，扣回失败则不删除，
+     * 保证「积分与评价」始终一致，失败重试也安全（扣回按 bizNo 幂等）。
+     * 删除后该商品不可再评价——记录仍占用 uk_user_order_product 唯一键。
+     */
+    public void delete(Long userId, Long reviewId) {
+        Review review = reviewMapper.selectById(reviewId);
+        if (review == null) {
+            throw new BusinessException(ReviewErrorCode.REVIEW_NOT_FOUND);
+        }
+        if (!userId.equals(review.getUserId())) {
+            throw new BusinessException(ReviewErrorCode.REVIEW_FORBIDDEN);
+        }
+        revokeRewardPoints(review);
+        reviewMapper.deleteById(reviewId);
+        recomputeRatings(review.getProductId(), review.getShopId());
+    }
+
     /** 本人已完成订单中可评价的商品 */
     public List<ReviewDtos.ReviewableVO> reviewable(Long userId, String orderNo) {
         List<Map<String, Object>> rows = jdbcTemplate.queryForList("""
@@ -140,12 +168,8 @@ public class ReviewApplicationService {
         List<Long> productIds = rows.stream()
                 .map(row -> ((Number) row.get("product_id")).longValue())
                 .toList();
-        Set<Long> reviewed = reviewMapper.selectList(Wrappers.<Review>lambdaQuery()
-                        .eq(Review::getUserId, userId)
-                        .in(Review::getProductId, productIds))
-                .stream()
-                .map(Review::getProductId)
-                .collect(Collectors.toSet());
+        // 含已删除的评价：删除后同样不可再评价，列表里应显示为「已评价」
+        Set<Long> reviewed = reviewedProductIds(userId, productIds);
 
         Map<Long, ReviewDtos.ReviewableVO> result = new LinkedHashMap<>();
         for (Map<String, Object> row : rows) {
@@ -436,6 +460,48 @@ public class ReviewApplicationService {
             // 发放失败不影响评价本身；bizNo 幂等，下次通过审核时可补发
             log.warn("评价奖励积分发放失败: reviewId={}, cause={}", review.getId(), ex.getMessage());
         }
+    }
+
+    /** 删除评价时扣回奖励积分：bizNo=REVIEW-{id} 幂等，失败则抛出，评价不删除 */
+    private void revokeRewardPoints(Review review) {
+        try {
+            MemberDtos.RevokeEarnRequest request = new MemberDtos.RevokeEarnRequest();
+            request.setUserId(review.getUserId());
+            request.setBizNo("REVIEW-" + review.getId());
+            request.setRemark("删除评价扣回奖励积分");
+            Integer deducted = Results.data(memberInternalApi.revokeEarn(request));
+            if (deducted != null && deducted > 0) {
+                log.info("删除评价扣回奖励积分: reviewId={}, userId={}, deduct={}",
+                        review.getId(), review.getUserId(), deducted);
+            }
+        } catch (Exception ex) {
+            log.error("删除评价扣回积分失败: reviewId={}, cause={}", review.getId(), ex.getMessage());
+            throw new BusinessException(ReviewErrorCode.REVIEW_REVOKE_FAILED);
+        }
+    }
+
+    /** 统计含逻辑删除的评价：删除后不可重评，也避免插入时撞唯一键报错 */
+    private int countReviewsIncludingDeleted(Long userId, Long productId) {
+        Integer cnt = jdbcTemplate.queryForObject("""
+                SELECT COUNT(*) FROM review WHERE user_id = ? AND product_id = ?
+                """, Integer.class, userId, productId);
+        return cnt == null ? 0 : cnt;
+    }
+
+    /** 已评价过的商品（含已删除的评价）：删除后同样不可再评价 */
+    private Set<Long> reviewedProductIds(Long userId, List<Long> productIds) {
+        if (productIds.isEmpty()) {
+            return Set.of();
+        }
+        String placeholders = productIds.stream().map(id -> "?").collect(Collectors.joining(","));
+        Object[] args = new Object[productIds.size() + 1];
+        args[0] = userId;
+        for (int i = 0; i < productIds.size(); i++) {
+            args[i + 1] = productIds.get(i);
+        }
+        return new HashSet<>(jdbcTemplate.queryForList(
+                "SELECT DISTINCT product_id FROM review WHERE user_id = ? AND product_id IN (" + placeholders + ")",
+                Long.class, args));
     }
 
     /** 图片 URL 列表存 JSON 字符串：过滤空值、最多 9 张 */

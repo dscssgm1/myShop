@@ -34,6 +34,9 @@ public interface MembershipRepository {
     /** 按业务单号合计已发放的积分（售后扣回用） */
     int sumEarnedByBizNo(Long userId, String bizNo);
 
+    /** 按业务单号合计已扣回的积分（删除评价等场景幂等判断用），返回负数或 0 */
+    int sumDeductedByBizNo(Long userId, String bizNo);
+
     /** 按业务单号合计已扣减的积分（抵现退款定位原扣减用） */
     int sumSpentByBizNo(Long userId, String bizNo);
 

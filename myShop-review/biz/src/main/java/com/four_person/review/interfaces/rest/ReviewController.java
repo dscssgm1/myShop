@@ -8,6 +8,7 @@ import com.four_person.review.api.dto.ReviewDtos;
 import com.four_person.review.application.ReviewApplicationService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -57,6 +58,13 @@ public class ReviewController {
     public Result<PageResult<ReviewDtos.ReviewVO>> mine(@RequestParam(defaultValue = "1") int page,
                                                         @RequestParam(defaultValue = "10") int size) {
         return Result.success(reviewApplicationService.mine(UserContext.getUserId(), page, size));
+    }
+
+    /** 买家删除自己的评价（扣回评价奖励积分，删除后不可再评价） */
+    @DeleteMapping("/{id}")
+    public Result<Void> delete(@PathVariable Long id) {
+        reviewApplicationService.delete(UserContext.getUserId(), id);
+        return Result.success("评价已删除", null);
     }
 
     /** 商家端：本店评价（含待审核、已隐藏） */

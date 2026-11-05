@@ -57,6 +57,12 @@ public class ProductRepositoryImpl implements ProductRepository {
                 .notIn(filter.excludeIds() != null && !filter.excludeIds().isEmpty(),
                         Product::getId, filter.excludeIds());
 
+        // 审核中心「待审核」合并视图：新发布待审 + 上架中修改待审核
+        if (filter.needsReview()) {
+            wrapper.and(w -> w.eq(Product::getAuditStatus, "PENDING")
+                    .or().isNotNull(Product::getPendingData));
+        }
+
         if (filter.subCategoryId() != null) {
             List<Long> productIds = categoryRelMapper.selectList(
                             Wrappers.<ProductCategoryRel>lambdaQuery()

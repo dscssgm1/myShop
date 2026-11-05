@@ -50,6 +50,7 @@ public class ProductApplicationService {
                 query.getKeyword(), query.getCategoryId(), query.getSubCategoryId(), query.getBrandId(), query.getShopId(),
                 query.getMinPrice(), query.getMaxPrice(), query.getTag(), query.getSort(),
                 query.getStatus(), query.getAuditStatus(), Boolean.TRUE.equals(query.getPendingEdit()),
+                Boolean.TRUE.equals(query.getNeedsReview()),
                 Boolean.TRUE.equals(query.getIncludeAll()), query.getExcludeIds(),
                 query.getPage() == null ? 1 : query.getPage(),
                 query.getSize() == null ? 8 : query.getSize());

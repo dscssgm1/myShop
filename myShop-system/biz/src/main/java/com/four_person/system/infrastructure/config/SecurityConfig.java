@@ -53,8 +53,11 @@ public class SecurityConfig {
                         .requestMatchers("/error", "/actuator/**").permitAll()
                         // 个人中心：任何登录用户都可以访问自己
                         .requestMatchers("/users/me", "/users/me/**").authenticated()
-                        // 平台管理员：用户与角色管理
-                        .requestMatchers("/users/**", "/roles/**").hasRole("ADMIN")
+                        // 平台用户管理：仅平台管理员
+                        .requestMatchers("/users/**").hasRole("ADMIN")
+                        // 角色与菜单配置：平台端/商家端各自管理本端角色，
+                        // 细粒度权限（角色管理、配置菜单）交由 AccessGuard 按权限码 + 所属端判定
+                        .requestMatchers("/roles/**").authenticated()
                         .requestMatchers(HttpMethod.GET, "/member/**").authenticated()
                         .anyRequest().authenticated())
                 .exceptionHandling(ex -> ex

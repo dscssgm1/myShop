@@ -14,7 +14,11 @@ public enum ReviewErrorCode implements ErrorCode {
     REVIEW_NOT_FOUND(40408, "评价不存在"),
     REVIEW_REPORT_DONE(40905, "该评价已被举报，正在等待平台处理"),
     REVIEW_FORBIDDEN(40303, "无权操作该评价"),
-    REVIEW_STATUS_INVALID(40023, "当前评价状态不允许该操作");
+    REVIEW_STATUS_INVALID(40023, "当前评价状态不允许该操作"),
+    /** 评价被删除后仍占用唯一键，且业务上不允许重评 */
+    REVIEW_DELETED_NO_REVIEW(40906, "评价已删除，不能重复评价该商品"),
+    /** 扣回评价奖励积分失败（用户服务不可用），删除未执行 */
+    REVIEW_REVOKE_FAILED(40024, "评价奖励积分扣回失败，请稍后再试");
 
     private final int code;
     private final String message;

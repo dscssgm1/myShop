@@ -222,19 +222,52 @@ public abstract class OrderApiBBTSupport {
     // ==================== 身份与请求 ====================
 
     protected RequestPostProcessor customer(long userId) {
-        return headers(userId, "USER", null);
+        return headers(userId, "USER", null, null, null);
     }
 
+    /** A 店店长：商家端账号，带订单查看 + 发货权限 */
     protected RequestPostProcessor merchantA() {
-        return headers(2001L, "MERCHANT", SHOP_A);
+        return headers(2001L, "MERCHANT", SHOP_A, "merchant",
+                "merchant:orders,merchant:orders:ship");
     }
 
-    private RequestPostProcessor headers(long userId, String group, Long shopId) {
+    /** B 店店长：另一家店的商家账号 */
+    protected RequestPostProcessor merchantB() {
+        return headers(2002L, "MERCHANT", SHOP_B, "merchant",
+                "merchant:orders,merchant:orders:ship");
+    }
+
+    /** 商家账号但未绑定店铺（shopId 缺失） */
+    protected RequestPostProcessor merchantWithoutShop() {
+        return headers(2003L, "MERCHANT", null, "merchant", "merchant:orders,merchant:orders:ship");
+    }
+
+    /**
+     * 平台管理员：PLATFORM 端账号。
+     * 权限集里故意带上历史遗留的 admin:orders:ship，用来证明后端不依赖权限码、只认商家端身份。
+     */
+    protected RequestPostProcessor platform() {
+        return headers(3001L, "PLATFORM", null, "admin",
+                "admin:orders,admin:orders:ship");
+    }
+
+    /** 平台业务员：PLATFORM 端账号，但权限集里没有发货权限码 */
+    protected RequestPostProcessor platformWithoutShipPerm() {
+        return headers(3002L, "PLATFORM", null, "admin", "admin:orders");
+    }
+
+    private RequestPostProcessor headers(long userId, String group, Long shopId, String role, String perms) {
         return (MockHttpServletRequest request) -> {
             request.addHeader(UserContext.USER_ID_HEADER, String.valueOf(userId));
             request.addHeader(UserContext.GROUP_HEADER, group);
+            if (role != null) {
+                request.addHeader(UserContext.ROLE_HEADER, role);
+            }
             if (shopId != null) {
                 request.addHeader(UserContext.SHOP_ID_HEADER, String.valueOf(shopId));
+            }
+            if (perms != null) {
+                request.addHeader(UserContext.PERMS_HEADER, perms);
             }
             return request;
         };

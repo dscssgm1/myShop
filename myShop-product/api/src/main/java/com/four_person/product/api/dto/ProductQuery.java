@@ -42,6 +42,9 @@ public class ProductQuery {
     /** 平台管理端筛选：true 时只看有待审核修改（pending_data 非空）的商品 */
     private Boolean pendingEdit;
 
+    /** 平台管理端筛选：true 时看所有需要审核的商品（新发布待审 + 上架中修改待审核） */
+    private Boolean needsReview;
+
     /** 商家管理端：true 时包含未上架/未审核商品，商家身份自动限定为本店 */
     private Boolean includeAll;
 

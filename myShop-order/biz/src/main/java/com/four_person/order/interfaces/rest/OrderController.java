@@ -96,11 +96,15 @@ public class OrderController {
         return Result.success();
     }
 
-    /** 商家发货（只能发本店铺订单）：订单服务编排创建运单并标记已发货 */
+    /**
+     * 商家发货（只能发本店铺订单）：订单服务编排创建运单并标记已发货。
+     * 发货是商家专属动作：平台方（PLATFORM）无权发货，这里只放行商家端账号。
+     */
     @PostMapping("/{orderNo}/ship")
     public Result<Void> ship(@PathVariable String orderNo, @Valid @RequestBody ShipRequest request) {
-        AccessGuard.requirePerm("merchant:orders:ship", "admin:orders:ship");
-        orderApplicationService.ship(UserContext.getShopId(), orderNo, request.getCompanyId());
+        AccessGuard.requireGroup("MERCHANT");
+        AccessGuard.requirePerm("merchant:orders:ship");
+        orderApplicationService.ship(UserContext.requireShopId(), orderNo, request.getCompanyId());
         return Result.success();
     }
 }

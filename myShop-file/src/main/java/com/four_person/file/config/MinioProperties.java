@@ -11,10 +11,10 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 public class MinioProperties {
 
     /** S3 API 地址，上传/删除走这里 */
-    private String endpoint = "http://127.0.0.1:9000";
+    private String endpoint = "http://101.132.73.8:9000";
 
-    /** 浏览器访问图片用的地址，默认与 endpoint 相同；上了域名/反代后单独配置 */
-    private String publicUrl = "http://127.0.0.1:9000";
+    /** 浏览器访问图片用的地址；该值会写进数据库，必须是外部电脑可达的公网地址 */
+    private String publicUrl = "http://101.132.73.8:9000";
 
     private String accessKey = "minioadmin";
 

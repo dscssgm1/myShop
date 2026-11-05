@@ -36,7 +36,8 @@ public class ProductController {
     public Result<PageResult<ProductVO>> page(ProductQuery query) {
         // 上架/审核状态筛选属于管理端能力，带这些参数时须有商品管理菜单权限
         if (query.getStatus() != null || StringUtils.hasText(query.getAuditStatus())
-                || Boolean.TRUE.equals(query.getPendingEdit())) {
+                || Boolean.TRUE.equals(query.getPendingEdit())
+                || Boolean.TRUE.equals(query.getNeedsReview())) {
             AccessGuard.requirePerm("merchant:products", "admin:products");
         }
         // 商家管理端：包含未上架/未审核商品，商家只能查本店

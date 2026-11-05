@@ -26,6 +26,13 @@ public interface MemberInternalApi {
     @PostMapping("/internal/points/earn-flat")
     Result<Integer> earnFlat(@RequestBody MemberDtos.EarnFlatRequest request);
 
+    /**
+     * 扣回已发放的积分（删除评价等场景），按 bizNo 幂等：
+     * 同一 bizNo 已扣回过则不再重复扣，返回实际扣回数。
+     */
+    @PostMapping("/internal/points/revoke-earn")
+    Result<Integer> revokeEarn(@RequestBody MemberDtos.RevokeEarnRequest request);
+
     // ==================== 下单积分抵现 ====================
 
     /** 积分余额（结算页算可抵上限用） */

@@ -163,6 +163,46 @@ public class MembershipApplicationService {
         return deduct;
     }
 
+    /**
+     * 扣回已发放的积分（删除评价等场景）。
+     * <p>
+     * 与 {@link #refundEarn} 的区别：按 bizNo 幂等——同一业务单号已扣回过则不再重复扣，
+     * 便于调用方在失败重试时安全地重复调用。已发放合计与当前余额取小者扣减
+     * （积分可能已被消费，不足部分不追讨），成长值不回收。
+     */
+    @Transactional
+    public int revokeEarn(Long userId, String bizNo, String remark) {
+        if (bizNo == null) {
+            return 0;
+        }
+        int earned = membershipRepository.sumEarnedByBizNo(userId, bizNo);
+        if (earned <= 0) {
+            return 0;
+        }
+        if (membershipRepository.sumDeductedByBizNo(userId, bizNo) < 0) {
+            return 0; // 已扣回，幂等返回
+        }
+        PointsAccount account = accountOf(userId);
+        int balance = account.getPoints() == null ? 0 : account.getPoints();
+        int deduct = Math.min(earned, Math.max(balance, 0));
+        if (deduct <= 0) {
+            return 0;
+        }
+        if (!membershipRepository.deductPoints(userId, deduct)) {
+            return 0;
+        }
+        PointsLog log = new PointsLog();
+        log.setUserId(userId);
+        log.setChangeAmount(-deduct);
+        log.setBalance(accountOf(userId).getPoints());
+        log.setType("DEDUCT");
+        log.setBizNo(bizNo);
+        log.setRemark((remark == null ? "扣回奖励积分" : remark)
+                + (deduct < earned ? "（应扣 " + earned + "，余额不足已扣 " + deduct + "）" : ""));
+        membershipRepository.saveLog(log);
+        return deduct;
+    }
+
     /** 当前积分余额（未建账户视为 0） */
     public int balance(Long userId) {
         PointsAccount account = membershipRepository.findAccount(userId).orElse(null);

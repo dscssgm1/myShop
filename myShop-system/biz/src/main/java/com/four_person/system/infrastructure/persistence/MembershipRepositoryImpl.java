@@ -85,6 +85,15 @@ public class MembershipRepositoryImpl implements MembershipRepository {
     }
 
     @Override
+    public int sumDeductedByBizNo(Long userId, String bizNo) {
+        List<PointsLog> logs = logMapper.selectList(Wrappers.<PointsLog>lambdaQuery()
+                .eq(PointsLog::getUserId, userId)
+                .eq(PointsLog::getBizNo, bizNo)
+                .eq(PointsLog::getType, "DEDUCT"));
+        return logs.stream().mapToInt(log -> log.getChangeAmount() == null ? 0 : log.getChangeAmount()).sum();
+    }
+
+    @Override
     public int sumSpentByBizNo(Long userId, String bizNo) {
         List<PointsLog> logs = logMapper.selectList(Wrappers.<PointsLog>lambdaQuery()
                 .eq(PointsLog::getUserId, userId)

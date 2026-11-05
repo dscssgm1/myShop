@@ -71,4 +71,11 @@ public class InternalUserController {
         return Result.success(membershipApplicationService.earnFlat(
                 request.getUserId(), request.getPoints(), request.getRemark(), request.getBizNo()));
     }
+
+    /** 扣回已发放的积分（删除评价），按 bizNo 幂等，返回实际扣回数 */
+    @PostMapping("/points/revoke-earn")
+    public Result<Integer> revokeEarn(@RequestBody MemberDtos.RevokeEarnRequest request) {
+        return Result.success(membershipApplicationService.revokeEarn(
+                request.getUserId(), request.getBizNo(), request.getRemark()));
+    }
 }
